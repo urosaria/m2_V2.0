@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>M2 관리자</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Bootstrap core CSS-->
+    <link href="/css/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom fonts for this template-->
+    <link href="/css/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- Page level plugin CSS-->
+    <link href="/css/bootstrap/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="/css/bootstrap/sb-admin.css" rel="stylesheet">
+    <script src="/js/handlebars/handlebars-v4.0.11.js"></script>
+    <script type="text/javascript">
+        function userRemove(num){
+            if(confirm("삭제하시겠습니까?")){
+                $.get( "/user/admin/remove/"+num, function( data ) {
+                    if(data=='success'){
+                      alert("삭제되었습니다");
+                      location.href="/user/admin/list";
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+
+{{> admin/common/nav}}
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <div class="card card-register mx-auto mt-5">
+            <div class="card-header">회원가입</div>
+            <div class="card-body">
+                {{#user}}
+                <form name="user" method="post" action="/user/admin/update/{{num}}">
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label for="exampleInputName">이름</label>
+                                <input class="form-control" id="exampleInputName" value="{{name}}" name="name" type="text" aria-describedby="nameHelp" readonly="readonly">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="exampleInputLastName">ID</label>
+                                <input class="form-control" id="exampleInputLastName" name="id"  type="text" aria-describedby="nameHelp" value="{{id}}" readonly="readonly">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Email address</label>
+                        <input class="form-control" id="exampleInputEmail1" name="email" type="email" aria-describedby="emailHelp" value="{{email}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">전화번호</label>
+                        <input class="form-control" id="phone" name="phone" type="text" aria-describedby="emailHelp" value="{{phone}}">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                알람 동의여부
+                                <input type="radio" name="agreeYn" value="Y" aria-label="Radio button for following text input"> 동의
+                                <input type="radio" name="agreeYn" value="N"  aria-label="Radio button for following text input"> 비동의
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label for="exampleInputPassword1">Password</label>
+                                <input class="form-control" id="exampleInputPassword1" name="passwd" type="password" placeholder="Password">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="exampleConfirmPassword">Confirm password</label>
+                                <input class="form-control" id="exampleConfirmPassword" type="password" placeholder="Confirm password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center">
+                        <input type="submit" value="수정" class="btn btn-primary" />
+                        <button type="button" class="btn btn-primary" onclick="userRemove({{num}})">삭제</button>
+                        <a class="btn btn-primary" href="/user/admin/list" role="button">목록</a>
+                    </div>
+                </form>
+                {{/user}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> admin/common/footer}}
+
+</body>
+</html>
