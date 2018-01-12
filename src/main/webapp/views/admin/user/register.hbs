@@ -38,7 +38,7 @@
         <div class="card card-register mx-auto mt-5">
             <div class="card-header">회원가입</div>
             <div class="card-body">
-                <form name="user" method="post" action="/user/admin/insert">
+                <form name="user" method="post" action="/admin/user/register">
                     <div class="form-group">
                         <div class="form-row">
                             <div class="col-md-6">
@@ -57,15 +57,16 @@
                         <input class="form-control" id="email" name="email" type="email" placeholder="email">
                     </div>
                     <div class="form-group">
-                        <label for="phone">전화번호</label>
-                        <input class="form-control" id="phone" name="phone" type="text" placeholder="phone">
-                    </div>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                알람 동의여부
-                                <input type="radio" name="agree_yn" value="Y" aria-label="Radio button for following text input"> 동의
-                                <input type="radio" name="agree_yn" value="N"  aria-label="Radio button for following text input"> 비동의
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label for="phone">전화번호</label>
+                                <input class="form-control" id="phone" name="phone" type="text" placeholder="phone">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="agree_yn">알람 동의여부</label>
+                                <br />
+                                <input type="radio" id="agreeYn" name="agreeYn" value="Y" aria-label="Radio button for following text input"> 동의
+                                <input type="radio" name="agreeYn" value="N"  aria-label="Radio button for following text input"> 비동의
                             </div>
                         </div>
                     </div>
@@ -73,17 +74,19 @@
                         <div class="form-row">
                             <div class="col-md-6">
                                 <label for="passwd">Password</label>
-                                <input class="form-control" id="passwd" name="passwd" type="password" placeholder="Password">
+                                <input class="form-control" id="passwd" name="password" type="password" placeholder="Password">
                             </div>
                             <div class="col-md-6">
                                 <label for="passwd2">Confirm password</label>
                                 <input class="form-control" id="passwd2" type="password" placeholder="Confirm password">
+                                ADMIN <input type="checkbox" name="roles" value="ADMIN"/> |
+                                USER  <input type="checkbox" name="roles" value="USER" />
                             </div>
                         </div>
                     </div>
                     <div style="text-align: center">
                         <input type="submit" value="등록" class="btn btn-primary" />
-                        <a class="btn btn-primary" href="/user/admin/list" role="button">목록</a>
+                        <a class="btn btn-primary" href="/admin/user/list" role="button">목록</a>
                     </div>
                 </form>
             </div>

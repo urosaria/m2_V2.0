@@ -3,65 +3,83 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Email;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-@Setter
-@Getter
 @Entity
+@Table(name = "user")
 @Data
-@Table(name="user")
-public class User implements Serializable {
-
+@Getter
+@Setter
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long num;
+    @Column(name = "num")
+    private Long num;
 
-    @NotNull
-    @Column(name="id")
-    String id;
+    @Column(name = "id")
+    private String id;
 
-    @NotNull
-    @Column(name="passwd")
-    String passwd;
+    @Column(name = "name")
+    private String name;
 
-    @NotNull
-    @Column(name="name")
-    String name;
+    @Column(name = "password")
+    private String password;
 
-    @NotNull
-    @Column(name="phone")
-    String phone;
+    private String status;
 
-    @NotNull
-    @Column(name="email")
-    String email;
+    @Column(name = "email")
+    @Email
+    private String email;
 
-    @NotNull
-    @Column(name="status")
-    String status="S";
+    @Column(name ="phone")
+    private String phone;
 
-    @NotNull
-    @Column(name="agree_yn")
-    String agreeYn;
+    @Column(name ="agree_yn")
+    private String agreeYn;
 
     @NotNull
     @Column(name="create_date")
     LocalDateTime createDate;
 
+    @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_num"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+
+    private Set<Role> roles;
+
+    public void insert(User insertUser){
+        this.id =insertUser.id;
+        this.name =insertUser.name;
+        this.password = insertUser.password;
+        this.email = insertUser.email;
+        this.phone = insertUser.phone;
+        this.agreeYn = insertUser.agreeYn;
+        LocalDateTime date = LocalDateTime.now();
+        this.createDate = date;
+        this.roles = insertUser.roles;
+        this.status = "S";
+    }
+
     public void update(User updateUser){
         this.email = updateUser.email;
         this.phone = updateUser.phone;
         this.agreeYn = updateUser.agreeYn;
-        this.passwd = updateUser.passwd;
+        this.password = updateUser.password;
     }
 
     public void delete(User deleteUser){
         this.status = "D";
     }
-
 }

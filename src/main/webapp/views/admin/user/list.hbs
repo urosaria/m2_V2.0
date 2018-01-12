@@ -24,7 +24,7 @@
 <div class="content-wrapper">
     <div class="container-fluid">
         <div class="table-responsive">
-            <div style="text-align: right;width: 100%; padding-bottom: 5px"><a class="btn btn-primary" href="/user/admin/register" role="button">등록</a></div>
+            <div style="text-align: right;width: 100%; padding-bottom: 5px"><a class="btn btn-primary" href="/admin/user/register" role="button">등록</a></div>
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                 <tr>
@@ -39,8 +39,8 @@
                 <tbody>
                     {{#each userList}}
                     <tr>
-                        <td><a href="/user/admin/modify/{{num}}">{{name}} ({{id}})</a></td>
-                        <td>{{email}}</td>
+                        <td><a href="/admin/user/modify/{{num}}">{{name}} ({{id}})</a></td>
+                        <td>{{email}} </td>
                         <td>{{phone}}</td>
                         <td>{{agreeYn}}</td>
                         <td>{{status}}</td>

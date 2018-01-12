@@ -19,10 +19,10 @@
     <script type="text/javascript">
         function userRemove(num){
             if(confirm("삭제하시겠습니까?")){
-                $.get( "/user/admin/remove/"+num, function( data ) {
+                $.get( "/admin/user/remove/"+num, function( data ) {
                     if(data=='success'){
                       alert("삭제되었습니다");
-                      location.href="/user/admin/list";
+                      location.href="/admin/user/list";
                     }
                 });
             }
@@ -39,7 +39,7 @@
             <div class="card-header">회원가입</div>
             <div class="card-body">
                 {{#user}}
-                <form name="user" method="post" action="/user/admin/update/{{num}}">
+                <form name="user" method="post" action="/admin/user/modify/{{num}}">
                     <div class="form-group">
                         <div class="form-row">
                             <div class="col-md-6">
@@ -85,7 +85,7 @@
                     <div style="text-align: center">
                         <input type="submit" value="수정" class="btn btn-primary" />
                         <button type="button" class="btn btn-primary" onclick="userRemove({{num}})">삭제</button>
-                        <a class="btn btn-primary" href="/user/admin/list" role="button">목록</a>
+                        <a class="btn btn-primary" href="/admin/user/list" role="button">목록</a>
                     </div>
                 </form>
                 {{/user}}

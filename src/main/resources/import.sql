@@ -1,4 +1,6 @@
-insert into user(agree_yn, email, id, name, passwd, phone, status, create_date) values ('Y', 'test@11.11', 'testid1', 'name1', '1234' ,'0101111111', 'S', now());
-insert into user(agree_yn, email, id, name, passwd, phone, status, create_date) values ('Y', 'test2@11.11', 'testid2', 'name2','1234' ,'0101111111', 'S', now());
-insert into user(agree_yn, email, id, name, passwd, phone, status, create_date) values ('Y', 'test3@11.11', 'testid3', 'name3','1234' ,'0101111111', 'S', now());
+insert into user(num, agree_yn, email, id, name, password, phone, status, create_date) values (1, 'Y', 'test@11.11', 'test', '이름임', '$2a$10$gFWj.NuYD4pqXvamuDqqquJr285Vx2KoagWmfpygd7cOUD6rJ6KGq' ,'0101111111', 'S', now());
 
+insert into role(id, name) VALUES (1,'ADMIN');
+insert into role(id, name) VALUES (2,'USER');
+
+insert into user_role(user_num, role_id) VALUES (1,1);
