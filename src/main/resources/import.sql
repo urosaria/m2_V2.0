@@ -4,3 +4,5 @@ insert into role(id, name) VALUES (1,'ADMIN');
 insert into role(id, name) VALUES (2,'USER');
 
 insert into user_role(user_num, role_id) VALUES (1,1);
+
+insert into board_master(id, name, reply_yn, status) values (1, '공지사항', 'N', 'S');

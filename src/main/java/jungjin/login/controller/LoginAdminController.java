@@ -19,8 +19,6 @@ import jungjin.user.domain.User;
 @RequestMapping(value = "/login")
 public class LoginAdminController {
 
-    //@Autowired
-    //private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private UserService userService;
 
