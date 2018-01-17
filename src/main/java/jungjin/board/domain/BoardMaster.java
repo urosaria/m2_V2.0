@@ -18,7 +18,7 @@ public class BoardMaster {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private Long id;
+    private int id;
 
     @Column(name = "name")
     private String name;
@@ -30,6 +30,9 @@ public class BoardMaster {
     @NotNull
     @Column(name="status")
     String status;
+
+    @Column(name="skin_name")
+    String skinName;
 
     public void update(BoardMaster updateBoardMaster){
         this.name = updateBoardMaster.name;

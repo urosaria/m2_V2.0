@@ -44,7 +44,7 @@ public class BoardMasterAdminController {
     }
 
     @RequestMapping(value="/modify/{id}", method=RequestMethod.GET)
-    public String boardMasterModify(Model model, @PathVariable Long id){
+    public String boardMasterModify(Model model, @PathVariable int id){
 
         BoardMaster boardMaster=boardMasterService.showBoardMaster(id);
         model.addAttribute("boardMaster", boardMaster);
@@ -53,7 +53,7 @@ public class BoardMasterAdminController {
     }
 
     @RequestMapping(value = "/modify/{id}", method = RequestMethod.POST)
-    public String boardMasterupdate(@PathVariable Long id, BoardMaster boardMaster) {
+    public String boardMasterupdate(@PathVariable int id, BoardMaster boardMaster) {
 
         boardMasterService.updateBoardMaster(id, boardMaster);
 
@@ -62,7 +62,7 @@ public class BoardMasterAdminController {
 
     @GetMapping(value="/remove/{id}")
     @ResponseBody
-    public String userRemove(@PathVariable Long id){
+    public String userRemove(@PathVariable int id){
 
         BoardMaster boardMaster = boardMasterService.deleteBoardMaster(id);
         String success="success";

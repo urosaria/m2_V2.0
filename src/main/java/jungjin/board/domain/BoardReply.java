@@ -4,18 +4,15 @@ import lombok.Getter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
-
 import jungjin.user.domain.User;
 
 @Getter
 @Entity
 @Data
-@Table(name="board")
-public class Board implements Serializable {
+@Table(name="board_reply")
+public class BoardReply implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,7 +20,7 @@ public class Board implements Serializable {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name="fk_board_writer"))
+    @JoinColumn(foreignKey = @ForeignKey(name="fk_board_reply_writer"))
     private User user;
 
     @NotNull
@@ -47,22 +44,17 @@ public class Board implements Serializable {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name="fk_board_master_id"))
-    private BoardMaster boardMaster;
+    @JoinColumn(foreignKey = @ForeignKey(name="fk_board_id"))
+    private Board board;
 
-    //@Transient
-    @OneToMany
-    @JoinColumn(name = "board_id")
-    List<BoardReply> boardReplyList;
-
-    public void update(Board upateBoard){
-        this.title = upateBoard.title;
-        this.contents = upateBoard.contents;
+    public void update(BoardReply upateBoardReply){
+        this.title = upateBoardReply.title;
+        this.contents = upateBoardReply.contents;
     }
 
-    public void insert(Board insertBoard){
-        this.title = insertBoard.title;
-        this.contents = insertBoard.contents;
+    public void insert(BoardReply insertBoardReply){
+        this.title = insertBoardReply.title;
+        this.contents = insertBoardReply.contents;
         this.status="S";
         this.createDate = LocalDateTime.now();
     }

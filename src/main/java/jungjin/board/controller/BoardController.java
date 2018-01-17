@@ -19,11 +19,9 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
-    @GetMapping(value="/admin/list")
+    @GetMapping(value="/list")
     public String userList(Model model){
 
-        List<Board> boardList =boardService.listBoard();
-        model.addAttribute("boardList", boardList);
 
         return "/board/list";
     }

@@ -22,19 +22,19 @@ public class BoardMasterService {
         boardMaster.setStatus("S");
         boardMasterRepository.save(boardMaster);
     }
-    public BoardMaster showBoardMaster(Long id){
+    public BoardMaster showBoardMaster(int id){
         return boardMasterRepository.findOne(id);
     }
 
     @Transactional
-    public void updateBoardMaster(Long id, BoardMaster updateBoareMaster){
+    public void updateBoardMaster(int id, BoardMaster updateBoareMaster){
         BoardMaster boardMaster = boardMasterRepository.findOne(id);
         boardMaster.update(updateBoareMaster);
         boardMasterRepository.save(boardMaster);
     }
 
     @Transactional
-    public BoardMaster deleteBoardMaster(Long id){
+    public BoardMaster deleteBoardMaster(int id){
         BoardMaster boardMaster = boardMasterRepository.findOne(id);
         boardMaster.setStatus("D");
         boardMaster = boardMasterRepository.save(boardMaster);
