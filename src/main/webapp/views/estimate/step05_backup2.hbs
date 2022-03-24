@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <style>
+
+        html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+        html,body{height:100%;}
+        body,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td,button,select{margin:0;padding:0;letter-spacing:0;font-size:18px;}
+        div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,input,textarea,p,blockquote,button,a,span,strong,label{box-sizing:border-box;}
+        body{direction:ltr;font-family:'Noto Sans Korean',sans-serif;font-weight:300;line-height:1.4em;}
+
+        input{padding:0;margin:0;}
+        /*input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill{background-color:transparent;color:inherit;}*/
+        select{font-family:'Noto Sans Korean',돋움,dotum,Arial,dotum,Helvetica,sans-serif;border:none;}
+        /*input,textarea,select,button{outline:none;}*/
+        ul,ol{list-style:none;}
+        form{display:inline;}
+        button{background-color:transparent;cursor:pointer;}
+        input,fieldset,img,button{border:none;}
+
+
+        .form{min-width:600px;margin:20px auto;font-size:0;border:solid 1px #333;background-color:#eaeaea;display:block;white-space:nowrap;}
+        .form .step{position:relative;width:33.33%;min-width:200px;padding:5px;display:inline-block;box-sizing:border-box;overflow:hidden;vertical-align:top;}
+        .form p{position:relative;padding:0.2em;border-bottom:solid 1px #ccc;}
+        .form p>label{position:relative;width:100%;height:2em;padding-left:7em;line-height:2em;display:block;}
+        .form p>label>strong{position:absolute;left:0;top:0;width:9em;font-size:14px;text-align:center;text-align:center;}
+        .form p>label>input{height:2em;line-height:2em;border:solid 1px #ccc;}
+        .form input.tr{width:33.33%;height:2em;line-height:2em;text-align:right;border:solid 1px #ccc;}
+        .form p>label>select{height:2em;line-height:2em;border:solid 1px #ccc;text-align-last:right;}
+        .form p>label>select>option{direction:rtl;}
+        .form p>label.full>input, .form p>label.full>select{width:100%;}
+        .form p>label.half>input, .form p>label.half>select{width:50%;}
+        .form p>label.num>input{text-align:right;}
+        .form p.submit>input{width:100%;height:2em;line-height:2em;color:white;background-color:black;display:block;cursor:pointer;}
+
+        .partition{padding:5px 20px;}
+        .partition.sub{padding:5px 25px;font-size:14px;background-color:rgba(0,0,0,0.1);}
+
+    </style>
+</head>
+<body>
+
+
+<form class="form" id="fm">
+{{#structureDetailForm}}
+    <div class="step step1">
+        <p>
+            <label class="full num">
+                <strong>건물타입(T)</strong>
+                <select name="t">
+                    <option value="1">A트러스</option>
+                    <option value="2">B트러스</option>
+                    <option value="3">B처마형</option>
+                    <option value="4">A박스형</option>
+                    <option value="5">B박스형</option>
+                    <option value="6">A처마형</option>
+                </select>
+            </label>
+        </p>
+        <p><label class="full num"><strong>건물폭(SW)</strong><input type="number" step="10" name="sw" value="{{structureDetailForm.structure.width}}" /></label></p>
+        <p><label class="full num"><strong>건물길이(SI)</strong><input type="number" step="10" name="si" value="{{structureDetailForm.structure.length}}" /></label></p>
+        <p><label class="full num"><strong>건물높이(SH)</strong><input type="number" step="10" name="sh" value="{{structureDetailForm.structure.height}}" /></label></p>
+        <p><label class="full num"><strong>트러스높이(ST)</strong><input type="number" step="10" name="st" value="{{structureDetailForm.structure.trussHeight}}" /></label></p>
+        <p><label class="full num"><strong>처마길이(SC)</strong><input type="number" step="10" name="sc" value="{{structureDetailForm.structure.eavesLength}}" /></label></p>
+        <p><label class="full num"><strong>배면트러스높이(SB)</strong><input type="number" step="10" name="sb" value="{{structureDetailForm.structure.rearTrussHeight}}" /></label></p>
+    </div>
+    <div class="step step2">
+        <p>
+            <label class="full num">
+                <strong>구찌(드레인) 지름</strong>
+                <input type="number" name="gd" value="{{structureDetailForm.gucci}}" />
+            </label>
+        </p>
+        <p><label class="full num"><strong>구찌(드레인)수량</strong><input type="number" name="ge" value="{{structureDetailForm.gucciAmount}}" /></label></p>
+        <p><label class="full num"><strong>천장</strong></label></p>
+        {{#each structureDetailForm.ceilingList}}
+        <p>
+            <input type="number" step="10" name="c{{@index}}w" class="tr" value="{{length}}" />
+            <input type="number" step="10" name="c{{@index}}h" class="tr" value="{{height}}" />
+            <input type="number" name="c{{@index}}e" class="tr" value="{{amount}}" />
+        </p>
+        {{/each}}
+        <p><label class="full num"><strong>내벽</strong></label></p>
+        {{#each structureDetailForm.insideWallList}}
+        <p>
+            <input type="number" step="10" name="n{{@index}}w" class="tr" value="{{length}}" />
+            <input type="number" step="10" name="n{{@index}}h" class="tr" value="{{height}}" />
+            <input type="number" name="n{{@index}}e" class="tr" value="{{amount}}" />
+        </p>
+        {{/each}}
+    </div>
+    <div class="step step3">
+        <p><label class="half num"><strong>캐노피</strong>
+            {{#each structureDetailForm.canopyList}}
+            <input type="number" step="10" name="cn{{@index}}w" value="{{length}}" />
+            <input type="number" name="cn{{@index}}e" value="{{amount}}" /></label>
+            {{/each}}
+        </p>
+        <p><label class="full num"><strong>창호</strong></label></p>
+        <p>
+            {{#each structureDetailForm.windowList}}
+            <input type="number" step="10" name="w{{@index}}w" class="tr" value="{{width}}" />
+            <input type="number" step="10" name="w{{@index}}h" class="tr" value="{{height}}" />
+            <input type="number" name="w{{@index}}e" class="tr" value="{{amount}}" />
+            {{/each}}
+        </p>
+        <p><label class="full num"><strong>도어</strong></label></p>
+        <p>
+            {{#each structureDetailForm.doorList}}
+            <input type="number" step="10" name="d{{@index}}w" class="tr" value="{{width}}" />
+            <input type="number" step="10" name="d{{@index}}h" class="tr" value="{{height}}" />
+            <input type="number" name="d{{@index}}e" class="tr" value="{{amount}}" />
+            {{/each}}
+        </p>
+        <p>
+            <label class="full num">
+                <strong>외벽 종류</strong>
+                <input type="number" name="oomk" value="{{outsideWallType}}" />
+            </label>
+        </p>
+        <p>
+            <label class="full num">
+                <strong>외벽 두께</strong>
+                <input type="number" name="oomt" value="{{outsideWallThick}}" />
+            </label>
+        </p>
+    </div>
+    <p class="submit"><input type="submit" id="go" value="계산" /></p>
+{{/structureDetailForm}}
+</form>
+
+<table cellpadding="0" cellspacing="0" class="calResult t1">
+    <caption>판넬공사</caption>
+    <thead>
+    <tr>
+        <th scope="col">품명</th>
+        <th scope="col">규격</th>
+        <th scope="col">단위</th>
+        <th scope="col">수량</th>
+        <th scope="col">가견적</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="ra">
+        <th class="name" scope="row">지붕판넬</th>
+        <td class="sta"></td>
+        <td class="unit">M²</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="oa">
+        <th class="name" scope="row">외벽판넬</th>
+        <td class="sta"></td>
+        <td class="unit">M²</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="na">
+        <th class="name" scope="row">내벽판넬</th>
+        <td class="sta"></td>
+        <td class="unit">M²</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="pa">
+        <th class="name" scope="row">파라펫판넬</th>
+        <td class="sta"></td>
+        <td class="unit">M²</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="ka">
+        <th class="name" scope="row">보온판넬</th>
+        <td class="sta"></td>
+        <td class="unit">M²</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="ca">
+        <th class="name" scope="row">캐노피판넬</th>
+        <td class="sta"></td>
+        <td class="unit">M²</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasrt">
+        <th class="name" scope="row">용마루상부</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasrb">
+        <th class="name" scope="row">용마루하부</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasrh">
+        <th class="name" scope="row">반트러스용마루</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasc">
+        <th class="name" scope="row">크로샤</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="oasdh">
+        <th class="name" scope="row">두겁후레싱</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasb"><!-- 수정필요 -->
+        <th class="name" scope="row">미돌출박공</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasb"><!-- 수정필요 -->
+        <th class="name" scope="row">돌출박공</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rassw">
+        <th class="name" scope="row">물끊기</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasw">
+        <th class="name" scope="row">물받이</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasw"><!-- 수정필요 -->
+        <th class="name" scope="row">SUS물받이</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="raswb">
+        <th class="name" scope="row">물받이받침대</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="raswb"><!-- 수정필요 -->
+        <th class="name" scope="row">물받이받침쇠</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasec">
+        <th class="name" scope="row">앤드캡</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="oascb">
+        <th class="name" scope="row">의자베이스</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="oasoc">
+        <th class="name" scope="row">외부코너</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="nasub">
+        <th class="name" scope="row">유바</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="cnass1">
+        <th class="name" scope="row">캐노피앵글</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="cnassw">
+        <th class="name" scope="row">캐노피상부마감</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="cnass2">
+        <th class="name" scope="row">캐노피정면마감</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="cnass3">
+        <th class="name" scope="row">캐노피측면마감</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="ga">
+        <th class="name" scope="row">구찌(드레인)</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="cnass1"><!-- 수정필요 -->
+        <th class="name" scope="row">상자홈통</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasrl">
+        <th class="name" scope="row">선홈통</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasrls">
+        <th class="name" scope="row">반도</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rass">
+        <th class="name" scope="row">소켓</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="rasre">
+        <th class="name" scope="row">엘보</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="eass1">
+        <th class="name" scope="row">기타부재료</th>
+        <td class="sta">볼트, 피스, 실리콘 등</td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="eass2">
+        <th class="name" scope="row">장비대</th>
+        <td class="sta">지게차, 스카이, 렌탈</td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="eass4">
+        <th class="name" scope="row">운반비</th>
+        <td class="sta">판넬, 부자재 등</td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    <tr class="eass3">
+        <th class="name" scope="row">폐기물</th>
+        <td class="sta"></td>
+        <td class="unit">EA</td>
+        <td class="sup">0</td>
+        <td class="price">0</td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <th scope="row">소계</th>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    </tfoot>
+</table>
+
+<form class="form" action="/estimate/step06" method="post">
+<div id="dbtest">
+
+</div>
+<input type="submit" value="전송">
+</form>
+
+<script src="/css/bootstrap/vendor/jquery/jquery.min.js"></script>
+<script src="/js/m2/calculus.js"></script>
+
+</body>
+</html>

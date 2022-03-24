@@ -1,0 +1,6 @@
+{{#each pictureAllList}}
+    {{#each adminFileList}}
+        <li><a href="#" data-url="/picture/fileDown/{{id}}?type=admin"><img src="/images/upload/picture/admin/{{picture.id}}/{{name}}" alt="{{oriName}}" /></a></li>
+    {{/each}}
+{{/each}}
+{{> common/imgPopup}}

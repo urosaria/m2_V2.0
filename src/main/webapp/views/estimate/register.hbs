@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+    <script type="text/javascript" src="/js/m2/ui.tmpl.js"></script>
+    <script type="text/javascript" src="/js/hbs/handlebars-v4.0.11.js"></script>
+    <style>
+        #step02,#step03,#step04 {display: none;}
+        #insideWallArea,#ceilingArea,#windowArea,#doorArea,#canopyArea,#step4ceilingArea,#step4insideWallArea {display: none;}
+    </style>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasCalProcess hasFooter">
+
+    {{> common/headerSub}}
+
+    <div class="calProcess">
+        <div class="_l">
+            <ul>
+                <li class="on"><a href="#" id="process1" data-step="1" class="on step01" data-next="step02" data-prev="main">건물정보</a></li>
+                <li><a href="#" id="process2" data-step="2" class="on step02" data-next="step03" data-prev="step01">세부정보</a></li>
+                <li><a href="#" id="process3" data-step="3" class="step03" data-next="step04" data-prev="step02">규격정보</a></li>
+                <li><a href="#" id="process4" data-step="4" class="step04" data-next="save" data-prev="step03">자재선택</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="content" class="cal">
+        <div class="contentArea">
+            <div class="formArea">
+                <form name="structureForm" id="structureForm" method="post" action="/estimate/register">
+                    <input type="text" id="stepCheck" value="1" />
+                    <input type="text" id="stepCheck1" value="N" />
+                    <input type="text" id="stepCheck2" value="N" />
+                    <input type="text" id="stepCheck3" value="N" />
+                    <input type="text" id="stepCheck4" value="N" />
+
+                    {{#structureForm}}
+                    <input type="text" name="structureType" value="{{type}}" />
+                    <input type="text" name="user.num" value="{{user.num}}" />
+                    <input type="text" name="id" id="structure_id" value="{{id}}" />
+                    <input type="text" id="cityNameForm" value="{{cityName}}" />
+                    <input type="text" id="returnUrl" name="returnUrl" value="" />
+                        {{> estimate/step01}}
+                        {{#structureDetail}}
+                            <input type="text" name="structureDetail.id" id="structureDetailId" value="{{id}}" />
+                            <input type="text" name="structureDetail.insideWallYn" id="insideWallYn" value="{{insideWallYn}}" />
+                            <input type="text" name="structureDetail.ceilingYn" id="ceilingYn" value="{{ceilingYn}}" />
+                            <input type="text" name="structureDetail.windowYn" id="windowYn" value="{{windowYn}}" />
+                            <input type="text" name="structureDetail.doorYn" id="doorYn" value="{{doorYn}}" />
+                            <input type="text" name="structureDetail.canopyYn" id="canopyYn" value="{{canopyYn}}" />
+                            <input type="text" name="structureDetail.downpipeYn" id="downpipeYn" value="{{downpipeYn}}" />
+                            {{> estimate/step02}}
+                            {{> estimate/step03}}
+                            {{> estimate/step04}}
+                        {{/structureDetail}}
+                    {{/structureForm}}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="nav">
+        <div class="_l">
+            <ul>
+                <li><a href="#" class="on"><img src="/images/m2/nav/n01.png" alt="cal" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n02.png" alt="3d" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n03.png" alt="bbs" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n04.png" alt="member" /></a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="button">
+        <div class="_l">
+            <ul class="_c2">
+                <li><a href="#" id="prev" class="prev cancel" data-prev="0">취소</a></li>
+                <li><a href="#" id="next" class="next on" data-next="2">다음</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+
+    function step01Check() {
+        var cityName = $("#cityName").val();
+
+        if(!blankCheck(cityName)) {
+            alert("지역을 선택하세요.");
+            $("#cityName").focus();
+            return false;
+        }
+        var placeName = $("input[name=placeName]").val();
+        if(!blankCheck(placeName)) {
+            alert("현장이름을 입력하세요.");
+            $("input[name=placeName]").focus();
+            return false;
+        }
+        var width = $("input[name=width]").val();
+        if(width==0 || !blankChecktho(width)) {
+            alert("건물폭을 입력하세요. (건물폭 100 MM 이상)");
+            $("input[name=width]").select();
+            return false;
+        }
+        var length = $("input[name=length]").val();
+        if(length==0 || !blankChecktho(length)) {
+            alert("건물길이을 입력하세요. (건물길이 100 MM 이상)");
+            $("input[name=length]").select();
+            return false;
+        }
+        var height = $("input[name=height]").val();
+        if(height==0 || !blankChecktho(height)) {
+            alert("건물높이를 입력하세요. (건물높이 100 MM 이상)");
+            $("input[name=height]").select();
+            return false;
+        }
+        {{#notEquals 'SL' type}}
+        var trussHeight = $("input[name=trussHeight]").val();
+        if(trussHeight==0 || !blankChecktho(trussHeight)) {
+            alert("트러스높이를 입력하세요. (트러스높이 100 MM 이상)");
+            $("input[name=trussHeight]").select();
+            return false;
+        }
+        {{/notEquals}}
+        $("#stepCheck1").val("Y");
+
+        return true;
+    }
+
+    function step02Check() {
+
+        $("#stepCheck2").val("Y");
+
+        return true;
+    }
+
+    function step03Check() {
+        var exit= true;
+        var gucciAmount = $("input[name=structureDetail\\.gucciAmount]").val();
+        if(gucciAmount==0 || !blankCheck(gucciAmount)) {
+            alert("구찌(드레인) 수량을 입력하세요.");
+            $("input[name=structureDetail\\.gucciAmount]").select();
+            return false;
+        }
+        $("#step03>.formsGroup>.meterial>div.on").each(function() {
+            $(this).children("div.on").find(" input").each(function() {
+                var realValue = $(this).val();
+                var type = $(this).attr("type");
+                var placeholder = $(this).attr("placeholder");
+                if(type!='hidden' && $(this).parent().css("display")!='none') {
+                    if (realValue == 0 || !blankCheck(realValue)) {
+                        alert(placeholder + "을 입력하세요.");
+                        $(this).select();
+                        exit = false;
+                        return false;
+                    }
+                }
+            });
+            if(!exit){
+                return false;
+            }
+        });
+
+        if(exit){
+            $("#stepCheck3").val("Y");
+            return true;
+        }
+
+    }
+
+    function step04Check() {
+        var exit= true;
+        $("#step04>.formsGroup>.meterial>.meterialGroup>div.on").each(function() {
+            $(this).find(" select").each(function() {
+                var realValue = $(this).val();
+                var title = $(this).attr("title");
+                if(realValue==0 || !blankCheck(realValue)) {
+                    alert(title+"을 입력하세요.");
+                    $(this).select();
+                    exit= false;
+                    return false;
+                }
+            });
+            if(!exit){
+                return false;
+            }
+        });
+
+        if(exit){
+            $("#stepCheck4").val("Y");
+            return true;
+        }
+    }
+
+    function nextPrev(next, prev) {
+        $(".next").attr("data-next",next);
+        $(".prev").attr("data-prev",prev);
+        if(prev==0){
+            $(".prev").text("취소");
+        }else{
+            $(".prev").text("이전");
+        }
+    }
+
+    $(document).ready(function(){
+        $("#nav>div>ul>li:eq(0)>a").addClass("on");
+        $(".headerTitle").html('<a href="/main">자동물량산출</a>');
+
+        $("input[type=number]").each(function() {
+            $(this).attr("oninput", "maxLengthCheck(this)");
+        });
+
+        $("input.amount").each(function() {
+            $(this).attr("oninput", "maxLengthCheckAmount(this)");
+        });
+
+        var sdetailId = $("#structure_id").val();
+        //수정
+        if(sdetailId!='0'){
+            $(".calProcess>div>ul>li>a").addClass("on");
+        }
+        var cityNameForm = $("#cityNameForm").val();
+        if(cityNameForm!=''){
+            $("#cityName").val(cityNameForm).prop("selected",true);
+        }
+
+        //상단 상태바
+        $(".calProcess>div>ul>li>a").click(function() {
+            var check = $(this).hasClass("on");
+            var process = false;
+            var stepCheck = $(this).attr("data-step");
+            var next = parseInt(stepCheck)+1;
+            var prev = parseInt(stepCheck)-1;
+            var realStep=$("#stepCheck").val();
+
+            //프로세스 활성화 버튼 클릭 시
+            if(check) {
+                if (stepCheck > realStep){
+                    if (eval('step0' + realStep + 'Check()')) {
+                        process = true;
+                        $("#stepCheck").val(stepCheck);
+                        nextPrev(next, prev);
+                    }
+                }else {
+                    process=true;
+                    $("#stepCheck").val(stepCheck);
+                    nextPrev(next, prev);
+                }
+
+                if(process){
+                    $(".calProcess>div>ul>li").removeClass("on");
+                    $(".calProcess>div>ul>li").each(function() {
+                        var idx = $(this).index();
+                        if(parseInt(stepCheck)>idx){
+                            $(this).addClass("on");
+                        }
+                    });
+
+                    $("#structureForm>._l").hide();
+                    $("#structureForm>#step0"+stepCheck).show();
+                    $(".calProcess>div>ul>li>a").eq(stepCheck).addClass("on");
+                    return false;
+                }
+            }
+
+        });
+
+        $(".next").click(function() {
+            var process = false;
+            var next = $(this).attr("data-next");
+            var realStep=$("#stepCheck").val();
+
+            if(eval('step0'+realStep+'Check()')){
+                process=true;
+                $("#stepCheck").val(next);
+                nextPrev(parseInt(next)+1, parseInt(next)-1);
+            }
+
+            if(process){
+                if(next<5){
+                    $(".calProcess>div>ul>li").removeClass("on");
+                    $(".calProcess>div>ul>li").each(function() {
+                        var idx = $(this).index();
+                        if(parseInt(next)>idx){
+                            $(this).addClass("on");
+                        }
+                    });
+
+                    $("#structureForm>._l").hide();
+                    $("#structureForm>#step0"+next).show();
+                    $(".calProcess>div>ul>li>a").eq(next).addClass("on");
+                    return false;
+                }else{
+                    var insideWallYn = $("#finsideWallYn>button.on").val();
+                    var ceilingYn = $("#fceilingYn>button.on").val();
+                    var windowYn = $("#fwindowYn>button.on").val();
+                    var doorYn = $("#fdoorYn>button.on").val();
+                    var canopyYn = $("#fcanopyYn>button.on").val();
+                    var downpipeYn = $("#fdownpipeYn>button.on").val();
+
+                    var obj = {
+                        "insideWallYn": insideWallYn,
+                        "ceilingYn": ceilingYn,
+                        "windowYn":windowYn,
+                        "doorYn":doorYn,
+                        "canopyYn":canopyYn,
+                        "downpipeYn":downpipeYn
+                    };
+
+                    $.each( obj, function( key, value ) {
+                        $("#"+key).val(value);
+                    });
+                    $("#step03>.formsGroup>.meterial>.meterialGroup").each(function() {
+                        var checkClass = $(this).css("display");
+                        if(checkClass=='none') $(this).remove();
+                    });
+
+                    $(".firstArticle").each(function() {
+                        var dataCount = $(this).attr("data-count");
+                        if(dataCount!=0){
+                            $(this).remove();
+                        }
+                    });
+                    $("#stepCheck").val("1");
+                    $( "#structureForm" ).submit();
+                }
+            }
+
+            return false;
+        });
+
+        $(".prev").click(function() {
+            var process = false;
+            var prev = $(this).attr("data-prev");
+            var realStep=$("#stepCheck").val();
+
+            if(prev!=0){
+                $("#stepCheck").val(prev);
+                nextPrev(parseInt(prev)+1, parseInt(prev)-1);
+
+                $(".calProcess>div>ul>li").removeClass("on");
+                $(".calProcess>div>ul>li").each(function() {
+                    var idx = $(this).index();
+                    if(parseInt(prev)>idx){
+                        $(this).addClass("on");
+                    }
+                });
+
+                $("#structureForm>._l").hide();
+                $("#structureForm>#step0"+prev).show();
+                $(".calProcess>div>ul>li>a").eq(prev).addClass("on");
+                return false;
+            }else{
+                if(confirm("취소하시겠습니까? 입력중인 정보가 저장되지 않습니다.")){
+                  location.href="/main";
+                }
+            }
+            return false;
+        });
+
+        $('#guide').bind('click', function() {
+            $(document.body).css({
+                "overflow": "hidden",
+                'width': $(window).width(),
+                'height': $(window).height()
+            });
+            var sTmpl = "/generalPopup.html";
+            var sContainer = "body";
+            var oData = {};
+            var src = $("#guide").attr("data-src");
+            $("#viewport").attr('content', 'width=device-width,initial-scale=1.0');
+
+            ui.tmpl.setTmpl({
+                tmpl: sTmpl,
+                container: sContainer,
+                data: oData,
+                type: 'append',
+                empty: false,
+                callback: function () {
+                    $(".org_image").attr("src",src);
+                    $(".ly_cls>a").click(function() {
+                        var target = $(event.currentTarget);
+                        target.parents('.dim_block').remove();
+                        $("#viewport").attr('content', 'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0');
+                        $(document.body).css({
+                            "overflow": "visible",
+                        });
+                    });
+                }
+            });
+        });
+
+
+    });
+</script>
+</body>
+</html>
+

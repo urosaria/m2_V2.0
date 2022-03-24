@@ -1,6 +1,6 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-    <a class="navbar-brand" href="/">M2 관리자페이지 </a>
+    <a class="navbar-brand" href="/admin/user/list">M2 관리자페이지 </a>
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -8,44 +8,50 @@
         <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="회원">
                 <a class="nav-link" href="/admin/user/list">
-                    <i class="fa fa-fw fa-dashboard"></i>
+                    <i class="fa fa-fw fa-users"></i>
                     <span class="nav-link-text">회원</span>
                 </a>
             </li>
-            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="게시판관리">
-                <a class="nav-link" href="/admin/board/master/list">
-                    <i class="fa fa-fw fa-dashboard"></i>
-                    <span class="nav-link-text">게시판관리</span>
-                </a>
-            </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="판넬자동산출">
-                <a class="nav-link" href="charts.html">
-                    <i class="fa fa-fw fa-area-chart"></i>
+                <a class="nav-link" href="/admin/estimate/list">
+                    <i class="fa fa-fw fa-calculator"></i>
                     <span class="nav-link-text">판넬자동산출</span>
                 </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="간이투시도">
-                <a class="nav-link" href="tables.html">
-                    <i class="fa fa-fw fa-table"></i>
+                <a class="nav-link" href="/admin/picture/list">
+                    <i class="fa fa-fw fa-image"></i>
                     <span class="nav-link-text">간이투시도</span>
                 </a>
             </li>
             <li class="nav-item" data-toggle="tooltip" data-placement="right" title="커뮤니티">
-                <a class="nav-link" href="tables.html">
-                    <i class="fa fa-fw fa-table"></i>
-                    <span class="nav-link-text">커뮤니티</span>
+                <a class="nav-link" href="/admin/board/list/1">
+                    <i class="fa fa-fw fa-bell"></i>
+                    <span class="nav-link-text">공지사항</span>
                 </a>
             </li>
-            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="자재">
-                <a class="nav-link" href="tables.html">
-                    <i class="fa fa-fw fa-table"></i>
-                    <span class="nav-link-text">자재</span>
+            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="커뮤니티">
+                <a class="nav-link" href="/admin/board/list/2">
+                    <i class="fa fa-fw fa-commenting"></i>
+                    <span class="nav-link-text">Q & A</span>
                 </a>
             </li>
-            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="과금정책">
-                <a class="nav-link" href="tables.html">
-                    <i class="fa fa-fw fa-table"></i>
-                    <span class="nav-link-text">과금정책</span>
+            <!--<li class="nav-item" data-toggle="tooltip" data-placement="right" title="자재">-->
+                <!--<a class="nav-link" href="tables.html">-->
+                    <!--<i class="fa fa-fw fa-table"></i>-->
+                    <!--<span class="nav-link-text">자재</span>-->
+                <!--</a>-->
+            <!--</li>-->
+            <!--<li class="nav-item" data-toggle="tooltip" data-placement="right" title="과금정책">-->
+                <!--<a class="nav-link" href="tables.html">-->
+                    <!--<i class="fa fa-fw fa-table"></i>-->
+                    <!--<span class="nav-link-text">과금정책</span>-->
+                <!--</a>-->
+            <!--</li>-->
+            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="게시판관리">
+                <a class="nav-link" href="/admin/board/master/list">
+                    <i class="fa fa-fw fa-list"></i>
+                    <span class="nav-link-text">게시판관리</span>
                 </a>
             </li>
         </ul>
@@ -147,3 +153,7 @@
         </ul>
     </div>
 </nav>
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <div id="real_contents">

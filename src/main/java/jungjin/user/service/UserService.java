@@ -1,24 +1,26 @@
 package jungjin.user.service;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import jungjin.user.domain.Role;
 import jungjin.user.domain.User;
 import jungjin.user.repository.RoleRepository;
 import jungjin.user.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 public class UserService {
+	private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -28,44 +30,61 @@ public class UserService {
 	@Autowired
 	RoleRepository roleRepository;
 
-	public List<User> listUser(){
-		return userRepository.findAll();
+	public Page<User> listUser(int page) {
+		PageRequest request = new PageRequest(page - 1, 10, Sort.Direction.DESC, new String[] { "createDate" });
+		return this.userRepository.findAll((Pageable)request);
 	}
 
-	public void saveUser(User user,String[] roles) {
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		Set<Role> rolesSet = new HashSet<Role>();
-		for(String role:roles){
-			rolesSet.add(new Role(role));
+	public Page<User> listSearchTextUser(String searchCondition, String searchText, int page, int size) {
+		PageRequest request = new PageRequest(page - 1, 10, Sort.Direction.DESC, new String[] { "createDate" });
+		Page<User> userList = null;
+		if (searchCondition.equals("name")) {
+			userList = this.userRepository.findByNameContaining(searchText, (Pageable)request);
+		} else if (searchCondition.equals("id")) {
+			userList = this.userRepository.findByIdContaining(searchText, (Pageable)request);
+		} else if (searchCondition.equals("email")) {
+			userList = this.userRepository.findByEmailContaining(searchText, (Pageable)request);
+		} else if (searchCondition.equals("phone")) {
+			userList = this.userRepository.findByPhoneContaining(searchText, (Pageable)request);
 		}
-		user.setRoles(rolesSet);
-		user.insert(user);
-		userRepository.save(user);
+		return userList;
 	}
 
-	public User showUser(Long num){
-		return userRepository.findOne(num);
+	public User saveUser(User user, Role roles) {
+		User userCheck = this.userRepository.findById(user.getId());
+		if (userCheck == null) {
+			user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+			user.setRoles(new HashSet(Arrays.asList((Object[])new Role[] { roles })));
+			user.insert(user);
+			user = (User)this.userRepository.save(user);
+		} else {
+			user = userCheck;
+		}
+		return user;
+	}
+
+	public User showUser(Long num) {
+		return (User)this.userRepository.findOne(num);
 	}
 
 	@Transactional
-	public User updateUser(Long num, User updateUser){
-		User user = userRepository.findOne(num);
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+	public User updateUser(Long num, User updateUser) {
+		updateUser.setPassword(this.bCryptPasswordEncoder.encode(updateUser.getPassword()));
+		User user = (User)this.userRepository.findOne(num);
 		user.update(updateUser);
-		user = userRepository.save(user);
+		user = (User)this.userRepository.save(user);
 		return user;
 	}
 
 	@Transactional
-	public User deleteUser(Long num){
-		User deleteUser = userRepository.findOne(num);
+	public User deleteUser(Long num) {
+		User deleteUser = (User)this.userRepository.findOne(num);
 		deleteUser.delete(deleteUser);
-		deleteUser = userRepository.save(deleteUser);
+		deleteUser = (User)this.userRepository.save(deleteUser);
 		return deleteUser;
 	}
 
 	public User findById(String username) {
-		return userRepository.findById(username);
+		return this.userRepository.findById(username);
 	}
-
 }

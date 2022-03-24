@@ -1,0 +1,216 @@
+<div class="_l" id="step04">
+    <div class="formsGroup noHP">
+        <div class="meterial">
+            <div class="meterialGroup">
+                <div class="article" id="step4insideWallArea">
+                    <div class="forms hasFormsTitle hasP">
+                        <div class="formsTitle">내벽</div>
+                        <div class="form w40">
+                            <select class="parentType focusAct" name="structureDetail.insideWallType" data-child="insideWallPaper" title="내벽보드종류">
+                                <option value="">보드종류</option>
+                                <option value="E" {{#equals 'E' insideWallType}}selected="selected"{{/equals}} >EPS</option>
+                                <option value="G" {{#equals 'G' insideWallType}}selected="selected"{{/equals}}>그라스울</option>
+                                <option value="W" {{#equals 'W' insideWallType}}selected="selected"{{/equals}}>우레탄</option>
+                            </select>
+                        </div>
+                        <div class="form w30">
+                            <select class="focusAct" name="structureDetail.insideWallPaper" id="insideWallPaper" data-value="{{insideWallPaper}}" title="내벽검사서">
+                                <option value="">검사서</option>
+                                <option value="E1">비난연</option><!-- EPS 옵션 1 -->
+                                <option value="E2">난연</option><!-- EPS 옵션 2 -->
+                                <option value="E3">가등급</option><!-- EPS 옵션 3 -->
+                                <option value="G1">48K</option><!-- 그라스울 옵션 1 -->
+                                <option value="G2">64K</option><!-- 그라스울 옵션 2 -->
+                                <option value="W1">난연</option><!-- 우레탄은 난연 자동 선택(옵션 하나) -->
+                            </select>
+                        </div>
+                        <div class="form w30">
+                            <select class="focusAct" name="structureDetail.insideWallThick" title="내벽두께">
+                                <option value="0">두께</option>
+                                <option value="50" {{#equals 50 insideWallThick}}selected="selected"{{/equals}}>50</option>
+                                <option value="75" {{#equals 75 insideWallThick}}selected="selected"{{/equals}}>75</option>
+                                <option value="100" {{#equals 100 insideWallThick}}selected="selected"{{/equals}}>100</option>
+                                <option value="125" {{#equals 125 insideWallThick}}selected="selected"{{/equals}}>125</option>
+                                <option value="150" {{#equals 150 insideWallThick}}selected="selected"{{/equals}}>150</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="article on">
+                    <div class="forms hasFormsTitle hasP">
+                        <div class="formsTitle">외벽</div>
+                        <div class="form w40">
+                            <select class="parentType focusAct" name="structureDetail.outsideWallType" data-child="outsideWallPaper" title="외벽보드종류">
+                                <option value="">보드종류</option>
+                                <option value="E" {{#equals 'E' outsideWallType}}selected="selected"{{/equals}} >EPS</option>
+                                <option value="G" {{#equals 'G' outsideWallType}}selected="selected"{{/equals}}>그라스울</option>
+                                <option value="W" {{#equals 'W' outsideWallType}}selected="selected"{{/equals}}>우레탄</option>
+                            </select>
+                        </div>
+                        <div class="form w30">
+                            <select class="childType focusAct" name="structureDetail.outsideWallPaper" id="outsideWallPaper" data-value="{{outsideWallPaper}}" title="외벽검사서">
+                                <option value="">검사서</option>
+                                <option value="E1">비난연</option><!-- EPS 옵션 1 -->
+                                <option value="E2">난연</option><!-- EPS 옵션 2 -->
+                                <option value="E3">가등급</option><!-- EPS 옵션 3 -->
+                                <option value="G1">48K</option><!-- 그라스울 옵션 1 -->
+                                <option value="G2">64K</option><!-- 그라스울 옵션 2 -->
+                                <option value="W1">난연</option><!-- 우레탄은 난연 자동 선택(옵션 하나) -->
+                            </select>
+                        </div>
+                        <div class="form w30">
+                            <select class="focusAct" name="structureDetail.outsideWallThick" title="외벽두께">
+                                <option value="0">두께</option>
+                                <option value="50" {{#equals 50 outsideWallThick}}selected="selected"{{/equals}}>50</option>
+                                <option value="75" {{#equals 75 outsideWallThick}}selected="selected"{{/equals}}>75</option>
+                                <option value="100" {{#equals 100 outsideWallThick}}selected="selected"{{/equals}}>100</option>
+                                <option value="125" {{#equals 125 outsideWallThick}}selected="selected"{{/equals}}>125</option>
+                                <option value="150" {{#equals 150 outsideWallThick}}selected="selected"{{/equals}}>150</option>
+                                <option value="175" {{#equals 175 outsideWallThick}}selected="selected"{{/equals}}>175</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {{#notEquals 'SL' type}}
+                <div class="article on">
+                    <div class="forms hasFormsTitle hasP">
+                        <div class="formsTitle">지붕</div>
+                        <div class="form w40">
+                            <select class="parentType focusAct" name="structureDetail.roofType" data-child="roofPaper" title="지붕보드종류">
+                                <option value="">보드종류</option>
+                                <option value="E" {{#equals 'E' roofType}}selected="selected"{{/equals}} >EPS</option>
+                                <option value="G" {{#equals 'G' roofType}}selected="selected"{{/equals}}>그라스울</option>
+                                <option value="W" {{#equals 'W' roofType}}selected="selected"{{/equals}}>우레탄</option>
+                            </select>
+                        </div>
+                        <div class="form w30">
+                            <select class="focusAct" name="structureDetail.roofPaper" id="roofPaper" data-value="{{roofPaper}}" title="지붕검사서">
+                                <option value="">검사서</option>
+                                <option value="E1">비난연</option><!-- EPS 옵션 1 -->
+                                <option value="E2">난연</option><!-- EPS 옵션 2 -->
+                                <option value="E3">가등급</option><!-- EPS 옵션 3 -->
+                                <option value="G1">48K</option><!-- 그라스울 옵션 1 -->
+                                <option value="G2">64K</option><!-- 그라스울 옵션 2 -->
+                                <option value="W1">난연</option><!-- 우레탄은 난연 자동 선택(옵션 하나) -->
+                            </select>
+                        </div>
+                        <div class="form w30">
+                            <select class="focusAct" name="structureDetail.roofThick" title="지붕두께">
+                                <option value="0">두께</option>
+                                <option value="50" {{#equals 50 roofThick}}selected="selected"{{/equals}}>50</option>
+                                <option value="75" {{#equals 75 roofThick}}selected="selected"{{/equals}}>75</option>
+                                <option value="100" {{#equals 100 roofThick}}selected="selected"{{/equals}}>100</option>
+                                <option value="125" {{#equals 125 roofThick}}selected="selected"{{/equals}}>125</option>
+                                <option value="150" {{#equals 150 roofThick}}selected="selected"{{/equals}}>150</option>
+                                <option value="175" {{#equals 175 roofThick}}selected="selected"{{/equals}}>175</option>
+                                <option value="200" {{#equals 200 roofThick}}selected="selected"{{/equals}}>200</option>
+                                <option value="225" {{#equals 225 roofThick}}selected="selected"{{/equals}}>225</option>
+                                <option value="260" {{#equals 260 roofThick}}selected="selected"{{/equals}}>260</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {{/notEquals}}
+                <div class="article" id="step4ceilingArea">
+                    <div class="forms hasFormsTitle hasP">
+                        <div class="formsTitle">천장</div>
+                        <div class="form w40">
+                            <select class="parentType focusAct" name="structureDetail.ceilingType" data-child="ceilingPaper" title="지붕천장">
+                                <option value="">보드종류</option>
+                                <option value="E" {{#equals 'E' ceilingType}}selected="selected"{{/equals}} >EPS</option>
+                                <option value="G" {{#equals 'G' ceilingType}}selected="selected"{{/equals}}>그라스울</option>
+                                <option value="W" {{#equals 'W' ceilingType}}selected="selected"{{/equals}}>우레탄</option>
+                            </select>
+                        </div>
+                        <div class="form w30">
+                            <select class="childType focusAct" name="structureDetail.ceilingPaper" id="ceilingPaper" data-value="{{ceilingPaper}}" title="지붕검사서">
+                                <option value="">검사서</option>
+                                <option value="E1">비난연</option><!-- EPS 옵션 1 -->
+                                <option value="E2">난연</option><!-- EPS 옵션 2 -->
+                                <option value="E3">가등급</option><!-- EPS 옵션 3 -->
+                                <option value="G1">48K</option><!-- 그라스울 옵션 1 -->
+                                <option value="G2">64K</option><!-- 그라스울 옵션 2 -->
+                                <option value="W1">난연</option><!-- 우레탄은 난연 자동 선택(옵션 하나) -->
+                            </select>
+                        </div>
+                        <div class="form w30">
+                            <select class="focusAct" name="structureDetail.ceilingThick" title="지붕두께">
+                                <option value="0">두께</option>
+                                <option value="50" {{#equals 50 ceilingThick}}selected="selected"{{/equals}}>50</option>
+                                <option value="75" {{#equals 75 ceilingThick}}selected="selected"{{/equals}}>75</option>
+                                <option value="100" {{#equals 100 ceilingThick}}selected="selected"{{/equals}}>100</option>
+                                <option value="125" {{#equals 125 ceilingThick}}selected="selected"{{/equals}}>125</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var sdetailId = $("#structure_id").val();
+    //수정
+    if(sdetailId!='0'){
+        {{#if structureDetail.insideWallType}}
+            $("#step4insideWallArea").show();
+            $("#step4insideWallArea").addClass("on");
+        {{/if}}
+        {{#if structureDetail.ceilingType}}
+            $("#step4ceilingArea").show();
+            $("#step4ceilingArea").addClass("on");
+        {{/if}}
+    }
+
+    var childEType = {
+        "E1": '비난연',
+        "E2": '난연',
+        "E3": '가등급'
+    };
+
+    var childGType = {
+        "G1": '48K',
+        "G2": '64K'
+    };
+
+    var childWType = {
+        "W1": '난연'
+    };
+
+    $(".parentType" ).each(function() {
+        var childId = $(this).attr('data-child');
+        var typeValue = $(this).val();
+
+        if(typeValue!=''){
+            $("#"+childId).children('option').remove();
+            $.each( eval('child'+typeValue+'Type') , function( key, value ) {
+                $("#"+childId).append('<option value="'+key+'">'+value+'</option>');
+                var childValue= $("#"+childId).attr('data-value');
+
+                if(childValue!=''){
+                    $("#"+childId).val(childValue).prop("selected", true);
+                }
+            });
+        }
+    });
+
+    $(".parentType").change(function() {
+      var typeValue = $(this).val();
+      var childId = $(this).attr('data-child');
+
+      if(typeValue==''){
+        alert('보드종류를 선택하세요.');
+        return false;
+      }else {
+        $("#"+childId).children('option').remove();
+        $.each( eval('child'+typeValue+'Type') , function( key, value ) {
+            $("#"+childId).append('<option value="'+key+'">'+value+'</option>');
+        });
+      }
+    });
+
+});
+
+</script>

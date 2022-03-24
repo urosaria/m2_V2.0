@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" class="fullsize">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasFooter">
+
+
+    {{> common/header}}
+
+
+    {{> common/footer}}
+
+    <div class="popupArea on">
+        <div class="dimmed"></div>
+        <div class="popup hasReaction">
+            <div class="popupContent">
+                <div class="popupIcon"><img src="/images/m2/common/iconSbb.png" alt="" /></div>
+                <div class="popupMsg">신청이 완료되었습니다. <br />무통장입금 572-044533-01-016 (주)앱패널 기업은행<br /> <strong>200,000원<br /></strong></div>
+            </div>
+            <div class="popupReaction">
+                <button class="positive full" type="button" id="btnList">확인</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#nav>div>ul>li:eq(1)>a").addClass("on");
+        $(".headerTitle").html('<a href="/picture/list">간이투시도</a>');
+        $("#btnList").click(function() {
+          location.href="/picture/list";
+        });
+    });
+</script>
+</body>
+</html>

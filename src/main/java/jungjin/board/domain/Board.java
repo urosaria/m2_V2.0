@@ -1,70 +1,155 @@
 package jungjin.board.domain;
-import lombok.Data;
-import lombok.Getter;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import jungjin.user.domain.User;
 
-@Getter
 @Entity
-@Data
-@Table(name="board")
+@Table(name = "m2_board")
 public class Board implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name="fk_board_writer"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_board_writer"))
     private User user;
 
     @NotNull
-    @Column(name="title", length=500)
+    @Column(name = "title", length = 500)
     private String title;
 
     @Lob
     private String contents;
 
-    //S:사용중 D:삭제
     @NotNull
-    @Column(name="status")
+    @Column(name = "status")
     private String status;
 
     @NotNull
-    @Column(name="create_date")
+    @Column(name = "create_date")
     private LocalDateTime createDate;
 
-    @Column(name="read_count")
+    @Column(name = "read_count")
     private int readcount;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name="fk_board_master_id"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_board_master_id"))
     private BoardMaster boardMaster;
 
-    //@Transient
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setReadcount(int readcount) {
+        this.readcount = readcount;
+    }
+
+    public void setBoardMaster(BoardMaster boardMaster) {
+        this.boardMaster = boardMaster;
+    }
+
+    public void setFileList(List<BoardFile> fileList) {
+        this.fileList = fileList;
+    }
+
+    public void setBoardReplyList(List<BoardReply> boardReplyList) {
+        this.boardReplyList = boardReplyList;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getContents() {
+        return this.contents;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return this.createDate;
+    }
+
+    public int getReadcount() {
+        return this.readcount;
+    }
+
+    public BoardMaster getBoardMaster() {
+        return this.boardMaster;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
+    List<BoardFile> fileList = new ArrayList<>();
+
     @OneToMany
     @JoinColumn(name = "board_id")
     List<BoardReply> boardReplyList;
 
-    public void update(Board upateBoard){
+    public List<BoardFile> getFileList() {
+        return this.fileList;
+    }
+
+    public List<BoardReply> getBoardReplyList() {
+        return this.boardReplyList;
+    }
+
+    public void update(Board upateBoard) {
         this.title = upateBoard.title;
         this.contents = upateBoard.contents;
     }
 
-    public void insert(Board insertBoard){
+    public void insert(Board insertBoard) {
         this.title = insertBoard.title;
         this.contents = insertBoard.contents;
-        this.status="S";
+        this.status = "S";
         this.createDate = LocalDateTime.now();
     }
-
 }

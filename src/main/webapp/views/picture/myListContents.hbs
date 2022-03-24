@@ -1,0 +1,21 @@
+{{#each pictureList}}
+    <li>
+        <div class="article">
+            <a class="articleLink" href="/picture/show/{{id}}">
+                <span class="articleTitle">{{name}}</span>
+                <span class="articleDate">{{formatDate createDate "yyyy-MM-dd HH:ss"}}</span>
+            </a>
+            <button class="{{pictureStatusCss status}} articleButton" type="button" data-url="/picture/zipFileDown/{{id}}?sName={{name}}">
+                <img src="/images/m2/common/icon{{status}}.png" class="icon" alt="{{pictureStatusUser status}}" />
+                <span class="buttonName"> &nbsp; {{pictureStatusUser status}}</span>
+            </button>
+        </div>
+    </li>
+{{/each}}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".complete").click(function() {
+            window.location.assign($(this).attr("data-url"));
+        });
+    });
+</script>

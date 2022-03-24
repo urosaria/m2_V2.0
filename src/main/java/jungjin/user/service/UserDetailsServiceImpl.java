@@ -2,7 +2,6 @@ package jungjin.user.service;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import jungjin.user.domain.Role;
 import jungjin.user.domain.User;
 import jungjin.user.repository.UserRepository;
@@ -19,18 +18,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
 
-    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        User user = userRepository.findById(username);
+        User user = this.userRepository.findById(username);
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-
-        for (Role role : user.getRoles()) {
+        if (user == null)
+            throw new UsernameNotFoundException(username);
+        for (Role role : user.getRoles())
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
-
-        return new org.springframework.security.core.userdetails.User(user.getId(),
-                user.getPassword(),
-                grantedAuthorities);
+        return new UserCustom(user.getId(), user.getPassword(), grantedAuthorities, user);
     }
 }

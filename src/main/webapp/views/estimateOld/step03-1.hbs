@@ -1,0 +1,58 @@
+<div class="meterialGroup" id="insideWallArea">
+    {{#each insideWallList}}
+        <div class="article">
+            <input type="text" name="insideWallList[{{@index}}].id"  value="{{id}}" />
+            <div class="forms hasFormsTitle hasP">
+                <div class="formsTitle">
+                    <button class="delete" data-url="/estimate/remove/insideWall/{{id}}"><img src="/images/m2/common/iconX.png" class="icon" alt="" />
+                        <strong class="title">내벽</strong><span class="guide">삭제</span>
+                    </button>
+                </div>
+                <div class="form hasUnit w35">
+                    <input type="number" name="insideWallList[{{@index}}].length" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="길이" autocomplete="off" class="focusAct" value="{{length}}" />
+                    <div class="unit">㎜</div>
+                </div>
+                <div class="form hasUnit w35">
+                    <input type="number" name="insideWallList[{{@index}}].height" placeholder="높이" autocomplete="off" class="focusAct" value="{{height}}" />
+                    <div class="unit">㎜</div>
+                </div>
+                <div class="form hasUnitS w30">
+                    <input type="number" name="insideWallList[{{@index}}].amount" placeholder="수량" autocomplete="off" class="focusAct" value="{{amount}}" />
+                    <div class="unit">EA</div>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+    <div class="firstArticle article" id="insideWallListFirst" style="display: none" data-count="{{insideWallListSize}}">
+        <div class="forms hasFormsTitle hasP">
+            <div class="formsTitle">
+                <button class="deleteFirst delete" data-url=""><img src="/images/m2/common/iconX.png" class="icon" alt="" />
+                    <strong class="title">내벽</strong><span class="guide">삭제</span>
+                </button>
+            </div>
+            <div class="form hasUnit w35">
+                <input type="number" name="insideWallList[0].length" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="길이" autocomplete="off" class="focusAct" value="0" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasUnit w35">
+                <input type="number" name="insideWallList[0].height" placeholder="높이" autocomplete="off" class="focusAct" value="0" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasUnitS w30">
+                <input type="number" name="insideWallList[0].amount" placeholder="수량" autocomplete="off" class="focusAct" value="0" />
+                <div class="unit">EA</div>
+            </div>
+        </div>
+    </div>
+    <div class="articleAdd">
+        <button value="insideWallArea" data-class="insideWallList">내벽 종류 추가</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var icount = '{{insideWallListSize}}';
+
+    if(icount==0) $("#insideWallListFirst").show();
+});
+</script>

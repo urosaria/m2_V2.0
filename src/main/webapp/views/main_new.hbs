@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko" class="fullsize">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasFooter">
+
+
+    {{> common/header}}
+    <div id="content" class="calMain">
+        <div class="calType">
+            <div class="_l">
+                <ul class="calTypeList">
+                    <li><a href="/estimate/register?type=AT"><img src="/images/m2/calN/typeA.png" alt="A" /><strong>A 트러스</strong></a></li>
+                    <li><a href="/estimate/register?type=BT"><img src="/images/m2/calN/typeB.png" alt="B" /><strong>B 트러스</strong></a></li>
+                    <li><a href="/estimate/register?type=BE"><img src="/images/m2/calN/typeBc.png" alt="Bc" /><strong>B 처마</strong></a></li>
+                    <li><a href="/estimate/register?type=BB"><img src="/images/m2/calN/typeBbox.png" alt="Bbox" /><strong>B 박스</strong></a></li>
+                    <li><a href="/estimate/register?type=AB"><img src="/images/m2/calN/typeAbox.png" alt="Abox" /><strong>A 박스</strong></a></li>
+                    <li><a href="/estimate/register?type=AE"><img src="/images/m2/calN/typeAc.png" alt="Ac" /><strong>A 처마</strong></a></li>
+                    <li><a href="/estimate/register?type=AG"><img src="/images/m2/calN/typeAr.png" alt="Ar" /><strong>A 기억자</strong></a></li>
+                    <li><a href="/estimate/register?type=BG"><img src="/images/m2/calN/typeBr.png" alt="Br" /><strong>B 기억자</strong></a></li>
+                    <li><a href="/estimate/register?type=SL"><img src="/images/m2/calN/typeS.png" alt="S" /><strong>슬라브</strong></a></li>
+                    <li><a href="/estimate/register?type=BX"><img src="/images/m2/calN/typeBe.png" alt="Be" /><strong>B 확장</strong></a></li>
+                    <li><a href="/estimate/register?type=BBX"><img src="/images/m2/calN/typeBbe.png" alt="Bbe" /><strong>B 박스확장</strong></a></li>
+                    <li><a href="#" id="aa"><img src="/images/m2/calN/typeA.png" alt="A" /><strong>AA</strong></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="contentArea bgDef">
+            <div class="calList">
+                <div class="_l">
+                    <h2>나의 견적 내역 <a href="/estimate/list" class="more">더보기</a></h2>
+                    <div class="sclArea">
+                        {{#if listEstimate}}
+                            <ul class="calListArticles">
+                                {{#each listEstimate}}
+                                    <li>
+                                        <div class="article">
+                                            <img src="/images/m2/cal/typeIcon{{structureType}}.png" class="icon" alt="{{typeNameKr structureType}}" />
+                                            <a class="articleLink" href="/estimate/calculate?id={{id}}&mode=main">
+                                                <span class="articleTitle">[{{cityNameKr cityName}}] {{placeName}}</span>
+                                                <span class="articleDate">{{formatDate createDate "yyyy-MM-dd hh:mm"}}</span>
+                                            </a>
+                                            <button class="articleButton download">
+                                                <a href="/estimate/fileDown/{{id}}?sName={{placeName}}"><span class="buttonName">DOWNLOAD</span></a>
+                                            </button>
+                                        </div>
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        {{/if}}
+                        {{#unless listEstimate}}
+                            <div class="articleNone">
+                                <strong>나의 견적 내역이 없습니다.</strong>
+                                <span>상단의 건물 타입 버튼으로 물량 및 견적을 계산하세요.</span>
+                            </div>
+                        {{/unless}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="popupArea">
+        <div class="dimmed"></div>
+        <div class="popup hasReaction guide">
+            <div class="popupContent">
+                <div class="popupGuide"><img src="/images/m2/content/guideCalMain.jpg" alt="" /></div>
+            </div>
+            <div class="popupReaction">
+                <button class="positive full">확인</button>
+            </div>
+        </div>
+    </div>
+
+    {{> common/footer}}
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#nav>div>ul>li:eq(0)>a").addClass("on");
+        $('.headerFunction').show();
+        $(".headerFunction").click(function() {
+            $(".popupArea").addClass("on");
+            return false;
+        });
+        $(".positive").click(function() {
+            $(".popupArea").removeClass("on");
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

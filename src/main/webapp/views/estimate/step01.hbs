@@ -1,0 +1,147 @@
+<div class="_l" id="step01">
+    <div class="selectedCalType">
+        <div class="_l">
+            <img src="/images/m2/cal/typeIcon{{type}}.png" alt="{{typeNameKr type}}" />
+            <strong>{{typeNameKr type}}</strong>
+            <a href="#" id="guide" data-src="/images/m2/guide/guide{{type}}.jpg">사이즈 입력 가이드</a>
+        </div>
+    </div>
+    <div class="formsGroup">
+        <div class="form full">
+            <select class="focusAct" name="cityName" id="cityName">
+                <option value="">지역 선택</option>
+                <option value="10">서울</option>
+                <option value="20">강원</option>
+                <option value="30">대전</option>
+                <option value="31">충남</option>
+                <option value="33">세종</option>
+                <option value="36">충북</option>
+                <option value="40">인천</option>
+                <option value="41">경기</option>
+                <option value="50">광주</option>
+                <option value="51">전남</option>
+                <option value="56">전북</option>
+                <option value="60">부산</option>
+                <option value="62">경남</option>
+                <option value="68">울산</option>
+                <option value="69">제주</option>
+                <option value="70">대구</option>
+                <option value="71">경북</option>
+                <option value="99">기타</option>
+            </select>
+        </div>
+        <div class="form hasLabel full">
+            <label class="labelId">현장이름</label>
+            <span class="formMsg">필수 입력</span>
+            <input type="text" autocomplete="off" class="focusAct" name="placeName" id="placeName" value="{{placeName}}" />
+        </div>
+    </div>
+    <div class="formsGroup">
+        <div class="form hasLabel value hasUnit full important">
+            <label class="labelId">건물폭</label>
+            <span class="formMsg">필수 입력</span>
+            <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" id="width" name="width" value="{{width}}" />
+            <div class="unit">㎜</div>
+        </div>
+        <div class="form hasLabel value hasUnit full important">
+            <label class="labelId">건물길이</label>
+            <span class="formMsg">필수 입력</span>
+            <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="length" value="{{length}}" />
+            <div class="unit">㎜</div>
+        </div>
+        {{#equals 'AE' type}}
+            <div class="form hasLabel value hasUnit full important"><!-- B1 타입 전용 -->
+                <label class="labelId">처마길이</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="eavesLength" value="{{eavesLength}}" />
+                <div class="unit">㎜</div>
+            </div>
+        {{/equals}}
+        {{#equals 'BE' type}}
+        <div class="form hasLabel value hasUnit full important"><!-- B1 타입 전용 -->
+            <label class="labelId">처마길이</label>
+            <span class="formMsg">필수 입력</span>
+            <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="eavesLength" value="{{eavesLength}}" />
+            <div class="unit">㎜</div>
+        </div>
+        <div class="form hasLabel value hasUnit full important"><!-- B1 타입 전용 -->
+            <label class="labelId">배면트러스높이</label>
+            <span class="formMsg">필수 입력</span>
+            <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="rearTrussHeight" value="{{rearTrussHeight}}" />
+            <div class="unit">㎜</div>
+        </div>
+        {{/equals}}
+
+        {{#equals 'AG' type}}
+            <div class="form hasLabel value hasUnit full important"><!-- AG BG 타입 전용 swi -->
+                <label class="labelId">건물내폭</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="insideWidth" value="{{insideWidth}}" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasLabel value hasUnit full important"><!-- AG BG 타입 전용 sii -->
+                <label class="labelId">건물내길이</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="insideLength" value="{{insideLength}}" />
+                <div class="unit">㎜</div>
+            </div>
+        {{/equals}}
+
+        {{#equals 'BG' type}}
+            <div class="form hasLabel value hasUnit full important"><!-- AG BG 타입 전용 swi -->
+                <label class="labelId">건물내폭</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="insideWidth" value="{{insideWidth}}" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasLabel value hasUnit full important"><!-- AG BG 타입 전용 sii -->
+                <label class="labelId">건물내길이</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="insideLength" value="{{insideLength}}" />
+                <div class="unit">㎜</div>
+            </div>
+        {{/equals}}
+
+        <div class="form hasLabel value hasUnit full important">
+            <label class="labelId">건물높이</label>
+            <span class="formMsg">필수 입력</span>
+            <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="height" value="{{height}}" />
+            <div class="unit">㎜</div>
+        </div>
+        {{#notEquals 'SL' type}}
+            <div class="form hasLabel value hasUnit full important">
+                <label class="labelId">트러스높이</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="trussHeight" value="{{trussHeight}}" />
+                <div class="unit">㎜</div>
+            </div>
+        {{/notEquals}}
+
+        {{#equals 'SL' type}}
+            <div class="form hasLabel value hasUnit full important">
+                <label class="labelId">옥탑난간높이</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="rooftopSideHeight" value="{{rooftopSideHeight}}" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasLabel value hasUnit full important">
+                <label class="labelId">옥탑폭</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="rooftopWidth" value="{{rooftopWidth}}" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasLabel value hasUnit full important">
+                <label class="labelId">옥탑길이</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="rooftopLength" value="{{rooftopLength}}" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasLabel value hasUnit full important">
+                <label class="labelId">옥탑높이</label>
+                <span class="formMsg">필수 입력</span>
+                <input type="number" pattern="[0-9]*" inputmode="numeric" min="0" autocomplete="off" class="focusAct" name="rooftopHeight" value="{{rooftopHeight}}" />
+                <div class="unit">㎜</div>
+            </div>
+        {{/equals}}
+    </div>
+</div>

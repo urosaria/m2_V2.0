@@ -1,0 +1,52 @@
+<div class="meterialGroup" id="canopyArea">
+    {{#each canopyList}}
+    <input type="text" name="canopyList[{{@index}}].id"  value="{{id}}" />
+    <div class="article">
+        <div class="forms hasFormsTitle hasP">
+            <div class="formsTitle">
+                <button class="delete" data-url="/estimate/remove/canopy/{{id}}"><img src="/images/m2/common/iconX.png" class="icon" alt="" />
+                    <strong class="title">캐노피</strong><span class="guide">삭제</span>
+                </button>
+            </div>
+            <div class="form hasUnit half">
+                <input type="number" name="canopyList[{{@index}}].length" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="길이" autocomplete="off" class="focusAct" value="{{length}}" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasUnitS half">
+                <input type="number" name="canopyList[{{@index}}].amount" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="수량" autocomplete="off" class="focusAct" value="{{amount}}" />
+                <div class="unit">EA</div>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+    <div class="firstArticle article" id="canopyListFirst" style="display: none" data-count="{{canopyListSize}}">
+        <div class="forms hasFormsTitle hasP">
+            <div class="formsTitle">
+                <button class="deleteFirst delete" data-url=""><img src="/images/m2/common/iconX.png" class="icon" alt="" />
+                    <strong class="title">캐노피</strong><span class="guide">삭제</span>
+                </button>
+            </div>
+            <div class="form hasUnit half">
+                <input type="number" name="canopyList[0].length" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="길이" autocomplete="off" class="focusAct" value="0" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasUnitS half">
+                <input type="number" name="canopyList[0].amount" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="수량" autocomplete="off" class="focusAct" value="0" />
+                <div class="unit">EA</div>
+            </div>
+        </div>
+    </div>
+    <div class="articleAdd">
+        <button value="canopyArea" data-class="canopyList">캐노피 종류 추가</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var cacount = '{{canopyListSize}}';
+
+    if(cacount==0){
+        $("#canopyListFirst").show();
+    }
+});
+</script>

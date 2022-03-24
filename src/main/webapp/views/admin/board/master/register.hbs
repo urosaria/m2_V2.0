@@ -7,59 +7,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!-- Bootstrap core CSS-->
-    <link href="/css/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom fonts for this template-->
-    <link href="/css/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <!-- Page level plugin CSS-->
-    <link href="/css/bootstrap/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <!-- Custom styles for this template-->
-    <link href="/css/bootstrap/sb-admin.css" rel="stylesheet">
-    <script src="/js/handlebars/handlebars-v4.0.11.js"></script>
-    <script type="text/javascript">
-    </script>
+    <script type="text/javascript" src="/js/admin/common/include.js"></script>
 </head>
-<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+<body>
 
-{{> admin/common/nav}}
+{{> admin/common/nav }}
 
-<div class="content-wrapper">
-    <div class="container-fluid">
-        <div class="card card-register mx-auto mt-5">
-            <div class="card-header">게시판등록</div>
-            <div class="card-body">
-                <form name="boardMasterForm" method="post" action="/admin/board/master/register">
-                    <div class="form-group">
-                        <label for="name">게시판명</label>
-                        <input class="form-control" id="name" name="name" type="text" placeholder="게시판명">
-                    </div>
-                    <div class="form-group">
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <label for="replyYn">답글여부</label>
-                                <br />
-                                <input type="radio" id="replyYn" name="replyYn" value="Y" aria-label="Radio button for following text input"> 답글
-                                <input type="radio" name="replyYn" value="N"  aria-label="Radio button for following text input"> 공지형
-                            </div>
-                            <div class="col-md-6">
-                                <label for="skinName">스킨명</label>
-                                <input class="form-control" id="skinName" name="skinName" type="text" placeholder="스킨명">
-                               <!-- ADMIN <input type="checkbox" name="roles" value="ADMIN"/> |
-                                USER  <input type="checkbox" name="roles" value="USER" />-->
-                            </div>
-                        </div>
-                    </div>
-                    <div style="text-align: center">
-                        <input type="submit" value="등록" class="btn btn-primary" />
-                        <a class="btn btn-primary" href="/admin/board/master/list" role="button">목록</a>
-                    </div>
-                </form>
+<div class="card card-register mx-auto mt-5">
+    <div class="card-header">게시판등록</div>
+    <div class="card-body">
+        <form name="boardMasterForm" method="post" action="/admin/board/master/register">
+            <div class="form-group">
+                <label for="name">게시판명</label>
+                <input class="form-control" id="name" name="name" type="text" placeholder="게시판명">
             </div>
-        </div>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <label for="replyYn">답글여부</label>
+                        <br />
+                        <input type="radio" id="replyYn" name="replyYn" value="Y" aria-label="Radio button for following text input"> 답글
+                        <input type="radio" name="replyYn" value="N"  aria-label="Radio button for following text input"> 공지형
+                    </div>
+                    <div class="col-md-6">
+                        <label for="skinName">스킨명</label>
+                        <input class="form-control" id="skinName" name="skinName" type="text" placeholder="스킨명">
+                       <!-- ADMIN <input type="checkbox" name="roles" value="ADMIN"/> |
+                        USER  <input type="checkbox" name="roles" value="USER" />-->
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center">
+                <input type="submit" value="등록" class="btn btn-primary" />
+                <a class="btn btn-secondary" href="/admin/board/master/list" role="button">목록</a>
+            </div>
+        </form>
     </div>
 </div>
 
-{{> admin/common/footer}}
+{{> admin/common/footer }}
 
 </body>
 </html>

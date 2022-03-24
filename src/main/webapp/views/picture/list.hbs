@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko" class="fullsize">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasFooter">
+
+
+    {{> common/header}}
+
+    <div id="content" class="d3Main">
+        <div class="contentArea">
+            <div class="d3List">
+                <div class="_l">
+                    <h2>나의 간이투시도 신청 내역 <a href="/picture/myList" class="more">더보기</a></h2>
+                    {{#if pictureList}}
+                    <ul class="d3ListArticles">
+                    {{#each pictureList}}
+                    <li>
+                        <div class="article">
+                            <a class="articleLink" href="/picture/show/{{id}}">
+                                <span class="articleTitle">{{name}}</span>
+                                <span class="articleDate">{{formatDate createDate "yyyy-MM-dd HH:ss"}}</span>
+                            </a>
+                            <button class="{{pictureStatusCss status}} articleButton" type="button" data-url="/picture/zipFileDown/{{id}}?sName={{name}}">
+                                <img src="/images/m2/common/icon{{status}}.png" class="icon" alt="{{pictureStatusUser status}}" />
+                                <span class="buttonName"> &nbsp; {{pictureStatusUser status}}</span>
+                            </button>
+                        </div>
+                    </li>
+                    {{/each}}
+                    </ul>
+                    {{/if}}
+                    {{#unless pictureList}}
+                        <div class="articleNone">
+                            <strong>나의 간이투시도 내역이 없습니다.</strong>
+                            <span>하단의 제작신청 버튼을 통해 간이투시도 제작을 요청하세요.</span>
+                        </div>
+                    {{/unless}}
+                </div>
+            </div>
+        </div>
+        <div class="d3Type">
+            <div class="_l">
+                <h2>M2 간이투시도 <a href="/picture/listAll" class="more">더보기</a></h2>
+                <ul class="d3ImgList _c2">
+                    {{#each pictureAllList}}
+                        {{#each adminFileList}}
+                            <li><a href="#" data-url="/picture/fileDown/{{id}}?type=admin"><img src="/images/upload/picture/admin/{{picture.id}}/{{name}}" alt="{{oriName}}" /></a></li>
+                        {{/each}}
+                    {{/each}}
+                </ul>
+                <button class="app bgBlue"><a href="/picture/register">간이투시도 제작 신청</a></button>
+            </div>
+        </div>
+    </div>
+
+    {{> common/footer}}
+
+    <div class="popupArea">
+        <div class="dimmed"></div>
+        <div class="popup hasReaction">
+            <div class="popupContent">
+                <div class="popupIcon"><img src="/images/m2/common/iconSbb.png" alt="" /></div>
+                <div class="popupMsg">신청이 완료되었습니다. <br />무통장입금 572-044533-01-016 (주)앱패널 기업은행<br /> <strong>200,000원<br /></strong></div>
+            </div>
+            <div class="popupReaction">
+                <button class="positive full" type="button" id="close">확인</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{{> common/imgPopup}}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#nav>div>ul>li:eq(1)>a").addClass("on");
+        $(".headerTitle").html('<a href="/picture/list">간이투시도</a>');
+
+        $("#close").click(function() {
+            $(".popupArea").removeClass("on");
+        });
+
+        $(".payment").click(function() {
+            $(".popupArea").addClass("on");
+        });
+
+        $(".complete").click(function() {
+            window.location.assign($(this).attr("data-url"));
+        });
+        var imgleng=$(".d3ImgList>li").length;
+        if(imgleng>2){
+            $(".d3ImgList>li").each(function(index) {
+                if(index>1) $(this).remove();
+            });
+        }
+    });
+</script>
+</body>
+</html>

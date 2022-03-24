@@ -1,23 +1,54 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
+    <meta charset="UTF-8" />
     <title>M2</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
 </head>
-<body>
-<table>
-    <tbody>
-    {{#each boardList}}
-        <tr>
-            <td>{{num}}</td>
-            <td>{{agree_yn}}</td>
-            <td>{{email}}</td>
-            <td>{{id}}</td>
-            <td>{{name}}</td>
-            <td>{{phone}}</td>
-        </tr>
-    {{/each}}
-    </tbody>
-</table>
+<body class="bgDef">
+<div class="wrap hasHeader hasArticleHeader hasFooter"><!-- hasHeader hasArticleHeader hasFooter hasArticleFooter -->
+
+    {{> common/header}}
+
+    <div class="articleHeader">
+        <div class="_l">
+            <h2>공지사항 </h2>
+        </div>
+    </div>
+    <div id="content" class="bbsMain">
+        <div class="contentArea">
+            <div class="_l">
+                <ul class="bbsListArticles">
+                    {{#each noticeList}}
+                    <li>
+                        <div class="article">
+                            <a class="articleLink" href="/board/show/{{boardMaster.id}}/{{id}}">
+                                <span class="articleTitle">{{title}}</span>
+                                <span class="articleWriter">{{user.name}}</span>
+                                <span class="articleDate">{{formatDate createDate "yyyy-MM-dd"}}</span>
+                            </a>
+                        </div>
+                    </li>
+                    {{/each}}
+                    <li id="more" class="articleMore" data-url="/board/listContents" data-ui=".bbsListArticles" data-last="{{noticeList.totalPages}}" data-current="{{page}}"><button type="button">더보기</button></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {{> common/footer}}
+</div>
+
+<script type="text/javascript" src="/js/m2/more.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#nav>div>ul>li:eq(2)>a").addClass("on");
+    $(".headerTitle").html('<a href="/user/mypage">커뮤니티</a>');
+});
+</script>
 </body>
+</html>

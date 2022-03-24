@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasArticleHeader hasFooter">
+
+
+    {{> common/headerSub}}
+
+    <div class="articleHeader">
+        <div class="_l">
+            <h2>{{pictureDetail.name}}</h2>
+        </div>
+    </div>
+    <div id="content" class="d3 view hasGuide">
+        <div class="contentArea">
+            <div class="d3Guide {{pictureStatusCss pictureDetail.status}}"><!-- 진행중 상태 -->
+                <div class="_l">
+                    {{#equals pictureDetail.status "S1"}}
+                        <img src="/images/m2/common/iconS.png" class="icon" alt="상태" />
+                        <div class="d3GuideMsg">
+                            결제 대기중입니다.<br>
+                            <strong>200,000원 국민 000-00-0000-000 M2</strong><br>
+                            무통장 입금 후 확인은 만 하루가 소요됩니다.
+                        </div>
+                    {{/equals}}
+                    {{#equals pictureDetail.status "S2"}}
+                        <img src="/images/m2/common/iconIng.png" class="icon" alt="상태" />
+                        <div class="d3GuideMsg">
+                            간이투시도가 제작중입니다.<br />
+                            결제 확인 후 최소 4~7일 이상이 소요됩니다.
+                        </div>
+                    {{/equals}}
+                    {{#equals pictureDetail.status "S3"}}
+                        <img src="/images/m2/common/iconIng.png" class="icon" alt="상태" />
+                        <div class="d3GuideMsg">
+                            간이투시도가 제작중입니다.<br />
+                            결제 확인 후 최소 4~7일 이상이 소요됩니다.
+                        </div>
+                    {{/equals}}
+                    {{#equals pictureDetail.status "S4"}}
+                        <img src="/images/m2/common/iconCheck.png" class="icon" alt="상태" />
+                        <div class="d3GuideMsg">
+                            <strong>간이투시도 제작이 완료되었습니다.</strong><br />
+                            목록에서 이미지 파일을 각각 다운로드할 수 있습니다.<br />
+                            전체 이미지를 한번에 받으시려면 화면 하단의 다운로드 버튼을 이용하세요.
+                        </div>
+                    {{/equals}}
+                </div>
+            </div>
+
+            {{#pictureDetail}}
+            {{#equals pictureDetail.status "S4"}}
+            <div class="d3Type">
+                <div class="_l">
+                    <ul class="d3ImgList _c3">
+                        {{#each adminFileList}}
+                            <li><a href="#" data-url="/picture/fileDown/{{id}}?type=admin"><img src="/images/upload/picture/admin/{{picture.id}}/{{name}}"></a></li>
+                        {{/each}}
+                        <button class="contentBtn download" type="button"><a href="/picture/zipFileDown/{{pictureDetail.id}}?sName={{name}}"><img src="/images/m2/common/iconDownload.png" class="icon" alt="" /> 간이투시도 다운로드</a></button>
+                    </ul>
+                </div>
+            </div>
+            {{/equals}}
+            <div class="formArea">
+                <div class="_l">
+                    <div class="formsGroup">
+                        <div class="form hasLabel full inputted">
+                            <label class="labelId">제목</label>
+                            <input type="text" autocomplete="off" class="focusAct" value="{{name}}" readonly />
+                        </div>
+                        <div class="form fileList">
+                            <h2>등록 도면</h2>
+                            <ul>
+                                {{#each fileList}}
+                                <li>
+                                    <div class="fileName"><a href="#">{{oriName}}</a></div>
+                                </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                        <div class="form hasLabel full inputted">
+                            <label class="labelId">요청사항</label>
+                            <input type="text" autocomplete="off" class="focusAct noEss" value="{{etc}}" readonly />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {{/pictureDetail}}
+        </div>
+    </div>
+
+    {{> common/footer}}
+
+    <div id="button">
+        <div class="_l">
+            <ul class="_c2">
+                <li {{#notEquals pictureDetail.status "S1"}}style="width: 100%"{{/notEquals}}><a href="/picture/list" class="next">목록</a></li>
+                {{#equals pictureDetail.status "S1"}}
+                <li><a href="/picture/register?id={{pictureDetail.id}}" class="next on">수정</a></li>
+                {{/equals}}
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+{{> common/imgPopup}}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#nav>div>ul>li:eq(1)>a").addClass("on");
+        $(".headerTitle").html('<a href="/picture/list">간이투시도</a>');
+
+        $(".next").click(function() {
+            $( "#pictureForm" ).submit();
+        });
+    });
+</script>
+</body>
+</html>

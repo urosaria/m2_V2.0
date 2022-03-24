@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" class="fullsize">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasFooter">
+
+    {{> common/header}}
+
+    <div id="content" class="mypage">
+        <div class="contentArea">
+            <div class="memberArea">
+                <div class="memberPhotoArea">
+                    <div class="_l">
+                        <div class="memberPhoto">
+                            <img src="/images/m2/content/memberPhoto.jpg" alt=""/>
+                        </div>
+                    </div>
+                </div>
+                {{#user}}
+                <div class="memberBox bgBlue">
+                    <div class="memberId">{{id}}</div>
+                    <button class="logout" id="logout"><a href="/logout">LOGOUT</a></button>
+                </div>
+                <div class="memberName">{{name}}</div>
+                <div class="memberPhone">{{phone}}</div>
+                <div class="memberEmail">{{email}}</div>
+                    <div class="memberCondition">{{#equals 'Y' agreeYn}}알림 수신중{{/equals}}</div>
+                    <div class="memberModify"><button id="memberModify">회원정보 수정</button></div>
+                {{/user}}
+            </div>
+        </div>
+    </div>
+    {{> common/footer}}
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //$("#nav>div>ul>li:eq(3)>a").addClass("on");
+        $(".headerTitle").html('<a href="/user/mypage">마이페이지</a>');
+        $("#memberModify").click(function() {
+            location.href="/user/modify/{{user.num}}";
+        });
+        $("#logout").click(function() {
+            location.href="/logout";
+        });
+    });
+</script>
+</body>
+</html>

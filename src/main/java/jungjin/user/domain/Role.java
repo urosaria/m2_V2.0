@@ -1,38 +1,39 @@
 package jungjin.user.domain;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.io.Serializable;
-import java.util.Set;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.Data;
-
 @Entity
-@Table(name="role")
-@Data
-@Getter
-@Setter
+@Table(name = "m2_role")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String name;
 
-    public Role(){
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Role(String name){
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Role() {}
+
+    public Role(String name) {
         this.name = name;
     }
 }

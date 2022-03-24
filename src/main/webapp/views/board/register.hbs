@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>M2 사용자</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script type="text/javascript" src="/js/admin/common/include.js"></script>
+    <script type="text/javascript" src="/js/hbs/templates.js"></script>
+    <script type="text/javascript" src="/js/hbs/partials.js"></script>
+</head>
+<body>
+<script id="contents_template" type="text/x-handlebars-template">
+        <div class="row">
+            <div class="col-8">{{boardMaster.name}} 등록</div>
+            <div class="col-4"><div style="text-align: right;width: 100%; padding-bottom: 5px"><a class="btn btn-primary" href="/board/register/2" role="button">등록</a></div></div>
+        </div>
+        <div class="card mt-5">
+            <div class="card-body">
+                <form name="boardForm" method="post" action="/board/register/2">
+                    <input type="text" name="boardMaster.id" value="2" />
+                    <input type="text" name="user.num" value="1" />
+
+                    <div class="form-group">
+                        <label for="name">제목 </label>
+                        <input class="form-control" id="title" name="title" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">내용 </label>
+                        <textarea class="form-control" name="contents" rows="3"></textarea>
+                    </div>
+                    <div style="text-align: center">
+                        <input type="submit" value="등록" class="btn btn-primary" />
+                        <a class="btn btn-primary" href="/board/list" role="button">목록</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+</script>
+
+<script type="text/javascript" src="/js/admin/common/index.js"></script>
+</body>
+</html>
+

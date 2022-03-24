@@ -1,0 +1,19 @@
+<nav aria-label="Page navigation example">
+    {{#pagination this currentPageNumber totalPageCount pageGroupCount }}
+        <ul class="pagination justify-content-end" style="height:85px">
+            {{#if canGoPrevious}}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{previousIdx}}&searchCondition={{searchCondition}}&searchText={{searchText}}&status={{status}}" tabindex="-1">Previous</a>
+                </li>
+            {{/if}}
+            {{#each pages}}
+                <li class="page-item {{#if isCurrent}}active{{/if}}"><a class="page-link" href="?page={{page}}&searchCondition={{searchCondition}}&searchText={{searchText}}&status={{status}}">{{page}}</a></li>
+            {{/each}}
+            {{#if canGoNext}}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{nextIdx}}&searchCondition={{searchCondition}}&searchText={{searchText}}&status={{status}}">Next</a>
+                </li>
+            {{/if}}
+        </ul>
+    {{/pagination}}
+</nav>

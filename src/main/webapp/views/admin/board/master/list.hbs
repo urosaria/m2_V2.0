@@ -7,47 +7,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!-- Bootstrap core CSS-->
-    <link href="/css/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom fonts for this template-->
-    <link href="/css/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <!-- Page level plugin CSS-->
-    <link href="/css/bootstrap/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <!-- Custom styles for this template-->
-    <link href="/css/bootstrap/sb-admin.css" rel="stylesheet">
-    <script src="/js/handlebars/handlebars-v4.0.11.js"></script>
+    <script type="text/javascript" src="/js/admin/common/include.js"></script>
 </head>
-<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+<body>
 
 {{> admin/common/nav}}
 
-<div class="content-wrapper">
-    <div class="container-fluid">
-        <div class="table-responsive">
-            <div style="text-align: right;width: 100%; padding-bottom: 5px"><a class="btn btn-primary" href="/admin/board/master/register" role="button">등록</a></div>
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                <tr>
-                    <th>게시판명(ID)</th>
-                    <th>답글게시판여부</th>
-                    <th>상태</th>
-                </tr>
-                </thead>
-                <tbody>
-                {{#each masterList}}
-                    <tr>
-                        <td><a href="/admin/board/master/modify/{{id}}">{{name}} ({{id}})</a> | <a href="/admin/board/list/{{id}}">{{name}}등록</a></td>
-                        <td>{{replyYn}} </td>
-                        <td>{{status}}</td>
-                    </tr>
-                {{/each}}
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="table-responsive">
+    <div style="text-align: right;width: 100%; padding-bottom: 5px"><a class="btn btn-primary" href="/admin/board/master/register" role="button">등록</a></div>
+    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+        <tr>
+            <th>게시판명(ID)</th>
+            <th>답글게시판여부</th>
+            <th>상태</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each masterList}}
+            <tr>
+                <td><a href="/admin/board/master/modify/{{id}}">{{name}} ({{id}})</a> | <a href="/admin/board/list/{{id}}">{{name}}등록</a></td>
+                <td>{{replyYn}} </td>
+                <td>{{status}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
 </div>
 
-{{> admin/common/footer}}
+{{> admin/common/footer }}
 
 </body>
 </html>

@@ -1,0 +1,47 @@
+@charset "UTF-8";
+
+/* calResult */
+.calResultArea{padding:5px 10px;}
+.calResult{width:100%;margin-bottom:10px;background-color:white;border-collapse:collapse;}
+.calResult caption{width:100%;padding:3px 0;font-size:3.5vw;line-height:1.2em;color:black;background-color:#ccc;displya:block;}
+.calResult th, .calResult td{padding:0.3em 5px;font-size:3.5vw;line-height:1.2em;color:black;border:solid 1px #ccc;}
+.calResult th{font-weight:normal;background-color:#eaeaea;}
+.calResult td{}
+.calResult thead th, .calResult thead td{}
+.calResult tbody th, .calResult tbody td{}
+.calResult tfoot th, .calResult tfoot td{}
+.calResult th.name{width:7em;text-align:left;}
+.calResult td.sta{width:6em;font-size:2.5vw;text-align:left;}
+.calResult td.unit{width:2em;text-align:center;}
+.calResult td.sup{width:4em;text-align:right;white-space:nowrap;}
+.calResult td.price{text-align:right;white-space:nowrap;}
+.calResult th.tit{width:25%;white-space:nowrap;}
+.calResult td.value{width:25%;text-align:right;white-space:nowrap;}
+.calResult td.s{font-size:2.5vw;line-height:1.1em;}
+
+.calResult.t3{background-color:#0078de;}
+.calResult.t3 caption{color:white;background-color:#0078de;}
+.calResult.t3 th, .calResult.t3 td{padding:0.5em 5px;color:white;border:solid 1px #333;}
+.calResult.t3 th{text-align:center;background-color:#0064b9;}
+.calResult.t3 td.price{font-size:5.5vw;}
+
+.calResult.t0{background-color:#222;}
+.calResult.t0 caption{color:white;background-color:#111;}
+.calResult.t0 th, .calResult.t0 td{color:white;border:solid 1px #333;}
+.calResult.t0 th{background-color:black;}
+
+ul.tableGuide{margin-bottom:30px;}
+ul.tableGuide>li{padding:1.5vw 20px;font-size:3vw;line-height:1.1em;border-bottom:solid 1px rgba(255,255,255,0.1);}
+ul.tableGuide>li.imp{color:#ffb100;}
+ul.tableGuide>li>.sub{font-size:0.8em;line-height:1.1em;}
+
+/* test css */
+.calResult td.update{background-color:yellow;}
+
+
+
+@media only screen and (min-width : 769px) {
+    .calResult th, .calResult td, .calResult caption{font-size:30px;}
+    .calResult td.sta, ul.tableGuide>li{font-size:20px;}
+    .calResult.t3 td.price{font-size:40px;}
+}

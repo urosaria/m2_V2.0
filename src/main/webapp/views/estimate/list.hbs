@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" class="fullsize">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+    <script type="text/javascript" src="/js/m2/ui.tmpl.js"></script>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasFooter hasArticleHeader">
+
+
+    {{> common/headerSub}}
+
+    <div class="articleHeader">
+        <div class="_l">
+            <h2>나의 견적 내역 </h2>
+        </div>
+    </div>
+
+    <div id="content">
+        <div class="contentArea" style="padding: 0; overflow: auto !important;">
+            <div class="_l">
+                {{#if listEstimate}}
+                <ul class="calListArticles">
+                    {{#each listEstimate}}
+                        <li>
+                            <div class="article">
+                                <img src="/images/m2/cal/typeIcon{{structureType}}.png" class="icon" alt="{{typeNameKr structureType}}" />
+                                <a class="articleLink" href="/estimate/calculate?id={{id}}">
+                                    <span class="articleTitle">[{{cityNameKr cityName}}] {{placeName}}</span>
+                                    <span class="articleDate">{{formatDate createDate "yyyy-MM-dd hh:mm"}}</span>
+                                </a>
+                                <button class="articleButton download"><img src="/images/m2/common/iconDownload.png" class="icon" alt="" /><span class="buttonName"><a href="/estimate/fileDown/{{id}}?sName={{placeName}}">다운로드</a></span></button>
+                            </div>
+                        </li>
+                    {{/each}}
+                    <li id="more" class="articleMore" data-url="/estimate/listContents" data-last="{{listEstimate.totalPages}}" data-current="{{page}}"><button type="button">더보기</button></li>
+                </ul>
+                {{/if}}
+                {{#unless listEstimate}}
+                    <div class="articleNone">
+                        <strong>나의 견적 내역이 없습니다.</strong>
+                    </div>
+                {{/unless}}
+            </div>
+        </div>
+    </div>
+
+    {{> common/footer}}
+</div>
+
+<script type="text/javascript" src="/js/m2/more.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //$("#nav>div>ul>li:eq(0)>a").addClass("on");
+        $(".headerTitle").html('<a href="/main">자동물량산출</a>');
+
+        $('.headerFunction').show();
+        $(".headerFunction").click(function() {
+            $(".popupArea").addClass("on");
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

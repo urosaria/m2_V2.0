@@ -7,59 +7,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!-- Bootstrap core CSS-->
-    <link href="/css/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom fonts for this template-->
-    <link href="/css/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <!-- Page level plugin CSS-->
-    <link href="/css/bootstrap/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <!-- Custom styles for this template-->
-    <link href="/css/bootstrap/sb-admin.css" rel="stylesheet">
-    <script src="/js/handlebars/handlebars-v4.0.11.js"></script>
+    <script type="text/javascript" src="/js/admin/common/include.js"></script>
 </head>
-<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+<body>
 
 {{> admin/common/nav}}
 
-<div class="content-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-8">{{boardMaster.name}}</div>
-            <div class="col-4"><div style="text-align: right;width: 100%; padding-bottom: 5px"><a class="btn btn-primary" href="/admin/board/register/{{board_master_id}}" role="button">등록</a></div></div>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                <tr>
-                    <th>제목</th>
-                    <th>내용</th>
-                    <th>상태</th>
-                    <th>등록일</th>
-                </tr>
-                </thead>
-                <tbody>
-                {{#each boardList}}
-                    <tr>
-                        <td><a href="/admin/board/modify/{{board_master_id}}/{{id}}">{{title}}</a>
-                            {{#equal boardMaster.replyYn "Y"}}
-                            <a href="/admin/board/reply/{{id}}" style="float: right" class="btn btn-success btn-sm">답변</a>
-                            {{#each boardReplyList}}
-                                <br /> - 답변: {{title}} | {{createDate}}
-                            {{/each}}
-                            {{/equal}}
-                        </td>
-                        <td>{{contents}} </td>
-                        <td>{{status}}</td>
-                        <td>{{createDate}}</td>
-                    </tr>
-                {{/each}}
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="row">
+    <div class="col-8">{{boardMaster.name}} | 전체 {{comma boardList.totalElements}}건 </div>
+    <div class="col-4"><div style="text-align: right;width: 100%; padding-bottom: 5px"><a class="btn btn-primary" href="/admin/board/register/{{board_master_id}}" role="button">등록</a></div></div>
 </div>
 
-{{> admin/common/footer}}
+<div class="table-responsive">
+    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>등록자</th>
+            <th>등록일</th>
+            <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each boardList}}
+            <tr>
+                <td> {{rowNum boardList.totalElements page @index }} </td>
+                <td><a href="/admin/board/modify/{{board_master_id}}/{{id}}">{{title}}</a>
+                    {{#equals 'Y' boardMaster.replyYn}}
+                    <a href="/admin/board/reply/{{id}}" style="float: right" class="btn btn-success btn-sm">답변</a>
+                    {{#each boardReplyList}}
+                        <br /> - 답변: {{title}} | {{formatDate createDate "yyyy-MM-dd"}}
+                    {{/each}}
+                    {{/equals}}
+                </td>
+                <td>{{user.name}}</td>
+                <td>{{formatDate createDate "yyyy-MM-dd"}}</td>
+                <td>{{readcount}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+
+    {{> admin/common/pagination currentPageNumber=page totalPageCount=boardList.totalPages pageGroupCount=boardList.numberOfElements}}
+
+</div>
+
+{{> admin/common/footer }}
 
 </body>
 </html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+    <style>
+        input[type="file"] {position:absolute;width:1px;height:1x;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:1px red solid}
+    </style>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasFooter">
+
+
+    {{> common/headerSub}}
+
+    <div id="content" class="d3 hasGuide">
+        <div class="contentArea">
+            <div class="d3Guide">
+                <div class="_l">
+                    <img src="/images/m2/common/iconNotice.png" class="icon" alt="알림" />
+                    <div class="d3GuideMsg">간이투시도 제작 비용은 건물의 규모와 관계 없이 200,000원으로 동일합니다.<br />신청 및 결제 후 간이투시도 완료까지 최소 4~7일 이상 소요됩니다.</div>
+                </div>
+            </div>
+            <div class="formArea">
+                <div class="_l">
+                    <form name="pictureForm" id="pictureForm" method="post" action="/picture/register" enctype="multipart/form-data">
+                    {{#pictureForm}}
+                    <input type="text" name="id" value="{{id}}" />
+                    <input type="text" name="user.num" value="2" />
+                    <input type="text" id="fileCnt" value="0" />
+
+                    <div class="formsGroup">
+                        <div class="form hasLabel full">
+                            <label class="labelId">제목</label>
+                            <span class="formMsg">필수 입력</span>
+                            <input type="text" name="name" autocomplete="off" class="focusAct" value="{{name}}" />
+                        </div>
+                        <div class="form hasLabel file full" id="fileUpload">
+                            <label class="labelId">도면</label>
+                            <span class="formMsg">필수 입력</span>
+                            <input type="text" id="fileName" disabled="disabled" autocomplete="off" class="focusAct" placeholder="ex) CAD, 이미지, PDF 파일" value="">
+                            <button type="button"><label>파일선택 <input type="file" name="file" class="uploadBtn" /></label></button>
+                        </div>
+
+                        <div class="form fileList">
+                            <ul>
+                                {{#each fileList}}
+                                <li>
+                                    <div class="fileName"><a href="/picture/fileDown/{{id}}">{{oriName}}</a></div>
+                                    <button class="delete" type="button" data-id="{{id}}">삭제</button>
+                                </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                        <div class="form hasLabel full">
+                            <label class="labelId">요청사항</label>
+                            <input type="text" name="etc" autocomplete="off" class="focusAct" placeholder="제작 시 간략한 요청사항 입력" value="{{etc}}" />
+                        </div>
+                    </div>
+                    {{/pictureForm}}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{> common/footer}}
+
+    <div id="button">
+        <div class="_l">
+            <ul class="_c2">
+                {{#if pictureForm.id}}
+                    <li><a href="#" class="cancel" id="cancel">삭제</a></li>
+                    <li><a href="#" class="next on">수정</a></li>
+                {{/if}}
+                {{#unless pictureForm.id}}
+                    <li><a href="/picture/list" class="cancel">취소</a></li>
+                    <li><a href="#" class="next on">신청</a></li>
+                {{/unless}}
+            </ul>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(document).on("change", ".uploadBtn", function() {
+        if(window.FileReader){
+            // 파일명 추출
+            var filename = $(this)[0].files[0].name;
+        } else {
+            // Old IE 파일명 추출
+            var filename = $(this).val().split('/').pop().split('\\').pop();
+        }
+
+        var maxSize = 512*1024*1024;
+        var fileSize =$(this)[0].files[0].size;
+
+        if(fileSize>maxSize){
+            alert("첨부파일 사이즈는 512MB 이내로 등록 가능합니다.");
+        }else{
+            var liappend = '<li><div class="fileName"><a href="#">'+filename+'</a></div>'
+            liappend+='<button class="delete" type="button">삭제</button></li>';
+
+            $(".fileList>ul").append(liappend);
+            $("#fileUpload>button").css("visibility","hidden");
+            $("#fileUpload").append('<button type="button"><label>파일선택 <input type="file" name="file" class="uploadBtn" /></label></button>');
+        }
+    });
+
+    $(document).on("click",".delete", function() {
+        var id = $(this).attr("data-id");
+        var ids = "<input type=\"text\" name=\"fileDeleteArray\" value=\""+id+"\" />";
+        $(this).parent().remove();
+        $("#pictureForm").append(ids);
+    });
+
+    $(document).ready(function(){
+        $("#nav>div>ul>li:eq(1)>a").addClass("on");
+        $(".headerTitle").html('<a href="/picture/list">간이투시도</a>');
+
+        {{#if pictureForm.id}}
+        var fileCnt = $(".fileList>ul>li").length;
+        $("#fileCnt").val(fileCnt);
+        {{/if}}
+
+        $(".next").click(function() {
+            var name = $("input[name=name]").val();
+            if(!blankCheck(name)) {
+                alert("제목을 입력하세요.");
+                $("input[name=name]").focus();
+                return false;
+            }
+            var fileCnt = $( ".fileList>ul>li" ).length;
+            if(fileCnt==0){
+                alert("도면을 입력하세요.");
+                return false;
+            }
+            $( "#pictureForm" ).submit();
+        });
+
+        $("#cancel").click(function() {
+            if(confirm("삭제하시겠습니까?")){
+                $.get( "/picture/remove/{{pictureForm.id}}", function( data ) {
+                    if(data=='success'){
+                        alert("삭제되었습니다.");
+                        location.href="/picture/list";
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

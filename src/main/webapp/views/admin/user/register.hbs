@@ -7,94 +7,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!-- Bootstrap core CSS-->
-    <link href="/css/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom fonts for this template-->
-    <link href="/css/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <!-- Page level plugin CSS-->
-    <link href="/css/bootstrap/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <!-- Custom styles for this template-->
-    <link href="/css/bootstrap/sb-admin.css" rel="stylesheet">
-    <script src="/js/handlebars/handlebars-v4.0.11.js"></script>
-    <script type="text/javascript">
-        function findId(){
-            var id = $("#id").val();
-            $.get( "/user/admin/findId?id="+id, function( data ) {
-                if(data=='success'){
-                    alert("사용가능");
-                }else{
-                    alert("사용불가 중복ID");
-                }
-            });
-        }
-    </script>
+    <script type="text/javascript" src="/js/admin/common/include.js"></script>
 </head>
-<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+<body>
 
 {{> admin/common/nav}}
 
-<div class="content-wrapper">
-    <div class="container-fluid">
-        <div class="card card-register mx-auto mt-5">
-            <div class="card-header">회원가입</div>
-            <div class="card-body">
-                <form name="user" method="post" action="/admin/user/register">
-                    <div class="form-group">
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <label for="name">이름</label>
-                                <input class="form-control" id="name" name="name" type="text" placeholder="이름">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="id">ID</label>
-                                <input class="form-control" id="id" name="id"  type="text" placeholder="ID" style="width:72%">
-                                <button type="button" class="btn btn-primary" onclick="findId();" style="position: absolute; top:45%; left: 73%;">중복확인</button>
-                            </div>
-                        </div>
+<div class="card card-register mx-auto mt-5">
+    <div class="card-header">회원가입</div>
+    <div class="card-body">
+        <form name="user" method="post" action="/admin/user/register">
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <label for="name">이름</label>
+                        <input class="form-control" id="name" name="name" type="text" placeholder="이름">
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email address</label>
-                        <input class="form-control" id="email" name="email" type="email" placeholder="email">
+                    <div class="col-md-6">
+                        <label for="id">ID</label>
+                        <input class="form-control" id="id" name="id"  type="text" placeholder="ID" style="width:72%">
+                        <button type="button" class="btn btn-primary" onclick="findId();" style="position: absolute; top:45%; left: 73%;">중복확인</button>
                     </div>
-                    <div class="form-group">
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <label for="phone">전화번호</label>
-                                <input class="form-control" id="phone" name="phone" type="text" placeholder="phone">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="agree_yn">알람 동의여부</label>
-                                <br />
-                                <input type="radio" id="agreeYn" name="agreeYn" value="Y" aria-label="Radio button for following text input"> 동의
-                                <input type="radio" name="agreeYn" value="N"  aria-label="Radio button for following text input"> 비동의
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <label for="passwd">Password</label>
-                                <input class="form-control" id="passwd" name="password" type="password" placeholder="Password">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="passwd2">Confirm password</label>
-                                <input class="form-control" id="passwd2" type="password" placeholder="Confirm password">
-                                ADMIN <input type="checkbox" name="roles" value="ADMIN"/> |
-                                USER  <input type="checkbox" name="roles" value="USER" />
-                            </div>
-                        </div>
-                    </div>
-                    <div style="text-align: center">
-                        <input type="submit" value="등록" class="btn btn-primary" />
-                        <a class="btn btn-primary" href="/admin/user/list" role="button">목록</a>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input class="form-control" id="email" name="email" type="email" placeholder="email">
+            </div>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <label for="phone">전화번호</label>
+                        <input class="form-control" id="phone" name="phone" type="text" placeholder="phone">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="agree_yn">알람 동의여부</label>
+                        <br />
+                        <input type="radio" id="agreeYn" name="agreeYn" value="Y" aria-label="Radio button for following text input"> 동의
+                        <input type="radio" name="agreeYn" value="N"  aria-label="Radio button for following text input"> 비동의
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <label for="passwd">Password</label>
+                        <input class="form-control" id="passwd" name="password" type="password" placeholder="Password">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="passwd2">Confirm password</label>
+                        <input class="form-control" id="passwd2" type="password" placeholder="Confirm password">
+                        ADMIN <input type="checkbox" name="roles" value="ADMIN"/> |
+                        USER  <input type="checkbox" name="roles" value="USER" />
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center">
+                <input type="submit" value="등록" class="btn btn-primary" />
+                <a class="btn btn-secondary" href="/admin/user/list" role="button">목록</a>
+            </div>
+        </form>
     </div>
 </div>
 
-{{> admin/common/footer}}
+{{> admin/common/footer }}
 
+<script type="text/javascript">
+    function findId(){
+        var id = $("#id").val();
+        $.get( "/user/admin/findId?id="+id, function( data ) {
+            if(data=='success'){
+                alert("사용가능");
+            }else{
+                alert("사용불가 중복ID");
+            }
+        });
+    }
+</script>
 </body>
 </html>

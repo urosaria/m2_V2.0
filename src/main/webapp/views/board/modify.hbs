@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>M2 관리자</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script type="text/javascript" src="/js/admin/common/include.js"></script>
+    <script type="text/javascript" src="/js/hbs/templates.js"></script>
+    <script type="text/javascript" src="/js/hbs/partials.js"></script>
+    <script type="text/javascript">
+        function boardRemove(id){
+            if(confirm("삭제하시겠습니까?")){
+                $.get( "/board/remove/"+id, function( data ) {
+                    if(data=='success'){
+                        alert("삭제되었습니다");
+                        location.href="/board/list";
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<script id="contents_template" type="text/x-handlebars-template">
+    <div class="row">
+        <div class="col-8">{{boardMaster.name}} 수정</div>
+    </div>
+    <div class="card mt-5">
+        <div class="card-body">
+            {{#board}}
+                <form name="boardForm" method="post" action="/board/modify/2/{{id}}">
+                    <div class="form-group">
+                        <label for="name">제목 </label>
+                        <input class="form-control" id="title" name="title" value="{{title}}" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">내용 </label>
+                        <textarea name="contents" class="form-control" rows="3">{{contents}}</textarea>
+                    </div>
+                    <div style="text-align: center">
+                        <input type="submit" value="수정" class="btn btn-primary" />
+                        <button type="button" class="btn btn-primary" onclick="boardRemove({{id}})">삭제</button>
+                        <a class="btn btn-primary" href="/board/list" role="button">목록</a>
+                    </div>
+                </form>
+            {{/board}}
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="/js/admin/common/index.js"></script>
+</body>
+</html>

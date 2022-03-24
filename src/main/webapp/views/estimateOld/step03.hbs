@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2 CALCULUS TEST</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+</head>           if(!exit){
+return false;
+}
+<body class="bgDef">
+<div class="wrap hasHeader hasCalProcess hasFooter">
+
+
+    {{> common/header}}
+
+    <div class="calProcess">
+        <div class="_l">
+            <ul>
+                <li class="complete"><a href="#" data-url="/estimate/step01?id={{structureDetailForm.structure.id}}">건물정보</a></li>
+                <li class="complete"><a href="#" data-url="/estimate/step02?structure_detail_id={{structureDetailForm.id}}">세부정보</a></li>
+                <li class="on"><a href="#">규격정보</a></li>
+                <li><a href="#" data-url="/estimate/step04?structure_detail_id={{structureDetailForm.id}}">자재선택</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="content" class="cal">
+        <div class="contentArea">
+            <div class="formArea">
+                <form name="structureDetailForm" id="structureForm" method="post" action="/estimate/step03">
+                {{#structureDetailForm}}
+                    <input type="text" name="id" value="{{id}}" />
+                    <input type="text" id="returnUrl" name="returnUrl" value="" />
+
+                    <div class="_l">
+                    <div class="formsGroup noHP">
+                        <div class="forms hasP hasFormsTitle">
+                            <div class="formsTitle">구찌</div>
+                            <div class="form hasUnitS half">
+                                <span class="formMsg">필수입력</span>
+                                <select class="focusAct" name="gucci">
+                                    <option value="75" {{#equals 75 gucci}}selected="selected"{{/equals}}>75</option>
+                                    <option value="100" {{#equals 100 gucci}}selected="selected"{{/equals}}>100</option>
+                                    <option value="125" {{#equals 125 gucci}}selected="selected"{{/equals}}>125</option>
+                                </select>
+                                <div class="unit">DIA</div>
+                            </div>
+                            <div class="form hasUnitS half">
+                                <input type="number" name="gucciAmount" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="수량" autocomplete="off" class="focusAct" value="{{gucciAmount}}" />
+                                <div class="unit">EA</div>
+                            </div>
+                        </div>
+                        <div class="meterial">
+
+                            {{#equals 'Y' insideWallYn}}
+                                {{> estimate/step03-1}}
+                            {{/equals}}
+
+                            {{#equals 'Y' ceilingYn}}
+                                {{> estimate/step03-2}}
+                            {{/equals}}
+
+                            {{#equals 'Y' windowYn}}
+                                {{> estimate/step03-3}}
+                            {{/equals}}
+
+                            {{#equals 'Y' doorYn}}
+                                {{> estimate/step03-4}}
+                            {{/equals}}
+
+                            {{#equals 'Y' canopyYn}}
+                                {{> estimate/step03-5}}
+                            {{/equals}}
+
+                        </div>
+                    </div>
+                </div>
+                {{/structureDetailForm}}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="nav">
+        <div class="_l">
+            <ul>
+                <li><a href="#" class="on"><img src="/images/m2/nav/n01.png" alt="cal" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n02.png" alt="3d" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n03.png" alt="bbs" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n04.png" alt="member" /></a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="button">
+        <div class="_l">
+            <ul class="_c2">
+                <li><a href="#" class="prev" data-url="/estimate/step02?structure_detail_id={{structureDetailForm.id}}">이전</a></li>
+                <li><a href="#" class="next on">다음</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+    $(".next").click(function() {
+        $(".firstArticle").each(function() {
+            var count = $(this).attr("data-count");
+            if(count!=0) $(this).remove();
+        });
+        $( "#structureForm" ).submit();
+    });
+
+    $(".delete").click(function() {
+        if($(this).hasClass("on")){
+            var url = $(this).attr("data-url");
+            if(url!='') $.get( url, function( data ) {});
+            $(this).parent().parent().parent().remove();
+        }else{
+          $(this).addClass("on");
+        }
+        return false;
+    });
+
+    var addhtml = '';
+    $(".articleAdd>button").click(function() {
+        var meterialId = $(this).val();
+        var dataClass = $(this).attr('data-class');
+        var firstContents = $("#"+dataClass+"First").html();
+
+        count = $("#"+meterialId+" .article:not([style*=\"display: none\"])").length;
+
+        addhtml = '';
+        addhtml+="<div class=\"article\" >";
+        addhtml+=firstContents.replaceAll(dataClass+"[0]",dataClass+"["+count+"]");
+        addhtml+="</div>";
+
+        $("#"+meterialId+" .article:last").after(addhtml);
+
+        if(meterialId =="doorArea"){
+            $(".subType").change(function() {
+                var subtype = $(this).val();
+                if(subtype=='H'){
+                    $(this).parent().parent().find(".selectDiv").hide();
+                    $(this).parent().parent().find(".widthDiv").show();
+                    $(this).parent().parent().find(".heightDiv").show();
+                }else{
+                    $(this).parent().parent().find(".selectDiv").show();
+                    $(this).parent().parent().find(".widthDiv").hide();
+                    $(this).parent().parent().find(".heightDiv").hide();
+                }
+            });
+        }
+        $(".deleteFirst").unbind().click(function() {
+            if($(this).hasClass("on")){
+                $(this).parent().parent().parent().remove();
+            }else{
+                $(this).addClass("on");
+            }
+            return false;
+        });
+
+        return false;
+    });
+
+});
+//replaceAll prototype 선언
+String.prototype.replaceAll = function(org, dest) {
+    return this.split(org).join(dest);
+}
+</script>
+
+</body>
+</html>
+
+

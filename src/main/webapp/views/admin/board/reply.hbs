@@ -7,90 +7,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <!-- Bootstrap core CSS-->
-    <link href="/css/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom fonts for this template-->
-    <link href="/css/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <!-- Page level plugin CSS-->
-    <link href="/css/bootstrap/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-    <!-- Custom styles for this template-->
-    <link href="/css/bootstrap/sb-admin.css" rel="stylesheet">
-    <script src="/js/handlebars/handlebars-v4.0.11.js"></script>
-    <script type="text/javascript">
-        function boardReplyRemove(id){
-            if(confirm("삭제하시겠습니까?")){
-                $.get( "/admin/board/reply/remove/"+id, function( data ) {
-                    if(data=='success'){
-                        alert("삭제되었습니다");
-                        location.href="/admin/board/reply/{{boardMaster.id}}";
-                    }
-                });
-            }
-        }
-    </script>
+    <script type="text/javascript" src="/js/admin/common/include.js"></script>
 </head>
-<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+<body>
 
 {{> admin/common/nav}}
 
-<div class="content-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-8">{{boardMaster.name}} 답변 </div>
-            <div class="col-4"><div style="text-align: right;width: 100%; padding-bottom: 5px"><a class="btn btn-primary" href="/admin/board/register/{{board_master_id}}" role="button">등록</a></div></div>
-        </div>
-        <div class="card mb-3">
-            {{#question}}
-            <div class="card-header">
-                질문 제목: {{title}}
-            </div>
-            <div class="card-body">
-                {{contents}}
-            </div>
-            <div class="card-footer small text-muted">등록일: {{createDate}}</div>
-            {{/question}}
-        </div>
-        {{#if replyList}}
-        <div class="card mb-3">
-            {{#replyList}}
-                <div class="card-header">
-                    답변 제목: {{title}}
-                    <div style="float: right">
-                        <button type="button" class="btn btn-success btn-sm" onclick="boardReplyRemove({{id}})">삭제</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    {{contents}}
-                </div>
-                <div class="card-footer small text-muted">등록일: {{createDate}}</div>
-            {{/replyList}}
-        </div>
-        {{/if}}
-        <div class="card mt-5">
-            <div class="card-header">답변</div>
-            <div class="card-body">
-                <form name="boardForm" method="post" action="/admin/board/reply/{{board_id}}">
-                    <input type="hidden" name="board.id" value="{{board_id}}" />
-                    <input type="hidden" name="user.num" value="1" />
-                    <div class="form-group">
-                        <label for="name">제목 </label>
-                        <input class="form-control" id="title" name="title" type="text">
-                    </div>
-                    <div class="form-group">
-                        <label for="name">내용 </label>
-                        <textarea class="form-control" name="contents" rows="3"></textarea>
-                    </div>
-                    <div style="text-align: center">
-                        <input type="submit" value="등록" class="btn btn-primary" />
-                        <a class="btn btn-primary" href="/admin/board/list/{{boardMaster.id}}" role="button">목록</a>
-                    </div>
-                </form>
+<div class="row">
+    <div class="col-8">{{boardMaster.name}} 답변 </div>
+</div>
+<div class="card mb-3">
+    {{#question}}
+    <div class="card-header">
+        질문 제목: {{title}}
+    </div>
+    <div class="card-body">
+        {{contents}}
+    </div>
+    <div class="card-footer small text-muted">등록일: {{formatDate createDate "yyyy-MM-dd"}}</div>
+    {{/question}}
+</div>
+{{#if replyList}}
+<div class="card mb-3">
+    {{#replyList}}
+        <div class="card-header">
+            답변 제목: {{title}}
+            <div style="float: right">
+                <button type="button" class="btn btn-success btn-sm" onclick="boardReplyRemove({{id}})">삭제</button>
             </div>
         </div>
+        <div class="card-body">
+            {{contents}}
+        </div>
+        <div class="card-footer small text-muted">등록일: {{createDate}}</div>
+    {{/replyList}}
+</div>
+{{/if}}
+<div class="card mt-5">
+    <div class="card-header">답변</div>
+    <div class="card-body">
+        <form name="boardForm" method="post" action="/admin/board/reply/{{board_id}}">
+            <input type="hidden" name="board.id" value="{{board_id}}" />
+            <input type="hidden" name="user.num" value="1" />
+            <div class="form-group">
+                <label for="name">제목 </label>
+                <input class="form-control" id="title" name="title" type="text">
+            </div>
+            <div class="form-group">
+                <label for="name">내용 </label>
+                <textarea class="form-control" name="contents" rows="3"></textarea>
+            </div>
+            <div style="text-align: center; margin-bottom: 40px">
+                <input type="submit" value="등록" class="btn btn-primary" />
+                <a class="btn btn-secondary" href="/admin/board/list/{{boardMaster.id}}" role="button">목록</a>
+            </div>
+        </form>
     </div>
 </div>
 
-{{> admin/common/footer}}
+{{> admin/common/footer }}
 
+<script type="text/javascript">
+    function boardReplyRemove(id){
+        if(confirm("삭제하시겠습니까?")){
+            $.get( "/admin/board/reply/remove/"+id, function( data ) {
+                if(data=='success'){
+                    alert("삭제되었습니다");
+                    location.href="/admin/board/reply/{{boardMaster.id}}";
+                }
+            });
+        }
+    }
+</script>
 </body>
 </html>

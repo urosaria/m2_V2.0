@@ -1,0 +1,72 @@
+<div class="meterialGroup" id="windowArea">
+    {{#each windowList}}
+    <input type="text" name="windowList[{{@index}}].id"  value="{{id}}" />
+    <div class="article">
+        <div class="forms hasFormsTitle hasP">
+            <div class="formsTitle">
+                <button class="delete" data-url="/estimate/remove/window/{{id}}"><img src="/images/m2/common/iconX.png" class="icon" alt="" />
+                    <strong class="title">창호</strong><span class="guide">삭제</span>
+                </button>
+            </div>
+            <div class="form hasUnit half">
+                <input type="number" name="windowList[{{@index}}].width" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="폭" autocomplete="off" class="focusAct" value="{{width}}" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasUnit half">
+                <input type="number" name="windowList[{{@index}}].height" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="높이" autocomplete="off" class="focusAct" value="{{height}}" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasUnitS half">
+                <input type="number" name="windowList[{{@index}}].amount" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="수량" autocomplete="off" class="focusAct" value="{{amount}}" />
+                <div class="unit">EA</div>
+            </div>
+            <div class="form half">
+                <select class="focusAct" name="windowList[{{@index}}].type">
+                    <option value="S" {{#equals 'S' type}}selected="selected"{{/equals}}>단창</option>
+                    <option value="D" {{#equals 'D' type}}selected="selected"{{/equals}}>이중창</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+    <div class="firstArticle article" id="windowListFirst" style="display: none" data-count="{{windowListSize}}">
+        <div class="forms hasFormsTitle hasP">
+            <div class="formsTitle">
+                <button class="deleteFirst delete" data-url=""><img src="/images/m2/common/iconX.png" class="icon" alt="" />
+                    <strong class="title">창호</strong><span class="guide">삭제</span>
+                </button>
+            </div>
+            <div class="form hasUnit half">
+                <input type="number" name="windowList[0].width" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="폭" autocomplete="off" class="focusAct" value="0" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasUnit half">
+                <input type="number" name="windowList[0].height" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="높이" autocomplete="off" class="focusAct" value="0" />
+                <div class="unit">㎜</div>
+            </div>
+            <div class="form hasUnitS half">
+                <input type="number" name="windowList[0].amount" pattern="[0-9]*" inputmode="numeric" min="0" placeholder="수량" autocomplete="off" class="focusAct" value="0" />
+                <div class="unit">EA</div>
+            </div>
+            <div class="form half">
+                <select class="focusAct" name="windowList[0].type">
+                    <option value="S">단창</option>
+                    <option value="D">이중창</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="articleAdd">
+        <button value="windowArea" data-class="windowList">창문 종류 추가</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var wcount = '{{windowListSize}}';
+
+    if(wcount==0){
+        $("#windowListFirst").show();
+    }
+});
+</script>

@@ -1,26 +1,23 @@
 package jungjin.user.domain;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.validator.constraints.Email;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Email;
 
 @Entity
-@Table(name = "user")
-@Data
-@Getter
-@Setter
+@Table(name = "m2_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,26 +39,107 @@ public class User {
     @Email
     private String email;
 
-    @Column(name ="phone")
+    @Column(name = "phone")
     private String phone;
 
-    @Column(name ="agree_yn")
+    @Column(name = "agree_yn")
     private String agreeYn;
 
     @NotNull
-    @Column(name="create_date")
+    @Column(name = "create_date")
     LocalDateTime createDate;
 
-    @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_num"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @JoinTable(name = "m2_user_role", joinColumns = {@JoinColumn(name = "user_num")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Set<Role> roles;
 
-    public void insert(User insertUser){
-        this.id =insertUser.id;
-        this.name =insertUser.name;
+    public String toString() {
+        return "User(num=" + getNum() + ", id=" + getId() + ", name=" + getName() + ", password=" + getPassword() + ", status=" + getStatus() + ", email=" + getEmail() + ", phone=" + getPhone() + ", agreeYn=" + getAgreeYn() + ", createDate=" + getCreateDate() + ", roles=" + getRoles() + ")";
+    }
+
+    public void setNum(Long num) {
+        this.num = num;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setAgreeYn(String agreeYn) {
+        this.agreeYn = agreeYn;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Long getNum() {
+        return this.num;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPhone() {
+        return this.phone;
+    }
+
+    public String getAgreeYn() {
+        return this.agreeYn;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return this.createDate;
+    }
+
+    public Set<Role> getRoles() {
+        return this.roles;
+    }
+
+    public void insert(User insertUser) {
+        this.id = insertUser.id;
+        this.name = insertUser.name;
         this.password = insertUser.password;
         this.email = insertUser.email;
         this.phone = insertUser.phone;
@@ -72,14 +150,15 @@ public class User {
         this.status = "S";
     }
 
-    public void update(User updateUser){
+    public void update(User updateUser) {
+        this.name = updateUser.name;
         this.email = updateUser.email;
         this.phone = updateUser.phone;
         this.agreeYn = updateUser.agreeYn;
         this.password = updateUser.password;
     }
 
-    public void delete(User deleteUser){
+    public void delete(User deleteUser) {
         this.status = "D";
     }
 }

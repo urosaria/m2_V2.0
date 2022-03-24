@@ -1,0 +1,77 @@
+<div id="navN">
+    <div class="_l">
+        <ul>
+            <li><a href="#" id="price" data-src="/images/m2/content/price.jpeg">금주판넬단가표</a></li>
+            <li><a href="#" id="price_notice">판넬발주(문의)하기</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="popupArea">
+    <div class="dimmed"></div>
+    <div class="popup hasReaction guide">
+        <div class="popupContent">
+
+            <div class="popupMsg">
+            발주 & 기타문의전화 <br />
+            판넬 및 판넬 부속자재발주 또는 기타 문의사항이 있으시면 전화주세요. <br />
+            <a href="tel:042-586-8484" style="text-align:center;display:block;">PHONE : 042-586-8484</a>
+            FAX : 042-5848485
+            </div>
+
+        </div>
+        <div class="popupReaction">
+            <button class="positive full">확인</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/js/m2/ui.tmpl.js"></script>
+<script type="text/javascript" src="/js/hbs/handlebars-v4.0.11.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('#price_notice').show();
+        $("#price_notice").click(function() {
+            $(".popupArea").addClass("on");
+            return false;
+        });
+
+        $(".positive").click(function() {
+            $(".popupArea").removeClass("on");
+            return false;
+        });
+
+        $('#price').bind('click', function() {
+            $(document.body).css({
+                "overflow": "hidden",
+                'width': $(window).width(),
+                'height': $(window).height()
+            });
+            var sTmpl = "/generalPopup.html";
+            var sContainer = "body";
+            var oData = {};
+            var src = $("#price").attr("data-src");
+            $("#viewport").attr('content', 'width=device-width,initial-scale=1.0');
+
+            ui.tmpl.setTmpl({
+                tmpl: sTmpl,
+                container: sContainer,
+                data: oData,
+                type: 'append',
+                empty: false,
+                callback: function () {
+                    $(".org_image").attr("src",src);
+                    $(".ly_cls>a").click(function() {
+                        var target = $(event.currentTarget);
+                        target.parents('.dim_block').remove();
+                        $("#viewport").attr('content', 'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0');
+                        $(document.body).css({
+                            "overflow": "visible",
+                        });
+                    });
+                }
+            });
+        });
+    });
+</script>

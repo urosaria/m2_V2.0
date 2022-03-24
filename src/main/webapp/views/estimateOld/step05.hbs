@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>M2 CALCULUS TEST</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+    <meta name="apple-mobile-web-app-title" content="M2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="/js/m2/include.js"></script>
+</head>
+<body class="bgDef">
+<div class="wrap hasHeader hasArticleHeader hasFooter">
+
+
+    {{> common/header}}
+
+    <div class="articleHeader">
+        <div class="_l">
+            <h2>[{{cityNameKr structureDetail.structure.cityName}}] {{structureDetail.structure.placeName}}</h2>
+            <div class="function">
+                <button><img src="/images/m2/common/iconFunction.png" alt="글관리" /></button>
+                <div class="functionPop ">
+                    <ul>
+                        <li><button><img src="/images/m2/common/iconModify.png" alt=""  class="icon" />수정</button></li>
+                        <li><button><img src="/images/m2/common/iconCopy.png" alt=""  class="icon" />복사</button></li>
+                        <li><button><img src="/images/m2/common/iconDelete.png" alt=""  class="icon" />삭제</button></li>
+                        <li><button><img src="/images/m2/common/iconDownloadB.png" alt=""  class="icon" />엑셀받기</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="content" class="cal">
+        <div class="contentArea">
+
+            <div class="calResultArea">
+                <div class="_l">
+                    <table cellpadding="0" cellspacing="0" class="calResult t1">
+                        <caption>판넬공사</caption>
+                        <thead>
+                        <tr>
+                            <th scope="col">품명</th>
+                            <th scope="col">규격</th>
+                            <th scope="col">단위</th>
+                            <th scope="col">수량</th>
+                            <th scope="col">금액</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#each structureDetail.structure.calculateList}}
+                        {{#notEquals "D" type}}
+                        <tr>
+                            <th class="name" scope="row">{{name}}</th>
+                            <td class="sta">{{standard}}</td>
+                            <td class="unit">{{unit}}</td>
+                            <td class="sup">{{#notEquals 0 amount}}{{comma amount}}{{/notEquals}}</td>
+                            <td class="price" data-price="{{price}}">{{comma price}}</td>
+                        </tr>
+                        {{/notEquals}}
+                        {{/each}}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th scope="row">소계</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="price" id="totalPrice"></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                    {{#notEquals 0 doorPriceCount}}
+                    <table cellpadding="0" cellspacing="0" class="calResult t2">
+                        <caption>도어/창호 공사</caption>
+                        <thead>
+                        <tr>
+                            <th scope="col">품명</th>
+                            <th scope="col">규격</th>
+                            <th scope="col">단위</th>
+                            <th scope="col">수량</th>
+                            <th scope="col">금액</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {{#each structureDetail.structure.calculateList}}
+                            {{#equals "D" type}}
+                                <tr>
+                                    <th class="name" scope="row">{{name}}</th>
+                                    <td class="sta">{{standard}}</td>
+                                    <td class="unit">{{unit}}</td>
+                                    <td class="sup">{{comma amount}}</td>
+                                    <td class="price" data-price="{{price}}">{{comma price}}</td>
+                                </tr>
+                            {{/equals}}
+                            {{/each}}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th scope="row">소계</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="price" id="wtotalPrice"></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                    {{/notEquals}}
+                    {{#structureDetail}}
+
+                    <table cellpadding="0" cellspacing="0" class="calResult t0">
+                        <caption>입력 정보</caption>
+                        <tbody>
+                        <tr>
+                            <th class="tit" scope="row">건물타입</th>
+                            <td class="txt" colspan="3">{{typeNameKr structure.structureType}}</td>
+                        </tr>
+                        <tr>
+                            <th class="tit" scope="row">건물폭</th>
+                            <td class="value">{{comma structure.width}} ㎜</td>
+                            <th class="tit" scope="row">건물길이</th>
+                            <td class="value">{{comma structure.length}} ㎜</td>
+                        </tr>
+                        <tr>
+                            <th class="tit" scope="row">건물높이</th>
+                            <td class="value">{{comma structure.height}} ㎜</td>
+                            <th class="tit" scope="row">트러스높이</th>
+                            <td class="value">{{comma structure.trussHeight}} ㎜</td>
+                        </tr>
+                        {{#notEquals 0 structure.eavesLength}}
+                        <tr>
+                            <th class="tit" scope="row">처마길이</th>
+                            <td class="value">{{comma structure.eavesLength}} ㎜</td>
+                            <th class="tit" scope="row">배면트러스높이</th>
+                            <td class="value">{{comma structure.rearTrussHeight}} ㎜</td>
+                        </tr>
+                        {{/notEquals}}
+                        <tr>
+                            <th class="tit" scope="row">캐노피</th>
+                            <td class="value">{{canopyTotal}} ea</td><!-- 상세정보 생략 총수량만 표시 -->
+                            <th class="tit" scope="row">구찌</th>
+                            <td class="value">{{comma gucci}} DIA / {{gucciAmount}} ea</td>
+                        </tr>
+                        <tr>
+                            <th class="tit" scope="row">천장</th>
+                            <td class="value">{{ceilingTotal}} ea</td>
+                            <th class="tit" scope="row">내벽</th>
+                            <td class="value">{{insideWallTotal}} ea</td>
+                        </tr>
+                        <tr>
+                            <th class="tit" scope="row">도어</th>
+                            <td class="value">{{doorTotal}} ea</td>
+                            <th class="tit" scope="row">창호</th>
+                            <td class="value">{{windowTotal}} ea</td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                    </table>
+                    {{/structureDetail}}
+                    <table cellpadding="0" cellspacing="0" class="calResult t3">
+                        <tbody>
+                        <tr class="dddddddddd">
+                            <th class="name" scope="row">합계</th>
+                            <td class="price" id="realTotal"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <ul class="tableGuide">
+                        <li>
+                            자재 견적에는 시공 시 발생하는 로스 물량이 포함되어 있습니다.<br />
+                            <span class="sub">ex) 트러스면의 절단 외벽 물량 등</span>
+                        </li>
+                        <li>금액은 순수 자재비만 표시되어 있으며 노무비등의 타 경비를 포함한 전체 금액은 엑셀파일을 다운로드하여 확인 할 수 있습니다.</li>
+                        <li>상세 내용은 엑셀파일을 다운로드하여 확인 가능합니다.</li>
+                        <li class="imp">전체 금액은 실 견적과 차이가 있을 수 있습니다.</li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="nav">
+        <div class="_l">l
+            <ul>
+                <li><a href="#" class="on"><img src="/images/m2/nav/n01.png" alt="cal" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n02.png" alt="3d" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n03.png" alt="bbs" /></a></li>
+                <li><a href="#"><img src="/images/m2/nav/n04.png" alt="member" /></a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="button">
+        <div class="_l">
+            <ul class="_c1">
+                <li><a href="#" class="download"><img src="/images/m2/common/iconDownload.png" class="icon" alt=""> 엑셀 다운로드</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var total=0;
+    var wtotal=0;
+
+    $(".t1>tbody>tr>td.price").each(function() {
+        var price = $(this).attr("data-price");
+        total+=parseInt(price);
+    });
+
+    {{#notEquals 0 doorPriceCount}}
+    $(".t2>tbody>tr>td.price").each(function() {
+        var price = $(this).attr("data-price");
+        wtotal+=parseInt(price);
+    });
+    {{/notEquals}}
+
+    $("#totalPrice").text(numberWithCommas(total));
+    $("#wtotalPrice").text(numberWithCommas(wtotal));
+    $("#realTotal").text(numberWithCommas(total+wtotal));
+
+});
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+</script>
+</body>
+</html>
