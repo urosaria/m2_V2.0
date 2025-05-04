@@ -1,0 +1,38 @@
+<style type="text/css">
+    /*이미지 팝업*/
+    .org_image_wrap{position:relative; top:30px}
+    .layer_view{position:absolute;left:50%;bottom:55px;margin-left:-90px;border-radius:2px;background-color:rgba(0,0,0, .7);color:#fff;font-size:13px;z-index:9000}
+    .layer_view .ly_view_p{padding:9px 11px 9px 11px;line-height:16px;text-align:center;}
+    .ly_original{position:fixed;bottom:auto;top:15px;margin-left:-132px;width:275px;height:76px;}
+    .ly_original .ly_view_p{position:relative;padding-top:20px; line-height:17px;text-align:left; color:#fff; font-size:14px; text-align: center;}
+    .ly_cls{position:absolute; /* top:20px; right:15px; */width:28px;height:28px;font-size:0; color:transparent;}
+    .ly_cls a{position:fixed;right:5px;top:5px;width:34px;height:34px;background:url(/images/m2/common/arr_close.png) no-repeat right center;font-size:0;line-height:0;color:transparent;}
+    /*.imgArea_01 img {width:100%!important; padding:0; position:relative; display:block}*/
+    .box_line{min-height:20px;margin:25px 0;border:1px solid #d8d8d8}
+    .dim_block {  position: fixed;  top: 0;  left: 0;  right: 0;  bottom: 0;  width: 100%;  height: 100%;  background-color: rgba(0, 0, 0, 0.85);  z-index: 2000;  }
+    .wrap_popup {  position: absolute;  top: 0;  left: 0;  width: 100%;  height: 100%;  line-height: 1.8rem;  z-index: 2000;  overflow: auto;  overflow-y: auto;  overflow-x: hidden;  -webkit-overflow-scrolling: touch;  }
+    .wrap_popup .popup_inner {  display: inline-block;  position: relative;  top: 0;  width: 100%;  border: 1px solid #aaa;  background: #fff;  vertical-align: middle;  }
+    .wrap_popup .popup_contents .box_inner {  padding: 0 18px 0px 20px  }
+</style>
+<div class="dim_block">
+    <div class="wrap_popup popup_info">
+
+        <div class="popup_contents">
+            <div class="box_inner">
+                <div class="org_image_wrap">
+                    <a href="#"><img src="/images/m2/common/blank.gif" alt="빈이미지" class="org_image" style="width: 99%; height: 90%" /></a>
+                </div>
+                <div class="ly_cls"><a href="#">닫기</a></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    //$(".org_image").style("height",$(window).height());
+
+
+  });
+</script>

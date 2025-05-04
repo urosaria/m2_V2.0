@@ -1,0 +1,85 @@
+package jungjin.estimate.domain;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+
+@Entity
+@Table(name = "m2_est_window")
+public class Window {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "width")
+    private int width;
+
+    @Column(name = "height")
+    private int height;
+
+    @Column(name = "amount")
+    private int amount;
+
+    @Column(name = "window_type")
+    private String type;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "structure_detail_id")
+    private StructureDetail structureDetail;
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setStructureDetail(StructureDetail structureDetail) {
+        this.structureDetail = structureDetail;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public int getAmount() {
+        return this.amount;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public StructureDetail getStructureDetail() {
+        return this.structureDetail;
+    }
+}

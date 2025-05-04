@@ -1,0 +1,33 @@
+@charset "UTF-8";
+/**********************************************************************
+WebStyleGuide Common Portable Style Sheet
+**********************************************************************/
+
+html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+html,body{/*height:100%;*/}
+body,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td,button{margin:0;padding:0;letter-spacing:-0.05em;font-size:0;}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,input,textarea,p,blockquote,button,a,span,strong,a,label{box-sizing:border-box;}
+body{direction:ltr;font-family:'Noto Sans Korean',sans-serif;font-weight:300;line-height:0;}
+
+input{padding:0;margin:0;}
+/*input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill{background-color:transparent;color:inherit;}*/
+select{font-family:'Noto Sans Korean',돋움,dotum,Arial,dotum,Helvetica,sans-serif;border:none;background:url('/images/m2/common/formSelect.png') no-repeat right 50%;background-size:auto 80%;}
+input[type=text],input[type=password],input[type=number],input[type=submit],textarea,select,button{border-radius:0;outline:none;-webkit-appearance:none;-moz-appearance:none;appearance:none;}
+ul,ol{list-style:none;}
+form{display:inline;}
+button{background-color:transparent;cursor:pointer;}
+input,fieldset,img,button{border:none;}
+::-webkit-input-placeholder{color:#999}
+:-moz-placeholder{color:#999}
+::-moz-placeholder{color:#999}
+:-ms-input-placeholder{color:#999}
+address{font-style:normal;margin:0;}
+table{border-collapse:collapse;}
+
+a{text-decoration:none;}
+a:link{color:inherit;}
+a:visited{color:inherit;}
+a:active{color:inherit;}
+a:hover{color:inherit;}
+
+body{color:white;}
