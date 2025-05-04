@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { TestModeProvider } from './context/TestModeContext';
 import './App.css';
 
 // Components
@@ -9,6 +10,9 @@ import Main from './components/Main';
 import UserRegister from './components/user/UserRegister';
 import UserModify from './components/user/UserModify';
 import MyPage from './components/user/MyPage';
+import EstimateForm from './components/estimate/EstimateForm';
+import EstimateList from './components/estimate/EstimateList';
+import Estimate from './components/estimate/Estimate';
 
 const theme = createTheme({
   palette: {
@@ -63,16 +67,30 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/main" element={<Main />} />
-          <Route path="/user/register" element={<UserRegister />} />
-          <Route path="/user/modify" element={<UserModify />} />
-          <Route path="/user/mypage" element={<MyPage />} />
-        </Routes>
-      </Router>
+      <TestModeProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/login" element={<Login />} />
+
+            {/* Wrap all layout-based pages inside Main */}
+            <Route path="/" element={<Main />}>
+              <Route path="main" element={<div>Main Home Content</div>} />
+
+              {/* Nested estimate routes with context */}
+              <Route path="estimates" element={<Estimate />}>
+                <Route index element={<EstimateList />} />
+                <Route path="new" element={<EstimateForm />} />
+                <Route path="edit/:id" element={<EstimateForm />} />
+              </Route>
+
+              <Route path="user/register" element={<UserRegister />} />
+              <Route path="user/modify" element={<UserModify />} />
+              <Route path="user/mypage" element={<MyPage />} />
+            </Route>
+          </Routes>
+        </Router>
+      </TestModeProvider>
     </ThemeProvider>
   );
 }

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+
 import { Box, CssBaseline, useMediaQuery, useTheme } from '@mui/material';
 import Header from './common/Header';
 import Footer from './common/Footer';
 import Sidebar from './common/Sidebar';
 import Estimate from './estimate/Estimate';
 import { ThemeProvider } from '../theme/ThemeContext';
+import { Outlet } from 'react-router-dom';
 
 const Main: React.FC = () => {
   const theme = useTheme();
@@ -36,29 +37,23 @@ const Main: React.FC = () => {
           <Box
             component="main"
             sx={{
-                borderRadius: 1.5,
+                borderRadius: theme.shape.borderRadius * 0.5,
                 backgroundColor: 'background.default',
                 flexGrow: 1,
                 mt: '64px',
-                mr: {
-                    xs: 1,
-                    sm: 2.5,
-                },
-                ml: {
-                    xs: 1,
-                    sm: 0,
-                },
+                mr: { xs: 1, sm: 2.5 },
+                ml: { xs: 1, sm: 0 },
                 pb: '20px',
-                px: 3,
+                px: { xs: 0, sm: 3 },                
                 width: isMobile ? '100%' : `calc(100% - 240px)`,
                 display: 'flex',
-                flexDirection: 'column',
                 minHeight: '100vh',
+                flexDirection: 'column',
                 boxSizing: 'border-box',
             }}
           >
             <Box sx={{ flex: 1 }}>
-              <Estimate />
+              <Outlet />
             </Box>
             <Footer />
           </Box>
