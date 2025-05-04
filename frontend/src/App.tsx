@@ -13,6 +13,10 @@ import MyPage from './components/user/MyPage';
 import EstimateForm from './components/estimate/EstimateForm';
 import EstimateList from './components/estimate/EstimateList';
 import Estimate from './components/estimate/Estimate';
+import BoardList from './components/board/BoardList';
+import BoardRegister from './components/board/BoardRegister';
+import BoardModify from './components/board/BoardModify';
+import BoardShow from './components/board/BoardShow';
 
 const theme = createTheme({
   palette: {
@@ -82,6 +86,13 @@ function App() {
                 <Route index element={<EstimateList />} />
                 <Route path="new" element={<EstimateForm />} />
                 <Route path="edit/:id" element={<EstimateForm />} />
+              </Route>
+
+              <Route path="board" element={<BoardList />}>
+                <Route index element={<BoardList />} />
+                <Route path="new" element={<BoardRegister />} />
+                <Route path="edit/:id" element={<BoardModify />} />
+                <Route path="show/:boardId/:postId" element={<BoardShow />} />
               </Route>
 
               <Route path="user/register" element={<UserRegister />} />
