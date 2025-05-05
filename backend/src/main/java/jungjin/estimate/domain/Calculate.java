@@ -20,8 +20,7 @@ public class Calculate {
     @Column(name = "id")
     private long id;
 
-    @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "structure_id")
     private Structure structure;
 
@@ -51,4 +50,5 @@ public class Calculate {
 
     @Column(name = "c_sort", nullable = false)
     private int sort;
+
 }

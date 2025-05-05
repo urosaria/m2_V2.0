@@ -12,6 +12,7 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
 import jungjin.HandlebarsHelper;
 import jungjin.M2Application;
 import jungjin.config.UploadConfig;
@@ -93,9 +94,19 @@ public class EstimateService {
         return structures;
     }
 
+    @Transactional
     public Page<Structure> listEstimate(int page, int size, Long userNum) {
         PageRequest request = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createDate"));
-        return this.estimateRepository.findByUserNumAndStatusNot(userNum, "D", (Pageable)request);
+        Page<Structure> structures = this.estimateRepository.findByUserNumAndStatusNot(userNum, "D", (Pageable)request);
+        
+        // Initialize user data to prevent lazy loading issues
+        structures.getContent().forEach(structure -> {
+            if (structure.getUser() != null) {
+                structure.getUser().getName(); // Force initialization
+            }
+        });
+        
+        return structures;
     }
 
     public Structure saveEstimate(Structure insertEstimate) {

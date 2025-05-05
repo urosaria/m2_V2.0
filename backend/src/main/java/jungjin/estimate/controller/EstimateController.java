@@ -3,10 +3,13 @@ package jungjin.estimate.controller;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import jungjin.config.UploadConfig;
 import jungjin.estimate.dto.EstimateRequestDTO;
 import jungjin.estimate.dto.EstimateResponseDTO;
+import jungjin.estimate.dto.EstimateListDTO;
+import jungjin.user.service.UserService;
 import org.springframework.core.io.Resource;
 
 import jakarta.persistence.EntityManager;
@@ -39,52 +42,52 @@ public class EstimateController {
     private final EstimateDetailService estimateDetailService;
     private final EstimatePriceService estimatePriceService;
     private final UploadConfig uploadConfig;
+    private final UserService userService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     final String pateTitle = "자동판넬견적";
 
-    @RequestMapping(value = {"/list"}, method = {RequestMethod.GET})
+    @GetMapping("/list")
     public ResponseEntity<?> getEstimateList(@RequestParam(defaultValue = "1") int page,
-                                             @RequestParam(defaultValue = "7") int size) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            Long userNum = user.getNum();
-            Page<Structure> listEstimate = estimateService.listEstimate(page, size, userNum);
+                                             @RequestParam(defaultValue = "10") int size) {
+        Long userNum = 2L;
+        Page<Structure> listEstimate = estimateService.listEstimate(page, size, userNum);
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("page", page);
-            response.put("size", size);
-            response.put("totalPages", listEstimate.getTotalPages());
-            response.put("totalElements", listEstimate.getTotalElements());
-            response.put("estimates", listEstimate.getContent());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error fetching estimate list: " + e.getMessage());
-        }
+        List<EstimateListDTO> estimateDTOs = listEstimate.getContent().stream()
+                .map(EstimateListDTO::from)
+                .collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("page", page);
+        response.put("size", size);
+        response.put("totalPages", listEstimate.getTotalPages());
+        response.put("totalElements", listEstimate.getTotalElements());
+        response.put("estimates", estimateDTOs);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/list/contents")
-    public ResponseEntity<?> getEstimateContents(@RequestParam(defaultValue = "1") int page,
-                                                 @RequestParam(defaultValue = "7") int size) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            Long userNum = user.getNum();
-            Page<Structure> listEstimate = estimateService.listEstimate(page, size, userNum);
-            Map<String, Object> response = new HashMap<>();
-            response.put("page", page);
-            response.put("size", size);
-            response.put("totalPages", listEstimate.getTotalPages());
-            response.put("totalElements", listEstimate.getTotalElements());
-            response.put("estimates", listEstimate.getContent());
+    public ResponseEntity<?> getBoardContents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "7") int size) {
+        Long userNum = 2L; // For testing purposes
+        Page<Structure> listEstimate = estimateService.listEstimate(page, size, userNum);
+        
+        List<EstimateListDTO> estimateDTOs = listEstimate.getContent().stream()
+                .map(EstimateListDTO::from)
+                .collect(Collectors.toList());
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error fetching estimate contents: " + e.getMessage());
-        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("page", page);
+        response.put("size", size);
+        response.put("totalPages", listEstimate.getTotalPages());
+        response.put("totalElements", listEstimate.getTotalElements());
+        response.put("estimates", estimateDTOs);
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
@@ -98,7 +101,7 @@ public class EstimateController {
             StructureDetail structureDetail = request.getStructureDetail();
 
             if (mode.isEmpty()) {
-                structure.setUser(user);
+                //structure.setUser(user);
             }
 
             Structure result = estimateService.saveEstimate(structure);
@@ -402,7 +405,7 @@ public class EstimateController {
             // STEP 01: Save Structure and associate user
             UserCustom principal = (UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Structure structure = request.getStructure();
-            structure.setUser(principal.getUser());
+            //structure.setUser(principal.getUser());
             Structure savedStructure = estimateService.saveEstimate(structure);
 
             if (savedStructure == null) {

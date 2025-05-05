@@ -24,37 +24,37 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 
 	public Page<User> listUser(int page) {
 		PageRequest request = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "createDate"));
-		return this.userRepository.findAll((Pageable)request);
+		return userRepository.findAll((Pageable)request);
 	}
 
 	public Page<User> listSearchTextUser(String searchCondition, String searchText, int page, int size) {
 		PageRequest request = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "createDate"));
 		Page<User> userList = null;
 		if (searchCondition.equals("name")) {
-			userList = this.userRepository.findByNameContaining(searchText, (Pageable)request);
+			userList = userRepository.findByNameContaining(searchText, (Pageable)request);
 		} else if (searchCondition.equals("id")) {
-			userList = this.userRepository.findByIdContaining(searchText, (Pageable)request);
+			userList = userRepository.findByIdContaining(searchText, (Pageable)request);
 		} else if (searchCondition.equals("email")) {
-			userList = this.userRepository.findByEmailContaining(searchText, (Pageable)request);
+			userList = userRepository.findByEmailContaining(searchText, (Pageable)request);
 		} else if (searchCondition.equals("phone")) {
-			userList = this.userRepository.findByPhoneContaining(searchText, (Pageable)request);
+			userList = userRepository.findByPhoneContaining(searchText, (Pageable)request);
 		}
 		return userList;
 	}
 
 	public User saveUser(User user, Role roles) {
-		User userCheck = this.userRepository.findById(user.getId());
+		User userCheck = userRepository.findById(user.getId());
 		if (userCheck == null) {
-			user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 			user.setRoles(new HashSet(Arrays.asList((Object[])new Role[] { roles })));
 			user.insert(user);
-			user = (User)this.userRepository.save(user);
+			user = (User)userRepository.save(user);
 		} else {
 			user = userCheck;
 		}
@@ -62,34 +62,34 @@ public class UserService {
 	}
 
 	public User showUser(Long num) {
-		return this.userRepository.findById(num).orElse(null);
+		return userRepository.findById(num).orElse(null);
 	}
 
 
 	@Transactional
 	public User updateUser(Long num, User updateUser) {
-		updateUser.setPassword(this.bCryptPasswordEncoder.encode(updateUser.getPassword()));
+		updateUser.setPassword(bCryptPasswordEncoder.encode(updateUser.getPassword()));
 
-		User user = this.userRepository.findById(num).orElse(null);
+		User user = userRepository.findById(num).orElse(null);
 		if (user == null) {
 			throw new EntityNotFoundException("User with id " + num + " not found.");
 		}
 
 		user.update(updateUser);
-		return this.userRepository.save(user);
+		return userRepository.save(user);
 	}
 
 	@Transactional
 	public User deleteUser(Long num) {
-		User deleteUser = this.userRepository.findById(num).orElse(null);
+		User deleteUser = userRepository.findById(num).orElse(null);
 		if (deleteUser == null) {
 			throw new EntityNotFoundException("User with id " + num + " not found.");
 		}
 		deleteUser.delete(deleteUser);
-		return this.userRepository.save(deleteUser);
+		return userRepository.save(deleteUser);
 	}
 
 	public User findById(String username) {
-		return this.userRepository.findById(username);
+		return userRepository.findById(username);
 	}
 }

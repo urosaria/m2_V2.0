@@ -19,32 +19,16 @@ import java.util.List;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class Structure {
-
-    public Structure setUser(User user) {
-        this.user = user;
-        return this;
-    }
-
-    public Structure setId(long id) {
-        this.id = id;
-        return this;
-    }
-
-    public Structure setCalculateList(List<Calculate> calculateList) {
-        this.calculateList = calculateList;
-        return this;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private long id;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "city_name")
     private String cityName;
-
-    @Column(name = "status", length = 1, nullable = false)
-    private String status = "S";
 
     @Column(name = "place_name")
     private String placeName;
@@ -88,9 +72,8 @@ public class Structure {
     @Column(name = "rooftop_length", nullable = false)
     private int rooftopLength = 0;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_est_structure_writer"))
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_num", nullable = false)
     private User user;
 
     @NotNull
@@ -100,8 +83,14 @@ public class Structure {
     @Column(name = "status_date")
     private LocalDateTime statusDate;
 
+    @Column(name = "status", length = 1, nullable = false)
+    private String status = "S";
+
+/*
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "structure")
     @OrderBy("sort ASC")
+*/
+    @OneToMany(mappedBy = "structure", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calculate> calculateList = new ArrayList<>();
 
     @Transient
