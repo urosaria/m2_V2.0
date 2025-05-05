@@ -14,12 +14,14 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jungjin.HandlebarsHelper;
 import jungjin.M2Application;
+import jungjin.config.UploadConfig;
 import jungjin.estimate.domain.Calculate;
 import jungjin.estimate.domain.Structure;
 import jungjin.estimate.domain.StructureDetail;
 import jungjin.estimate.repository.EstimateCalculateRepository;
 import jungjin.estimate.repository.EstimateDetailRepository;
 import jungjin.estimate.repository.EstimateRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -43,15 +45,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EstimateService {
-    @Autowired
-    EstimateRepository estimateRepository;
-
-    @Autowired
-    EstimateDetailRepository estimateDetailRepository;
-
-    @Autowired
-    EstimateCalculateRepository estimateCalculateRepository;
+    private final EstimateRepository estimateRepository;
+    private final  EstimateDetailRepository estimateDetailRepository;
+    private final EstimateCalculateRepository estimateCalculateRepository;
+    private final UploadConfig uploadConfig;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -151,7 +150,7 @@ public class EstimateService {
     public void excel(String path, Long structure_id) throws IOException {
         StructureDetail structureDetail = this.estimateDetailRepository.findByStructureId(structure_id);
         List<Calculate> listCal = this.estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
-        FileInputStream fis = new FileInputStream(M2Application.UPLOAD_DIR + "/estimate/sample/sample.xlsx");
+        FileInputStream fis = new FileInputStream(uploadConfig + "/estimate/sample/sample.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         XSSFFormulaEvaluator xSSFFormulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         int columnindex = 0;
@@ -482,7 +481,7 @@ public class EstimateService {
             Long id = Long.valueOf(structureDetail.getStructure().getId());
             if (id != null) {
                 String fileName = "estimate" + String.valueOf(id) + ".xlsx";
-                FileOutputStream fileOutputStream = new FileOutputStream(new File(M2Application.UPLOAD_DIR + "/estimate/" + fileName));
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(uploadConfig+ "/estimate/" + fileName));
                 workbook.write(fileOutputStream);
                 fileOutputStream.close();
             }
@@ -494,7 +493,7 @@ public class EstimateService {
     public void excel_backup(String path, Long structure_id) throws IOException {
         StructureDetail structureDetail = this.estimateDetailRepository.findByStructureId(structure_id);
         List<Calculate> listCal = this.estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
-        FileInputStream fis = new FileInputStream(M2Application.UPLOAD_DIR + "/estimate/sample/sample.xlsx");
+        FileInputStream fis = new FileInputStream(uploadConfig + "/estimate/sample/sample.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         XSSFFormulaEvaluator xSSFFormulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
         int columnindex = 0;
@@ -806,7 +805,7 @@ public class EstimateService {
             Long id = Long.valueOf(structureDetail.getStructure().getId());
             if (id != null) {
                 String fileName = "estimate" + String.valueOf(id) + ".xlsx";
-                FileOutputStream fileOutputStream = new FileOutputStream(new File(M2Application.UPLOAD_DIR + "/estimate/" + fileName));
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(uploadConfig + "/estimate/" + fileName));
                 workbook.write(fileOutputStream);
                 fileOutputStream.close();
             }
@@ -818,7 +817,7 @@ public class EstimateService {
     public void excel_old(String path, Long structure_id) throws IOException {
         StructureDetail structureDetail = this.estimateDetailRepository.findByStructureId(structure_id);
         List<Calculate> listCal = this.estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
-        FileInputStream fis = new FileInputStream(M2Application.UPLOAD_DIR + "/estimate/sample/sample.xlsx");
+        FileInputStream fis = new FileInputStream(uploadConfig + "/estimate/sample/sample.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         int columnindex = 0;
         XSSFSheet sheet = workbook.getSheetAt(0);
@@ -1114,7 +1113,7 @@ public class EstimateService {
             Long id = Long.valueOf(structureDetail.getStructure().getId());
             if (id != null) {
                 String fileName = "estimate" + String.valueOf(id) + ".xlsx";
-                FileOutputStream fileOutputStream = new FileOutputStream(new File(M2Application.UPLOAD_DIR + "/estimate/" + fileName));
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(uploadConfig + "/estimate/" + fileName));
                 workbook.write(fileOutputStream);
                 fileOutputStream.close();
             }
@@ -1124,10 +1123,10 @@ public class EstimateService {
     }
 
     public void excelCopy(Long oldId, Long newId) {
-        File orgFile = new File(M2Application.UPLOAD_DIR + "/estimate/estimate" + oldId + ".xlsx");
+        File orgFile = new File(uploadConfig + "/estimate/estimate" + oldId + ".xlsx");
         try {
             FileInputStream inputStream = new FileInputStream(orgFile);
-            FileOutputStream outputStream = new FileOutputStream(M2Application.UPLOAD_DIR + "/estimate/estimate" + newId + ".xlsx");
+            FileOutputStream outputStream = new FileOutputStream(uploadConfig + "/estimate/estimate" + newId + ".xlsx");
             FileChannel fcin = inputStream.getChannel();
             FileChannel fcout = outputStream.getChannel();
             long size = fcin.size();

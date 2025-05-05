@@ -3,6 +3,7 @@ package jungjin.picture.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jungjin.M2Application;
+import jungjin.config.UploadConfig;
 import jungjin.picture.domain.Picture;
 import jungjin.picture.domain.PictureAdminFile;
 import jungjin.picture.domain.PictureFile;
@@ -33,6 +34,7 @@ import java.util.zip.ZipOutputStream;
 public class PictureController {
 
     private final PictureService pictureService;
+    private final UploadConfig uploadConfig;
 
     @GetMapping
     public ResponseEntity<Page<Picture>> list(@RequestParam(defaultValue = "1") int page) {
@@ -63,7 +65,7 @@ public class PictureController {
                         String timestamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
                         String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                         String fileName = timestamp + "_" + result.getId() + "_" + (i + 1) + ext;
-                        File targetFile = new File(M2Application.UPLOAD_DIR + "/picture/" + fileName);
+                        File targetFile = new File(uploadConfig + "/picture/" + fileName);
                         targetFile.getParentFile().mkdirs();
                         try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(targetFile))) {
                             bos.write(file.getBytes());
@@ -107,7 +109,7 @@ public class PictureController {
                              @RequestParam(value = "type", defaultValue = "user") String type,
                              HttpServletRequest request,
                              HttpServletResponse response) throws IOException {
-        String fileUrl = M2Application.UPLOAD_DIR + "/picture/";
+        String fileUrl = uploadConfig + "/picture/";
         String fileName;
         String oriFileName;
 
@@ -141,7 +143,7 @@ public class PictureController {
 
     @GetMapping("/download-zip/{id}")
     public void downloadZip(@PathVariable Long id, @RequestParam(value = "sName", defaultValue = "all") String sName, HttpServletResponse response) throws IOException {
-        String dirPath = M2Application.UPLOAD_DIR + "/picture/admin/" + id;
+        String dirPath = uploadConfig + "/picture/admin/" + id;
         File zipFile = new File(dirPath + "/all.zip");
         if (zipFile.exists()) zipFile.delete();
 

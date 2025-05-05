@@ -93,7 +93,7 @@ public class BoardController {
             @PathVariable("boardMasterId") int boardMasterId,
             @RequestBody Board board) {
         try {
-            board.setBoardMaster(boardMasterService.showBoardMaster(boardMasterId));
+            //board.setBoardMaster(boardMasterService.showBoardMaster(boardMasterId));
             boardService.saveBoard(board);
             Board savedBoard = boardService.showBoard(board.getId());
             return ResponseEntity.ok(savedBoard);

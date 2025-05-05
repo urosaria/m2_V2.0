@@ -17,40 +17,40 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BoardService {
 
-	BoardRepository boardRepository;
-	BoardFileRepository boardFileRepository;
+	private final BoardRepository boardRepository;
+	private final BoardFileRepository boardFileRepository;
 
-	public Page<Board> listBoard(int page, int size, int board_master_id) {
-		PageRequest request = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createDate"));
-		return this.boardRepository.findByBoardMasterIdAndStatus((Pageable)request, board_master_id, "S");
+	public Page<Board> listBoard(int page, int size, long boardMasterId) {
+		Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createDate"));
+		return boardRepository.findByBoardMasterIdAndStatus(pageable, boardMasterId, "S");
 	}
 
 	public List<Board> listUserBoard(int board_master_id, Long user_num) {
-		return this.boardRepository.findByBoardMasterIdAndUserNum(board_master_id, user_num);
+		return boardRepository.findByBoardMasterIdAndUserNum(board_master_id, user_num);
 	}
 
 	public void saveBoard(Board insertBoard) {
 		insertBoard.insert(insertBoard);
-		this.boardRepository.save(insertBoard);
+		boardRepository.save(insertBoard);
 	}
 
 	public Board showBoard(Long id) {
 		updateBoardReadcount(id);
-		return this.boardRepository.findById(id).orElse(null);
+		return boardRepository.findById(id).orElse(null);
 	}
 
 	@Transactional
 	public void updateBoard(Long id, Board updateBoard) {
-		Board board = this.boardRepository.findById(id).orElse(null);
+		Board board = boardRepository.findById(id).orElse(null);
 		board.update(updateBoard);
-		this.boardRepository.save(board);
+		boardRepository.save(board);
 	}
 
 	@Transactional
 	public Board deleteBoard(Long id) {
-		Board board = this.boardRepository.findById(id).orElse(null);
+		Board board = boardRepository.findById(id).orElse(null);
 		board.setStatus("D");
-		board = (Board)this.boardRepository.save(board);
+		board = (Board)boardRepository.save(board);
 		return board;
 	}
 

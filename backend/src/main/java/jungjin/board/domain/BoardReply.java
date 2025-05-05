@@ -32,7 +32,6 @@ public class BoardReply implements Serializable {
     @Column(name = "title", length = 500)
     private String title;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String contents;
 

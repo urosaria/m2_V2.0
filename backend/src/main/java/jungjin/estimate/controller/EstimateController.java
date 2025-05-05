@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
 
+import jungjin.config.UploadConfig;
 import jungjin.estimate.dto.EstimateRequestDTO;
 import jungjin.estimate.dto.EstimateResponseDTO;
 import org.springframework.core.io.Resource;
@@ -37,6 +38,7 @@ public class EstimateController {
     private final EstimateService estimateService;
     private final EstimateDetailService estimateDetailService;
     private final EstimatePriceService estimatePriceService;
+    private final UploadConfig uploadConfig;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -353,7 +355,7 @@ public class EstimateController {
         try {
             // File metadata
             String fileName = "estimate" + bno + ".xlsx";
-            String filePath = M2Application.UPLOAD_DIR + "/estimate/" + fileName;
+            String filePath = uploadConfig + "/estimate/" + fileName;
             File file = new File(filePath);
 
             if (!file.exists()) {

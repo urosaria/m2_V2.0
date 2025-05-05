@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/board/master")
+@RequestMapping("/api/board/master")
 @RequiredArgsConstructor
-public class BoardMasterAdminController {
+public class BoardMasterController {
     private final BoardMasterService boardMasterService;
 
     @GetMapping("/list")
@@ -23,15 +23,6 @@ public class BoardMasterAdminController {
             return ResponseEntity.ok(masterList);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error fetching board master list: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/register")
-    public ResponseEntity<?> getBoardMasterForm() {
-        try {
-            return ResponseEntity.ok(new BoardMaster());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error preparing board master form: " + e.getMessage());
         }
     }
 
@@ -45,7 +36,7 @@ public class BoardMasterAdminController {
         }
     }
 
-    @GetMapping("/modify/{id}")
+    @GetMapping("/view/{id}")
     public ResponseEntity<?> getBoardMaster(@PathVariable("id") int id) {
         try {
             BoardMaster boardMaster = boardMasterService.showBoardMaster(id);
@@ -68,8 +59,8 @@ public class BoardMasterAdminController {
         }
     }
 
-    @DeleteMapping("/remove/{id}")
-    public ResponseEntity<?> removeBoardMaster(@PathVariable("id") int id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBoardMaster(@PathVariable("id") int id) {
         try {
             BoardMaster boardMaster = boardMasterService.deleteBoardMaster(id);
             if (boardMaster == null) {

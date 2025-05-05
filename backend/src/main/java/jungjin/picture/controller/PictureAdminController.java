@@ -2,6 +2,7 @@ package jungjin.picture.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jungjin.M2Application;
+import jungjin.config.UploadConfig;
 import jungjin.picture.domain.Picture;
 import jungjin.picture.domain.PictureAdminFile;
 import jungjin.picture.service.PictureService;
@@ -24,6 +25,7 @@ import java.util.Date;
 public class PictureAdminController {
 
     private final PictureService pictureService;
+    private final UploadConfig uploadConfig;
 
     @GetMapping("/list")
     public ResponseEntity<Page<Picture>> list(@RequestParam(defaultValue = "1") int page, User user) {
@@ -84,7 +86,7 @@ public class PictureAdminController {
                     String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                     String fileName = baseName + ext;
 
-                    File dir = new File(M2Application.UPLOAD_DIR + "/picture/admin/" + id);
+                    File dir = new File(uploadConfig + "/picture/admin/" + id);
                     if (!dir.exists()) dir.mkdirs();
 
                     try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(dir, fileName)))) {

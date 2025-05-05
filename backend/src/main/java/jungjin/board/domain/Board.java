@@ -3,10 +3,11 @@ package jungjin.board.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jungjin.user.domain.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -18,23 +19,18 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Accessors(chain = true)
-public class Board implements Serializable {
+@AllArgsConstructor
+@Builder
+public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @NotNull
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_board_writer"))
-    private User user;
-
-    @NotNull
     @Column(name = "title", length = 500)
     private String title;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String contents;
 
@@ -51,7 +47,12 @@ public class Board implements Serializable {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_board_master_id"))
+    @JoinColumn(name = "user_num")
+    private User user;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "board_master_id")
     private BoardMaster boardMaster;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")

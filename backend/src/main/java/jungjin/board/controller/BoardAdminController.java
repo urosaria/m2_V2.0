@@ -4,11 +4,16 @@ import jungjin.board.domain.Board;
 import jungjin.board.domain.BoardFile;
 import jungjin.board.domain.BoardMaster;
 import jungjin.board.domain.BoardReply;
+import jungjin.board.dto.BoardDto;
+import jungjin.board.mapper.BoardMapper;
 import jungjin.board.service.BoardMasterService;
 import jungjin.board.service.BoardReplyService;
 import jungjin.board.service.BoardService;
+import jungjin.config.UploadConfig;
 import jungjin.user.service.UserCustom;
 
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+//TODO: might delete
 @RestController
 @RequestMapping("/api/admin/board")
 @RequiredArgsConstructor
@@ -31,34 +37,26 @@ public class BoardAdminController {
     private final BoardService boardService;
     private final BoardMasterService boardMasterService;
     private final BoardReplyService boardReplyService;
+    private final BoardMapper boardMapper;
+    private final UploadConfig uploadConfig;
 
-    @GetMapping("/list/{boardMasterId}")
-    public ResponseEntity<?> boardList(
-            @RequestParam(defaultValue = "1") int page,
-            @PathVariable("boardMasterId") int boardMasterId) {
+    @GetMapping("/list")
+    public ResponseEntity<?> boardList() {
         try {
-            BoardMaster boardMaster = boardMasterService.showBoardMaster(boardMasterId);
-            org.springframework.data.domain.Page<Board> boardList = boardService.listBoard(page, 10, boardMasterId);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("boardList", boardList);
-            response.put("boardMaster", boardMaster);
-            response.put("page", page);
-            
-            return ResponseEntity.ok(response);
+            List<BoardMaster> boardMasters = boardMasterService.listBoardMaster();
+            return ResponseEntity.ok(boardMasters);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error fetching board list: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error fetching board list", "message", e.getMessage()));
         }
     }
 
-    @GetMapping("/register/{boardMasterId}")
-    public ResponseEntity<?> getBoardRegisterForm(
-            @PathVariable("boardMasterId") int boardMasterId) {
+    @GetMapping("/detail/{boardMasterId}")
+    public ResponseEntity<?> getBoardMaster(
+            @PathVariable("boardMasterId") long boardMasterId) {
         try {
             BoardMaster boardMaster = boardMasterService.showBoardMaster(boardMasterId);
-            Map<String, Object> response = new HashMap<>();
-            response.put("boardMaster", boardMaster);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(boardMaster);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error fetching board master: " + e.getMessage());
         }
@@ -82,8 +80,8 @@ public class BoardAdminController {
                     if (!file.isEmpty()) {
                         String fileName = file.getOriginalFilename();
                         String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
-                        String filePath = "/Users/jungjin/Downloads/upload/" + System.currentTimeMillis() + "." + fileExt;
-                        
+                        String filePath = uploadConfig.getUploadDir() + "/" + System.currentTimeMillis() + "." + fileExt;
+
                         Path path = Paths.get(filePath);
                         Files.write(path, file.getBytes());
                         
@@ -161,7 +159,7 @@ public class BoardAdminController {
                     if (!file.isEmpty()) {
                         String fileName = file.getOriginalFilename();
                         String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
-                        String filePath = "/Users/jungjin/Downloads/upload/" + System.currentTimeMillis() + "." + fileExt;
+                        String filePath = uploadConfig.getUploadDir() + System.currentTimeMillis() + "." + fileExt;
                         
                         Path path = Paths.get(filePath);
                         Files.write(path, file.getBytes());

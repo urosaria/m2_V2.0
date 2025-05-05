@@ -6,31 +6,33 @@ import jakarta.persistence.EntityNotFoundException;
 import jungjin.board.domain.BoardMaster;
 import jungjin.board.repository.BoardMasterRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardMasterService {
-    BoardMasterRepository boardMasterRepository;
+    private final BoardMasterRepository boardMasterRepository;
 
     public List<BoardMaster> listBoardMaster() {
-        return this.boardMasterRepository.findAll();
+        return boardMasterRepository.findAll();
     }
 
     public void saveBoardMaster(BoardMaster boardMaster) {
         boardMaster.setStatus("S");
-        this.boardMasterRepository.save(boardMaster);
+        boardMasterRepository.save(boardMaster);
     }
 
-    public BoardMaster showBoardMaster(int id) {
+    public BoardMaster showBoardMaster(long id) {
         return boardMasterRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("BoardMaster with id " + id + " not found."));
     }
 
     @Transactional
-    public void updateBoardMaster(int id, BoardMaster updateBoardMaster) {
+    public void updateBoardMaster(long id, BoardMaster updateBoardMaster) {
         BoardMaster boardMaster = boardMasterRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("BoardMaster with id " + id + " not found."));
 
@@ -39,7 +41,7 @@ public class BoardMasterService {
     }
 
     @Transactional
-    public BoardMaster deleteBoardMaster(int id) {
+    public BoardMaster deleteBoardMaster(long id) {
         BoardMaster boardMaster = boardMasterRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("BoardMaster with id " + id + " not found."));
 

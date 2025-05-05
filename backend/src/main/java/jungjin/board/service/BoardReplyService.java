@@ -12,38 +12,38 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class BoardReplyService {
-    BoardReplyRepository boardReplyRepository;
+    private final BoardReplyRepository boardReplyRepository;
 
     public List<BoardReply> listBoardReply(Long board_id) {
-        return this.boardReplyRepository.findByBoardId(board_id);
+        return boardReplyRepository.findByBoardId(board_id);
     }
 
     public void saveBoardReply(BoardReply insertBoard) {
         insertBoard.insert(insertBoard);
-        this.boardReplyRepository.save(insertBoard);
+        boardReplyRepository.save(insertBoard);
     }
 
     public BoardReply showBoardReply(Long id) {
-        return this.boardReplyRepository.findById(id).orElse(null);
+        return boardReplyRepository.findById(id).orElse(null);
     }
 
     @Transactional
     public void updateBoardReply(Long id, BoardReply updateBoard) {
-        BoardReply board = this.boardReplyRepository.findById(id).orElse(null);
+        BoardReply board = boardReplyRepository.findById(id).orElse(null);
         if (board != null) {
             board.update(updateBoard);
-            this.boardReplyRepository.save(board);
+            boardReplyRepository.save(board);
         }
     }
 
     @Transactional
     public BoardReply deleteBoardReply(Long id) {
-        BoardReply boardReply = this.boardReplyRepository.findById(id).orElse(null);
+        BoardReply boardReply = boardReplyRepository.findById(id).orElse(null);
         if (boardReply == null) {
             throw new EntityNotFoundException("BoardReply with id " + id + " not found.");
         }
 
         boardReply.setStatus("D");
-        return this.boardReplyRepository.save(boardReply);
+        return boardReplyRepository.save(boardReply);
     }
 }
