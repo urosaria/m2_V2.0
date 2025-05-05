@@ -5,7 +5,7 @@ import jungjin.board.domain.Board;
 import jungjin.board.domain.BoardFile;
 import jungjin.board.repository.BoardFileRepository;
 import jungjin.board.repository.BoardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,11 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class BoardService {
-	@Autowired
-	BoardRepository boardRepository;
 
-	@Autowired
+	BoardRepository boardRepository;
 	BoardFileRepository boardFileRepository;
 
 	public Page<Board> listBoard(int page, int size, int board_master_id) {

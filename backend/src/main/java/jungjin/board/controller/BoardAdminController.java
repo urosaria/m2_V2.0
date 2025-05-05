@@ -1,13 +1,5 @@
 package jungjin.board.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import jungjin.M2Application;
 import jungjin.board.domain.Board;
 import jungjin.board.domain.BoardFile;
 import jungjin.board.domain.BoardMaster;
@@ -16,152 +8,243 @@ import jungjin.board.service.BoardMasterService;
 import jungjin.board.service.BoardReplyService;
 import jungjin.board.service.BoardService;
 import jungjin.user.service.UserCustom;
-import jungjin.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Controller
-@RequestMapping({"/admin/board"})
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+@RestController
+@RequestMapping("/api/admin/board")
+@RequiredArgsConstructor
 public class BoardAdminController {
-    @Autowired
-    private BoardService boardService;
+    private final BoardService boardService;
+    private final BoardMasterService boardMasterService;
+    private final BoardReplyService boardReplyService;
 
-    @Autowired
-    private BoardReplyService boardReplyService;
-
-    @Autowired
-    private BoardMasterService boardMasterService;
-
-    @Autowired
-    private UserService userService;
-
-    @GetMapping({"/list/{board_master_id}"})
-    public String boardList(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @PathVariable int board_master_id) {
-        BoardMaster boardMaster = this.boardMasterService.showBoardMaster(board_master_id);
-        Page<Board> boardList = this.boardService.listBoard(page, 10, board_master_id);
-        model.addAttribute("boardList", boardList);
-        model.addAttribute("boardMaster", boardMaster);
-        model.addAttribute("page", Integer.valueOf(page));
-        return "/admin/board/list";
+    @GetMapping("/list/{boardMasterId}")
+    public ResponseEntity<?> boardList(
+            @RequestParam(defaultValue = "1") int page,
+            @PathVariable("boardMasterId") int boardMasterId) {
+        try {
+            BoardMaster boardMaster = boardMasterService.showBoardMaster(boardMasterId);
+            org.springframework.data.domain.Page<Board> boardList = boardService.listBoard(page, 10, boardMasterId);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("boardList", boardList);
+            response.put("boardMaster", boardMaster);
+            response.put("page", page);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching board list: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/register/{board_master_id}"}, method = {RequestMethod.GET})
-    public String boardRegister(Model model, @PathVariable int board_master_id) {
-        BoardMaster boardMaster = this.boardMasterService.showBoardMaster(board_master_id);
-        model.addAttribute("boardForm", new Board());
-        model.addAttribute("boardMaster", boardMaster);
-        return "/admin/board/register";
+    @GetMapping("/register/{boardMasterId}")
+    public ResponseEntity<?> getBoardRegisterForm(
+            @PathVariable("boardMasterId") int boardMasterId) {
+        try {
+            BoardMaster boardMaster = boardMasterService.showBoardMaster(boardMasterId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("boardMaster", boardMaster);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching board master: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/register/{board_master_id}"}, method = {RequestMethod.POST})
-    public String boardInsert(@ModelAttribute("boardForm") Board board, @PathVariable int board_master_id, BindingResult bindingResult, @RequestParam("file") MultipartFile[] files, Model model) {
-        UserCustom principal = (UserCustom)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        board.setUser(principal.getUser());
-        this.boardService.saveBoard(board);
-        if (files != null && files.length > 0)
-            for (int i = 0; i < files.length; i++) {
-                try {
-                    if (true != files[i].isEmpty()) {
-                        byte[] bytes = files[i].getBytes();
+    @PostMapping("/register/{boardMasterId}")
+    public ResponseEntity<?> boardInsert(
+            @RequestPart("board") Board board,
+            @PathVariable("boardMasterId") int boardMasterId,
+            @RequestPart(value = "files", required = false) MultipartFile[] files) {
+        try {
+            UserCustom principal = (UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            board.setUser(principal.getUser());
+            board.setBoardMaster(boardMasterService.showBoardMaster(boardMasterId));
+            
+            boardService.saveBoard(board);
+            Board savedBoard = boardService.showBoard(board.getId());
+            
+            if (files != null && files.length > 0) {
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        String fileName = file.getOriginalFilename();
+                        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
+                        String filePath = "/Users/jungjin/Downloads/upload/" + System.currentTimeMillis() + "." + fileExt;
+                        
+                        Path path = Paths.get(filePath);
+                        Files.write(path, file.getBytes());
+                        
                         BoardFile boardFile = new BoardFile();
-                        Date date = new Date();
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-                        String fileName = String.valueOf(sdf.format(date)) + "_" + String.valueOf(board.getId()) + "_" + String.valueOf(i + 1);
-                        String ext = files[i].getOriginalFilename();
-                        ext = ext.substring(ext.indexOf("."));
-                        BufferedOutputStream buffStream = new BufferedOutputStream(new FileOutputStream(new File(M2Application.UPLOAD_DIR + "/board/" + fileName + ext)));
-                        boardFile.setName(fileName + ext);
-                        boardFile.setExt(ext);
-                        boardFile.setOriName(files[i].getOriginalFilename());
-                        boardFile.setBoard(board);
-                        boardFile.setCreateDate(LocalDateTime.now());
-                        this.boardService.saveBoardFile(boardFile);
-                        buffStream.write(bytes);
-                        buffStream.close();
+                        boardFile.setBoard(savedBoard);
+                        boardFile.setOriName(fileName);
+                        boardFile.setName(fileName);
+                        boardFile.setExt(fileExt);
+                        boardFile.setCreateDate(java.time.LocalDateTime.now());
+                        boardService.saveBoardFile(boardFile);
                     }
-                } catch (Exception exception) {}
+                }
             }
-        return "redirect:/admin/board/list/{board_master_id}";
+            
+            return ResponseEntity.ok(savedBoard);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("File upload failed: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error creating board: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/modify/{board_master_id}/{id}"}, method = {RequestMethod.GET})
-    public String boardModify(Model model, @PathVariable int board_master_id, @PathVariable Long id) {
-        BoardMaster boardMaster = this.boardMasterService.showBoardMaster(board_master_id);
-        Board board = this.boardService.showBoard(id);
-        model.addAttribute("board", board);
-        model.addAttribute("boardMaster", boardMaster);
-        return "/admin/board/modify";
+    @GetMapping("/show/{boardMasterId}/{boardId}")
+    public ResponseEntity<?> getBoard(
+            @PathVariable("boardMasterId") int boardMasterId,
+            @PathVariable("boardId") Long boardId) {
+        try {
+            Board board = boardService.showBoard(boardId);
+            BoardMaster boardMaster = boardMasterService.showBoardMaster(boardMasterId);
+            List<BoardReply> boardReplyList = boardReplyService.listBoardReply(boardId);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("board", board);
+            response.put("boardMaster", boardMaster);
+            response.put("replyList", boardReplyList);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching board: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/modify/{board_master_id}/{id}"}, method = {RequestMethod.POST})
-    public String boardupdate(@PathVariable Long id, @PathVariable int board_master_id, Board board, @RequestParam(value = "fileDeleteArray", required = false) Long[] fileDeleteArray, @RequestParam("file") MultipartFile[] files) {
-        this.boardService.updateBoard(id, board);
-        if (files != null && files.length > 0)
-            for (int i = 0; i < files.length; i++) {
-                try {
-                    if (true != files[i].isEmpty()) {
-                        byte[] bytes = files[i].getBytes();
+    @DeleteMapping("/delete/{boardMasterId}/{boardId}")
+    public ResponseEntity<?> deleteBoard(
+            @PathVariable("boardMasterId") int boardMasterId,
+            @PathVariable("boardId") Long boardId) {
+        try {
+            boardService.deleteBoard(boardId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting board: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update/{boardMasterId}/{boardId}")
+    public ResponseEntity<?> updateBoardWithFiles(
+            @PathVariable("boardMasterId") int boardMasterId,
+            @PathVariable("boardId") Long boardId,
+            @RequestPart("board") Board board,
+            @RequestPart(value = "files", required = false) MultipartFile[] files,
+            @RequestParam(value = "fileDeleteIds", required = false) List<Long> fileDeleteIds) {
+        try {
+            Board originBoard = boardService.showBoard(boardId);
+            originBoard.setTitle(board.getTitle());
+            originBoard.setContents(board.getContents());
+            
+            boardService.saveBoard(originBoard);
+            
+            if (fileDeleteIds != null && !fileDeleteIds.isEmpty()) {
+                boardService.deleteBoardFile(fileDeleteIds.toArray(new Long[0]));
+            }
+            
+            if (files != null && files.length > 0) {
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        String fileName = file.getOriginalFilename();
+                        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
+                        String filePath = "/Users/jungjin/Downloads/upload/" + System.currentTimeMillis() + "." + fileExt;
+                        
+                        Path path = Paths.get(filePath);
+                        Files.write(path, file.getBytes());
+                        
                         BoardFile boardFile = new BoardFile();
-                        Date date = new Date();
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-                        String fileName = String.valueOf(sdf.format(date)) + "_" + String.valueOf(board.getId()) + "_" + String.valueOf(i + 1);
-                        String ext = files[i].getOriginalFilename();
-                        ext = ext.substring(ext.indexOf("."));
-                        BufferedOutputStream buffStream = new BufferedOutputStream(new FileOutputStream(new File(M2Application.UPLOAD_DIR + "/board/" + fileName + ext)));
-                        boardFile.setName(fileName + ext);
-                        boardFile.setExt(ext);
-                        boardFile.setOriName(files[i].getOriginalFilename());
-                        boardFile.setBoard(board);
-                        boardFile.setCreateDate(LocalDateTime.now());
-                        this.boardService.saveBoardFile(boardFile);
-                        buffStream.write(bytes);
-                        buffStream.close();
+                        boardFile.setBoard(originBoard);
+                        boardFile.setOriName(fileName);
+                        boardFile.setName(fileName);
+                        boardFile.setExt(fileExt);
+                        boardService.saveBoardFile(boardFile);
                     }
-                } catch (Exception exception) {}
+                }
             }
-        if (fileDeleteArray != null)
-            this.boardService.deleteBoardFile(fileDeleteArray);
-        return "redirect:/admin/board/list/" + board_master_id;
+            
+            Board updatedBoard = boardService.showBoard(boardId);
+            return ResponseEntity.ok(updatedBoard);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating board: " + e.getMessage());
+        }
     }
 
-    @GetMapping({"/remove/{id}"})
-    @ResponseBody
-    public String boardRemove(@PathVariable Long id) {
-        Board board = this.boardService.deleteBoard(id);
-        String success = "success";
-        if (board == null)
-            success = "fail";
-        return success;
+    @DeleteMapping("/remove/{boardMasterId}/{boardId}")
+    public ResponseEntity<?> removeBoard(
+            @PathVariable("boardMasterId") int boardMasterId,
+            @PathVariable("boardId") Long boardId) {
+        try {
+            Board board = boardService.deleteBoard(boardId);
+            if (board == null) {
+                return ResponseEntity.badRequest().body("Failed to delete board");
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting board: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/reply/{board_id}"}, method = {RequestMethod.GET})
-    public String boardReplyRegister(Model model, @PathVariable Long board_id) {
-        Board board = this.boardService.showBoard(board_id);
-        BoardMaster boardMaster = this.boardMasterService.showBoardMaster(board.getBoardMaster().getId());
-        List<BoardReply> boardReplyList = this.boardReplyService.listBoardReply(board_id);
-        model.addAttribute("boardMaster", boardMaster);
-        model.addAttribute("question", board);
-        model.addAttribute("replyList", boardReplyList);
-        model.addAttribute("boardForm", new BoardReply());
-        return "/admin/board/reply";
+    @PostMapping("/reply/{boardMasterId}/{boardId}")
+    public ResponseEntity<?> createReply(
+            @PathVariable("boardMasterId") int boardMasterId,
+            @PathVariable("boardId") int boardId,
+            @RequestBody BoardReply boardReply) {
+        try {
+            UserCustom principal = (UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            boardReply.setUser(principal.getUser());
+            
+            Board board = boardService.showBoard(Long.valueOf(boardId));
+            boardReply.setBoard(board);
+            
+            boardReplyService.saveBoardReply(boardReply);
+            BoardReply savedReply = boardReplyService.showBoardReply(boardReply.getId());
+            return ResponseEntity.ok(savedReply);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error creating reply: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/reply/{board_id}"}, method = {RequestMethod.POST})
-    public String boardReplyInsert(@ModelAttribute("boardForm") BoardReply boardReply, @PathVariable Long board_id, BindingResult bindingResult, Model model) {
-        this.boardReplyService.saveBoardReply(boardReply);
-        return "redirect:/admin/board/list/2";
+    @GetMapping("/reply/{boardMasterId}/{replyId}")
+    public ResponseEntity<?> getReply(
+            @PathVariable("boardMasterId") int boardMasterId,
+            @PathVariable("replyId") int replyId) {
+        try {
+            BoardReply reply = boardReplyService.showBoardReply(Long.valueOf(replyId));
+            return ResponseEntity.ok(reply);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching reply: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/reply/{boardMasterId}/{replyId}")
+    public ResponseEntity<?> updateReply(
+            @PathVariable("boardMasterId") int boardMasterId,
+            @PathVariable("replyId") int replyId,
+            @RequestBody BoardReply boardReply) {
+        try {
+            BoardReply existingReply = boardReplyService.showBoardReply(Long.valueOf(replyId));
+            existingReply.setContents(boardReply.getContents());
+            
+            boardReplyService.saveBoardReply(existingReply);
+            BoardReply updatedReply = boardReplyService.showBoardReply(existingReply.getId());
+            return ResponseEntity.ok(updatedReply);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating reply: " + e.getMessage());
+        }
     }
 
     @GetMapping({"/reply/remove/{id}"})

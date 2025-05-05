@@ -4,47 +4,63 @@ import jungjin.estimate.domain.Structure;
 import jungjin.estimate.domain.StructureDetail;
 import jungjin.estimate.service.EstimateDetailService;
 import jungjin.estimate.service.EstimateService;
-import jungjin.user.domain.User;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping({"/admin/estimate"})
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+import java.util.HashMap;
+
+@RestController
+@RequestMapping("/api/admin/estimate")
+@RequiredArgsConstructor
 public class EstimateAdminController {
-    @Autowired
-    EstimateService estimateService;
+    private final EstimateService estimateService;
+    private final EstimateDetailService estimateDetailService;
 
-    @Autowired
-    EstimateDetailService estimateDetailService;
-
-    @RequestMapping(value = {"/list"}, method = {RequestMethod.GET})
-    public String list(Model model, @RequestParam(value = "page", defaultValue = "1") int page, @RequestParam(value = "status", defaultValue = "") String status, @RequestParam(value = "searchCondition", defaultValue = "") String searchCondition, @RequestParam(value = "searchText", defaultValue = "") String searchText, User user) {
-        Page<Structure> estimateList = null;
-        if ((status != null && !status.equals("")) || (searchCondition != null && !searchCondition.equals(""))) {
-            estimateList = this.estimateService.listEstimateStatus(searchCondition, searchText, status, page, 10);
-        } else {
-            estimateList = this.estimateService.listEstimateAll(page, 10);
+    @GetMapping("/list")
+    public ResponseEntity<?> getEstimateList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "") String status,
+            @RequestParam(defaultValue = "") String searchCondition,
+            @RequestParam(defaultValue = "") String searchText) {
+        try {
+            Page<Structure> estimateList;
+            if (!status.isEmpty() || !searchCondition.isEmpty()) {
+                estimateList = estimateService.listEstimateStatus(searchCondition, searchText, status, page, 10);
+            } else {
+                estimateList = estimateService.listEstimateAll(page, 10);
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("estimateList", estimateList);
+            response.put("page", page);
+            response.put("status", status);
+            response.put("searchCondition", searchCondition);
+            response.put("searchText", searchText);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching estimate list: " + e.getMessage());
         }
-        model.addAttribute("estimateList", estimateList);
-        model.addAttribute("page", Integer.valueOf(page));
-        model.addAttribute("status", status);
-        model.addAttribute("searchCondition", searchCondition);
-        model.addAttribute("searchText", searchText);
-        return "/admin/estimate/list";
     }
 
-    @RequestMapping(value = {"/show/{id}"}, method = {RequestMethod.GET})
-    public String show(Model model, @PathVariable Long id) {
-        Structure structure = this.estimateService.showEstimate(id);
-        StructureDetail detail = this.estimateDetailService.showEstimateDetail(id);
-        model.addAttribute("structure", structure);
-        model.addAttribute("structureDetail", detail);
-        return "/admin/estimate/show";
+    @GetMapping("/show/{id}")
+    public ResponseEntity<?> getEstimate(@PathVariable("id") Long id) {
+        try {
+            Structure structure = estimateService.showEstimate(id);
+            StructureDetail detail = estimateDetailService.showEstimateDetail(id);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("structure", structure);
+            response.put("structureDetail", detail);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching estimate: " + e.getMessage());
+        }
     }
 }

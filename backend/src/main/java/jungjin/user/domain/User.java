@@ -2,23 +2,21 @@ package jungjin.user.domain;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Email;
+import lombok.*;
+import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name = "m2_user")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "num")
@@ -33,10 +31,11 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "status")
     private String status;
 
-    @Column(name = "email")
     @Email
+    @Column(name = "email")
     private String email;
 
     @Column(name = "phone")
@@ -47,94 +46,22 @@ public class User {
 
     @NotNull
     @Column(name = "create_date")
-    LocalDateTime createDate;
+    private LocalDateTime createDate;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    @JoinTable(name = "m2_user_role", joinColumns = {@JoinColumn(name = "user_num")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "m2_user_role",
+            joinColumns = @JoinColumn(name = "user_num"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Role> roles;
 
+    @Override
     public String toString() {
-        return "User(num=" + getNum() + ", id=" + getId() + ", name=" + getName() + ", password=" + getPassword() + ", status=" + getStatus() + ", email=" + getEmail() + ", phone=" + getPhone() + ", agreeYn=" + getAgreeYn() + ", createDate=" + getCreateDate() + ", roles=" + getRoles() + ")";
-    }
-
-    public void setNum(Long num) {
-        this.num = num;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public void setAgreeYn(String agreeYn) {
-        this.agreeYn = agreeYn;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public Long getNum() {
-        return this.num;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getPhone() {
-        return this.phone;
-    }
-
-    public String getAgreeYn() {
-        return this.agreeYn;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return this.createDate;
-    }
-
-    public Set<Role> getRoles() {
-        return this.roles;
+        return String.format(
+                "User(num=%s, id=%s, name=%s, password=%s, status=%s, email=%s, phone=%s, agreeYn=%s, createDate=%s, roles=%s)",
+                num, id, name, password, status, email, phone, agreeYn, createDate, roles
+        );
     }
 
     public void insert(User insertUser) {
@@ -144,8 +71,7 @@ public class User {
         this.email = insertUser.email;
         this.phone = insertUser.phone;
         this.agreeYn = insertUser.agreeYn;
-        LocalDateTime date = LocalDateTime.now();
-        this.createDate = date;
+        this.createDate = LocalDateTime.now();
         this.roles = insertUser.roles;
         this.status = "S";
     }

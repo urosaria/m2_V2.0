@@ -2,12 +2,12 @@ package jungjin.user.service;
 
 import jungjin.user.domain.Role;
 import jungjin.user.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RoleService {
-    @Autowired
     private RoleRepository roleRepository;
 
     public Role showRole(Long id) {

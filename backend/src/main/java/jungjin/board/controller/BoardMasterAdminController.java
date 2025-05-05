@@ -1,64 +1,83 @@
 package jungjin.board.controller;
 
-import java.util.List;
 import jungjin.board.domain.BoardMaster;
 import jungjin.board.service.BoardMasterService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-@Controller
-@RequestMapping({"/admin/board/master"})
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/admin/board/master")
+@RequiredArgsConstructor
 public class BoardMasterAdminController {
-    @Autowired
-    private BoardMasterService boardMasterService;
+    private final BoardMasterService boardMasterService;
 
-    @RequestMapping({"/list"})
-    public String boardMasterList(Model model) {
-        List<BoardMaster> masterList = this.boardMasterService.listBoardMaster();
-        model.addAttribute("masterList", masterList);
-        return "/admin/board/master/list";
+    @GetMapping("/list")
+    public ResponseEntity<?> getBoardMasterList() {
+        try {
+            List<BoardMaster> masterList = boardMasterService.listBoardMaster();
+            return ResponseEntity.ok(masterList);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching board master list: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/register"}, method = {RequestMethod.GET})
-    public String boardMasterRegister(Model model) {
-        model.addAttribute("boardMasterForm", new BoardMaster());
-        return "/admin/board/master/register";
+    @GetMapping("/register")
+    public ResponseEntity<?> getBoardMasterForm() {
+        try {
+            return ResponseEntity.ok(new BoardMaster());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error preparing board master form: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/register"}, method = {RequestMethod.POST})
-    public String boardMasterInsert(@ModelAttribute("boardMasterForm") BoardMaster boardMasterForm, BindingResult bindingResult, Model model) {
-        this.boardMasterService.saveBoardMaster(boardMasterForm);
-        return "redirect:/admin/board/master/list";
+    @PostMapping("/register")
+    public ResponseEntity<?> createBoardMaster(@RequestBody BoardMaster boardMaster) {
+        try {
+            boardMasterService.saveBoardMaster(boardMaster);
+            return ResponseEntity.ok(boardMaster);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error creating board master: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/modify/{id}"}, method = {RequestMethod.GET})
-    public String boardMasterModify(Model model, @PathVariable int id) {
-        BoardMaster boardMaster = this.boardMasterService.showBoardMaster(id);
-        model.addAttribute("boardMaster", boardMaster);
-        return "/admin/board/master/modify";
+    @GetMapping("/modify/{id}")
+    public ResponseEntity<?> getBoardMaster(@PathVariable("id") int id) {
+        try {
+            BoardMaster boardMaster = boardMasterService.showBoardMaster(id);
+            return ResponseEntity.ok(boardMaster);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching board master: " + e.getMessage());
+        }
     }
 
-    @RequestMapping(value = {"/modify/{id}"}, method = {RequestMethod.POST})
-    public String boardMasterupdate(@PathVariable int id, BoardMaster boardMaster) {
-        this.boardMasterService.updateBoardMaster(id, boardMaster);
-        return "redirect:/admin/board/master/list";
+    @PutMapping("/modify/{id}")
+    public ResponseEntity<?> updateBoardMaster(
+            @PathVariable("id") int id,
+            @RequestBody BoardMaster boardMaster) {
+        try {
+            boardMasterService.updateBoardMaster(id, boardMaster);
+            BoardMaster updatedMaster = boardMasterService.showBoardMaster(id);
+            return ResponseEntity.ok(updatedMaster);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error updating board master: " + e.getMessage());
+        }
     }
 
-    @GetMapping({"/remove/{id}"})
-    @ResponseBody
-    public String userRemove(@PathVariable int id) {
-        BoardMaster boardMaster = this.boardMasterService.deleteBoardMaster(id);
-        String success = "success";
-        if (boardMaster == null)
-            success = "fail";
-        return success;
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<?> removeBoardMaster(@PathVariable("id") int id) {
+        try {
+            BoardMaster boardMaster = boardMasterService.deleteBoardMaster(id);
+            if (boardMaster == null) {
+                return ResponseEntity.badRequest().body("Failed to delete board master");
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error deleting board master: " + e.getMessage());
+        }
     }
 }

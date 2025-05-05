@@ -14,34 +14,21 @@ import jungjin.estimate.repository.EstimateCanopyRepository;
 import jungjin.estimate.repository.EstimateCeilingRepository;
 import jungjin.estimate.repository.EstimateDetailRepository;
 import jungjin.estimate.repository.EstimateDoorRepository;
-import jungjin.estimate.repository.EstimateDownpipeRepository;
 import jungjin.estimate.repository.EstimateInsideWallRepository;
 import jungjin.estimate.repository.EstimateWindowRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sk.nociar.jpacloner.JpaCloner;
 
 @Service
+@RequiredArgsConstructor
 public class EstimateDetailService {
-    @Autowired
+
     EstimateDetailRepository estimateDetailRepository;
-
-    @Autowired
     EstimateCanopyRepository estimateCanopyRepository;
-
-    @Autowired
     EstimateCeilingRepository estimateCeilingRepository;
-
-    @Autowired
     EstimateDoorRepository estimateDoorRepository;
-
-    @Autowired
-    EstimateDownpipeRepository estimateDownpipeRepository;
-
-    @Autowired
     EstimateInsideWallRepository estimateInsideWallRepository;
-
-    @Autowired
     EstimateWindowRepository estimateWindowRepository;
 
     @PersistenceContext

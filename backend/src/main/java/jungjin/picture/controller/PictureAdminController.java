@@ -1,123 +1,115 @@
 package jungjin.picture.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
+import jakarta.servlet.http.HttpServletRequest;
 import jungjin.M2Application;
 import jungjin.picture.domain.Picture;
 import jungjin.picture.domain.PictureAdminFile;
 import jungjin.picture.service.PictureService;
 import jungjin.user.domain.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Controller
-@RequestMapping({"/admin/picture"})
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@RestController
+@RequestMapping("/api/admin/picture")
+@RequiredArgsConstructor
 public class PictureAdminController {
-    @Autowired
-    PictureService pictureService;
 
-    @RequestMapping(value = {"/list"}, method = {RequestMethod.GET})
-    public String list(Model model, @RequestParam(value = "page", defaultValue = "1") int page, User user) {
-        Page<Picture> pictureList = this.pictureService.listPicture(page, 10);
-        model.addAttribute("pictureList", pictureList);
-        model.addAttribute("page", Integer.valueOf(page));
-        return "/admin/picture/list";
+    private final PictureService pictureService;
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<Picture>> list(@RequestParam(defaultValue = "1") int page, User user) {
+        Page<Picture> pictureList = pictureService.listPicture(page, 10);
+        return ResponseEntity.ok(pictureList);
     }
 
-    @RequestMapping(value = {"/show/{id}"}, method = {RequestMethod.GET})
-    public String show(Model model, @PathVariable Long id) {
-        Picture detail = this.pictureService.showPicture(id);
-        model.addAttribute("pictureDetail", detail);
-        return "/admin/picture/show";
+    @GetMapping("/show/{id}")
+    public ResponseEntity<Picture> show(@PathVariable Long id) {
+        Picture detail = pictureService.showPicture(id);
+        return ResponseEntity.ok(detail);
     }
 
-    @RequestMapping(value = {"/register"}, method = {RequestMethod.GET})
-    public String register(Model model, Picture picture, @RequestParam(name = "id", required = false) Long id) {
-        if (id != null)
-            picture = this.pictureService.showPicture(id);
-        model.addAttribute("pictureForm", picture);
-        return "/admin/picture/register";
+    @GetMapping("/register")
+    public ResponseEntity<Picture> register(@RequestParam(required = false) Long id) {
+        Picture picture = (id != null) ? pictureService.showPicture(id) : new Picture();
+        return ResponseEntity.ok(picture);
     }
 
-    @RequestMapping(value = {"/register"}, method = {RequestMethod.POST})
-    public String insert(@ModelAttribute("pictureForm") Picture picture, BindingResult bindingResult, Model model) {
-        Picture detail = this.pictureService.showPicture(Long.valueOf(picture.getId()));
-        detail.update(picture);
-        Picture result = this.pictureService.savePicture(detail);
-        return "redirect:/admin/picture/show/" + result.getId();
+    @PostMapping("/register")
+    public ResponseEntity<Picture> insert(@RequestBody Picture picture) {
+        Picture existing = pictureService.showPicture(picture.getId());
+        existing.update(picture);
+        Picture saved = pictureService.savePicture(existing);
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping({"/status/{id}"})
-    @ResponseBody
-    public String boardReplyRemove(@PathVariable Long id, @RequestParam String process, Picture picture) {
-        String success = "success";
-        this.pictureService.updatePictureStatus(id, process);
-        return success;
+    @PatchMapping("/status/{id}")
+    public ResponseEntity<String> updateStatusQuick(@PathVariable Long id, @RequestParam String process) {
+        pictureService.updatePictureStatus(id, process);
+        return ResponseEntity.ok("success");
     }
 
-    @RequestMapping(value = {"/status"}, method = {RequestMethod.POST})
-    public String statusUpdate(@ModelAttribute("pictureForm") Picture picture, BindingResult bindingResult, Model model) {
-        Picture detail = this.pictureService.showPicture(Long.valueOf(picture.getId()));
-        detail.updateStatus(picture);
-        Picture result = this.pictureService.savePicture(detail);
-        return "redirect:/admin/picture/show/" + result.getId();
+    @PostMapping("/status")
+    public ResponseEntity<Picture> updateStatus(@RequestBody Picture picture) {
+        Picture existing = pictureService.showPicture(picture.getId());
+        existing.updateStatus(picture);
+        Picture saved = pictureService.savePicture(existing);
+        return ResponseEntity.ok(saved);
     }
 
-    @RequestMapping(value = {"/upload"}, method = {RequestMethod.POST})
-    public String multipleSave(@RequestParam("file") MultipartFile[] files, @RequestParam("id") Long id) {
-        String msg = "";
-        if (files != null && files.length > 0)
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFiles(
+            @RequestParam("file") MultipartFile[] files,
+            @RequestParam("id") Long id) {
+
+        if (files == null || files.length == 0) {
+            return ResponseEntity.badRequest().body("No files uploaded");
+        }
+
+        try {
             for (int i = 0; i < files.length; i++) {
-                try {
-                    if (true != files[i].isEmpty()) {
-                        byte[] bytes = files[i].getBytes();
-                        PictureAdminFile pictureAdminFile = new PictureAdminFile();
-                        Date date = new Date();
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-                        String fileName = String.valueOf(sdf.format(date)) + "_" + String.valueOf(id) + "_" + String.valueOf(i + 1);
-                        String ext = files[i].getOriginalFilename();
-                        ext = ext.substring(ext.indexOf("."));
-                        Picture picture = this.pictureService.showPicture(id);
-                        File file = new File(M2Application.UPLOAD_DIR + "/picture/admin/" + id);
-                        if (!file.exists())
-                            file.mkdirs();
-                        BufferedOutputStream buffStream = new BufferedOutputStream(new FileOutputStream(new File(M2Application.UPLOAD_DIR + "/picture/admin/" + id + "/" + fileName + ext)));
-                        pictureAdminFile.setName(fileName + ext);
-                        pictureAdminFile.setExt(ext);
-                        pictureAdminFile.setOriName(files[i].getOriginalFilename());
-                        pictureAdminFile.setPicture(picture);
-                        pictureAdminFile.setCreateDate(LocalDateTime.now());
-                        pictureAdminFile.setPath("/admin/" + id);
-                        this.pictureService.savePictureAdminFile(pictureAdminFile);
-                        buffStream.write(bytes);
-                        buffStream.close();
-                        msg = "success";
+                MultipartFile file = files[i];
+                if (!file.isEmpty()) {
+                    byte[] bytes = file.getBytes();
+                    String timestamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+                    String baseName = timestamp + "_" + id + "_" + (i + 1);
+                    String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+                    String fileName = baseName + ext;
+
+                    File dir = new File(M2Application.UPLOAD_DIR + "/picture/admin/" + id);
+                    if (!dir.exists()) dir.mkdirs();
+
+                    try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(dir, fileName)))) {
+                        bos.write(bytes);
                     }
-                } catch (Exception exception) {}
+
+                    PictureAdminFile fileEntity = new PictureAdminFile();
+                    fileEntity.setName(fileName);
+                    fileEntity.setExt(ext);
+                    fileEntity.setOriName(file.getOriginalFilename());
+                    fileEntity.setPicture(pictureService.showPicture(id));
+                    fileEntity.setCreateDate(LocalDateTime.now());
+                    fileEntity.setPath("/admin/" + id);
+                    pictureService.savePictureAdminFile(fileEntity);
+                }
             }
-        return "redirect:/admin/picture/show/" + id;
+            return ResponseEntity.ok("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed: " + e.getMessage());
+        }
     }
 
-    @GetMapping({"/file/remove/{id}"})
-    @ResponseBody
-    public String pictureAdminFileRemove(@PathVariable Long id) {
-        this.pictureService.deletePictureAdminFile(id);
-        String success = "success";
-        return success;
+    @DeleteMapping("/file/{id}")
+    public ResponseEntity<String> removePictureFile(@PathVariable Long id) {
+        pictureService.deletePictureAdminFile(id);
+        return ResponseEntity.ok("success");
     }
 }

@@ -1,19 +1,20 @@
 package jungjin.estimate.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Entity
 @Table(name = "m2_est_door")
+@Getter
+@Setter
+@NoArgsConstructor
+@Accessors(chain = true)
 public class Door {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -41,68 +42,4 @@ public class Door {
     @ManyToOne
     @JoinColumn(name = "structure_detail_id")
     private StructureDetail structureDetail;
-
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public int getAmount() {
-        return this.amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getSubType() {
-        return this.subType;
-    }
-
-    public void setSubType(String subType) {
-        this.subType = subType;
-    }
-
-    public String getSelectWh() {
-        return this.selectWh;
-    }
-
-    public void setSelectWh(String selectWh) {
-        this.selectWh = selectWh;
-    }
-
-    public StructureDetail getStructureDetail() {
-        return this.structureDetail;
-    }
-
-    public void setStructureDetail(StructureDetail structureDetail) {
-        this.structureDetail = structureDetail;
-    }
 }

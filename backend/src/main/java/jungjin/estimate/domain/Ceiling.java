@@ -1,18 +1,20 @@
 package jungjin.estimate.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Entity
 @Table(name = "m2_est_ceiling")
+@Getter
+@Setter
+@NoArgsConstructor
+@Accessors(chain = true)
 public class Ceiling {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -31,44 +33,4 @@ public class Ceiling {
     @ManyToOne
     @JoinColumn(name = "structure_detail_id")
     private StructureDetail structureDetail;
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public void setStructureDetail(StructureDetail structureDetail) {
-        this.structureDetail = structureDetail;
-    }
-
-    public long getId() {
-        return this.id;
-    }
-
-    public int getLength() {
-        return this.length;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public int getAmount() {
-        return this.amount;
-    }
-
-    public StructureDetail getStructureDetail() {
-        return this.structureDetail;
-    }
 }

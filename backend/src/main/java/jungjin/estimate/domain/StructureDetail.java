@@ -1,24 +1,38 @@
 package jungjin.estimate.domain;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "m2_est_structure_detail")
+@Getter
+@Setter
+@NoArgsConstructor
+@Accessors(chain = true)
 public class StructureDetail {
+
+    public StructureDetail setStructure(Structure structure) {
+        this.structure = structure;
+        return this;
+    }
+
+    public StructureDetail setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public StructureDetail setCanopyList(List<Canopy> canopyList) {
+        this.canopyList = canopyList;
+        return this;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -100,22 +114,22 @@ public class StructureDetail {
     private int gucciAmount;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
-    List<Canopy> canopyList = new ArrayList<>();
+    private List<Canopy> canopyList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
-    List<Ceiling> ceilingList = new ArrayList<>();
+    private List<Ceiling> ceilingList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
-    List<Door> doorList = new ArrayList<>();
+    private List<Door> doorList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
-    List<Downpipe> downpipeList = new ArrayList<>();
+    private List<Downpipe> downpipeList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
-    List<InsideWall> insideWallList = new ArrayList<>();
+    private List<InsideWall> insideWallList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
-    List<Window> windowList = new ArrayList<>();
+    private List<Window> windowList = new ArrayList<>();
 
     public void insert(StructureDetail structureDetail) {
         this.createDate = LocalDateTime.now();
@@ -157,253 +171,5 @@ public class StructureDetail {
         this.ceilingType = structureDetail.ceilingType;
         this.ceilingPaper = structureDetail.ceilingPaper;
         this.ceilingThick = structureDetail.ceilingThick;
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getInsideWallYn() {
-        return this.insideWallYn;
-    }
-
-    public void setInsideWallYn(String insideWallYn) {
-        this.insideWallYn = insideWallYn;
-    }
-
-    public String getCeilingYn() {
-        return this.ceilingYn;
-    }
-
-    public void setCeilingYn(String ceilingYn) {
-        this.ceilingYn = ceilingYn;
-    }
-
-    public String getWindowYn() {
-        return this.windowYn;
-    }
-
-    public void setWindowYn(String windowYn) {
-        this.windowYn = windowYn;
-    }
-
-    public String getDoorYn() {
-        return this.doorYn;
-    }
-
-    public void setDoorYn(String doorYn) {
-        this.doorYn = doorYn;
-    }
-
-    public String getCanopyYn() {
-        return this.canopyYn;
-    }
-
-    public void setCanopyYn(String canopyYn) {
-        this.canopyYn = canopyYn;
-    }
-
-    public String getDownpipeYn() {
-        return this.downpipeYn;
-    }
-
-    public void setDownpipeYn(String downpipeYn) {
-        this.downpipeYn = downpipeYn;
-    }
-
-    public String getInsideWallType() {
-        return this.insideWallType;
-    }
-
-    public void setInsideWallType(String insideWallType) {
-        this.insideWallType = insideWallType;
-    }
-
-    public String getInsideWallPaper() {
-        return this.insideWallPaper;
-    }
-
-    public void setInsideWallPaper(String insideWallPaper) {
-        this.insideWallPaper = insideWallPaper;
-    }
-
-    public int getInsideWallThick() {
-        return this.insideWallThick;
-    }
-
-    public void setInsideWallThick(int insideWallThick) {
-        this.insideWallThick = insideWallThick;
-    }
-
-    public String getOutsideWallType() {
-        return this.outsideWallType;
-    }
-
-    public void setOutsideWallType(String outsideWallType) {
-        this.outsideWallType = outsideWallType;
-    }
-
-    public String getOutsideWallPaper() {
-        return this.outsideWallPaper;
-    }
-
-    public void setOutsideWallPaper(String outsideWallPaper) {
-        this.outsideWallPaper = outsideWallPaper;
-    }
-
-    public int getOutsideWallThick() {
-        return this.outsideWallThick;
-    }
-
-    public void setOutsideWallThick(int outsideWallThick) {
-        this.outsideWallThick = outsideWallThick;
-    }
-
-    public String getRoofType() {
-        return this.roofType;
-    }
-
-    public void setRoofType(String roofType) {
-        this.roofType = roofType;
-    }
-
-    public String getRoofPaper() {
-        return this.roofPaper;
-    }
-
-    public void setRoofPaper(String roofPaper) {
-        this.roofPaper = roofPaper;
-    }
-
-    public int getRoofThick() {
-        return this.roofThick;
-    }
-
-    public void setRoofThick(int roofThick) {
-        this.roofThick = roofThick;
-    }
-
-    public String getCeilingType() {
-        return this.ceilingType;
-    }
-
-    public void setCeilingType(String ceilingType) {
-        this.ceilingType = ceilingType;
-    }
-
-    public String getCeilingPaper() {
-        return this.ceilingPaper;
-    }
-
-    public void setCeilingPaper(String ceilingPaper) {
-        this.ceilingPaper = ceilingPaper;
-    }
-
-    public int getCeilingThick() {
-        return this.ceilingThick;
-    }
-
-    public void setCeilingThick(int ceilingThick) {
-        this.ceilingThick = ceilingThick;
-    }
-
-    public Structure getStructure() {
-        return this.structure;
-    }
-
-    public void setStructure(Structure structure) {
-        this.structure = structure;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return this.createDate;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public int getGucci() {
-        return this.gucci;
-    }
-
-    public void setGucci(int gucci) {
-        this.gucci = gucci;
-    }
-
-    public int getGucciAmount() {
-        return this.gucciAmount;
-    }
-
-    public void setGucciAmount(int gucciAmount) {
-        this.gucciAmount = gucciAmount;
-    }
-
-    public List<Canopy> getCanopyList() {
-        return this.canopyList;
-    }
-
-    public void setCanopyList(List<Canopy> canopyList) {
-        this.canopyList = canopyList;
-    }
-
-    public List<Ceiling> getCeilingList() {
-        return this.ceilingList;
-    }
-
-    public void setCeilingList(List<Ceiling> ceilingList) {
-        this.ceilingList = ceilingList;
-    }
-
-    public List<Door> getDoorList() {
-        return this.doorList;
-    }
-
-    public void setDoorList(List<Door> doorList) {
-        this.doorList = doorList;
-    }
-
-    public List<Downpipe> getDownpipeList() {
-        return this.downpipeList;
-    }
-
-    public void setDownpipeList(List<Downpipe> downpipeList) {
-        this.downpipeList = downpipeList;
-    }
-
-    public List<InsideWall> getInsideWallList() {
-        return this.insideWallList;
-    }
-
-    public void setInsideWallList(List<InsideWall> insideWallList) {
-        this.insideWallList = insideWallList;
-    }
-
-    public List<Window> getWindowList() {
-        return this.windowList;
-    }
-
-    public void setWindowList(List<Window> windowList) {
-        this.windowList = windowList;
-    }
-
-    public int getGucciInside() {
-        return this.gucciInside;
-    }
-
-    public void setGucciInside(int gucciInside) {
-        this.gucciInside = gucciInside;
-    }
-
-    public int getGucciInsideAmount() {
-        return this.gucciInsideAmount;
-    }
-
-    public void setGucciInsideAmount(int gucciInsideAmount) {
-        this.gucciInsideAmount = gucciInsideAmount;
     }
 }

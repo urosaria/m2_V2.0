@@ -3,55 +3,48 @@ package jungjin.login.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jungjin.user.service.SecurityService;
-import jungjin.user.service.UserDetailsServiceImpl;
-import jungjin.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping({"/admin"})
+@RestController
+@RequestMapping("/api/admin")
+@RequiredArgsConstructor
 public class LoginAdminController {
-    @Autowired
-    private UserService userService;
 
-    @Autowired
-    private SecurityService securityService;
+    private final SecurityService securityService;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    @PostMapping("/login")
+    public ResponseEntity<String> adminLogin(
+            @RequestParam String username,
+            @RequestParam String password,
+            HttpServletRequest request) {
 
-    @RequestMapping(value = {"/login"}, method = {RequestMethod.GET})
-    public String adminLoginPage(Model model, HttpServletRequest request) {
-        request.getSession().setAttribute("prevPage", "/admin/user/list");
-        return "/admin/main";
+        String autologin = securityService.adminLoginCheck(username, password);
+
+        if (autologin != null) {
+            request.getSession().setAttribute("prevPage", "/admin/user/list");
+            return ResponseEntity.ok("Login successful");
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
     }
 
-    @RequestMapping(value = {"/login"}, method = {RequestMethod.POST})
-    public String adminLogin(Model model, HttpServletRequest request, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) {
-        String autologin = this.securityService.adminLoginCheck(username, password);
-        if (autologin != null)
-            return "redirect:/admin/user/list";
-        return "redirect:/admin/login";
-    }
-
-    @RequestMapping({"/loginError"})
-    public String loginError(Model model, String username) {
-        model.addAttribute("error", "Your username and password is invalid.");
-        return "/admin/main";
-    }
-
-    @RequestMapping(value = {"/logout"}, method = {RequestMethod.GET})
-    public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null)
-            (new SecurityContextLogoutHandler()).logout(request, response, auth);
-        return "redirect:/admin/login";
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return ResponseEntity.ok("Logout successful");
+    }
+
+    @GetMapping("/login-error")
+    public ResponseEntity<String> loginError(@RequestParam(required = false) String username) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Your username and password is invalid.");
     }
 }

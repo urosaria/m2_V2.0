@@ -1,8 +1,8 @@
 package jungjin.user.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,19 +14,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SecurityService {
     private static final Logger log = LoggerFactory.getLogger(SecurityService.class);
 
-    @Autowired
     private UserDetailsService userDetailsService;
-
-    @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public String findLoggedInUsername() {
         Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -50,7 +44,7 @@ public class SecurityService {
         System.out.println("userDetails::" + userDetails);
         if (userDetails == null)
             return null;
-        boolean passwdCheck = bCryptPasswordEncoder().matches(password, userDetails.getPassword());
+        boolean passwdCheck = bCryptPasswordEncoder.matches(password, userDetails.getPassword());
         if (!passwdCheck)
             return null;
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());

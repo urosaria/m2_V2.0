@@ -8,9 +8,9 @@ import jungjin.user.domain.Role;
 import jungjin.user.domain.User;
 import jungjin.user.repository.RoleRepository;
 import jungjin.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,16 +20,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-	@Autowired
 	RoleRepository roleRepository;
 
 	public Page<User> listUser(int page) {

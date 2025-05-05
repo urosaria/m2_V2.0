@@ -1,119 +1,109 @@
 package jungjin.estimate.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
-import java.util.List;
+import java.util.*;
+
+import jungjin.estimate.dto.EstimateRequestDTO;
+import jungjin.estimate.dto.EstimateResponseDTO;
+import org.springframework.core.io.Resource;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jungjin.M2Application;
-import jungjin.estimate.domain.Calculate;
-import jungjin.estimate.domain.Canopy;
-import jungjin.estimate.domain.Ceiling;
-import jungjin.estimate.domain.Door;
-import jungjin.estimate.domain.InsideWall;
-import jungjin.estimate.domain.Price;
-import jungjin.estimate.domain.Structure;
-import jungjin.estimate.domain.StructureDetail;
-import jungjin.estimate.domain.Window;
-import jungjin.estimate.service.EstimateDetailService;
-import jungjin.estimate.service.EstimatePriceService;
-import jungjin.estimate.service.EstimateService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jungjin.M2Application;
+import jungjin.estimate.domain.*;
+import jungjin.estimate.service.*;
+import jungjin.user.domain.User;
 import jungjin.user.service.UserCustom;
-import jungjin.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import sk.nociar.jpacloner.JpaCloner;
 
-@Controller
-@RequestMapping({"/estimate"})
+@RestController
+@RequestMapping("/api/estimates")
+@RequiredArgsConstructor
 public class EstimateController {
-    @Autowired
-    EstimateService estimateService;
 
-    @Autowired
-    EstimateDetailService estimateDetailService;
-
-    private static EstimatePriceService estimatePriceService;
-
-    @Autowired
-    private UserService userService;
+    private final EstimateService estimateService;
+    private final EstimateDetailService estimateDetailService;
+    private final EstimatePriceService estimatePriceService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired(required = true)
-    public void setEstimatePriceService(EstimatePriceService _estimatePriceService) {
-        estimatePriceService = _estimatePriceService;
-    }
-
     final String pateTitle = "자동판넬견적";
 
     @RequestMapping(value = {"/list"}, method = {RequestMethod.GET})
-    public String register(@RequestParam(value = "page", defaultValue = "1") int page, Model model, Structure structure) {
-        UserCustom principal = (UserCustom)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long userNum = principal.getUser().getNum();
-        Page<Structure> listEstimate = this.estimateService.listEstimate(page, 7, userNum);
-        model.addAttribute("page", Integer.valueOf(page));
-        model.addAttribute("listEstimate", listEstimate);
-        return "/estimate/list";
-    }
+    public ResponseEntity<?> getEstimateList(@RequestParam(defaultValue = "1") int page,
+                                             @RequestParam(defaultValue = "7") int size) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            Long userNum = user.getNum();
+            Page<Structure> listEstimate = estimateService.listEstimate(page, size, userNum);
 
-    @RequestMapping(value = {"/listContents"}, method = {RequestMethod.GET})
-    public String listContent(@RequestParam(value = "page", defaultValue = "1") int page, Model model, Structure structure) {
-        UserCustom principal = (UserCustom)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long userNum = principal.getUser().getNum();
-        Page<Structure> listEstimate = this.estimateService.listEstimate(page, 7, userNum);
-        model.addAttribute("page", Integer.valueOf(page));
-        model.addAttribute("listEstimate", listEstimate);
-        return "/estimate/listContents";
-    }
-
-    @RequestMapping(value = {"/register"}, method = {RequestMethod.GET})
-    public String register(Model model, @RequestParam(name = "type", required = false) String type, Structure structure, StructureDetail structureDetail, @RequestParam(name = "id", required = false) Long id) {
-        if (id != null) {
-            structure = this.estimateService.showEstimate(id);
-            type = structure.getStructureType();
-            structureDetail = this.estimateDetailService.showEstimateDetail(id);
+            Map<String, Object> response = new HashMap<>();
+            response.put("page", page);
+            response.put("size", size);
+            response.put("totalPages", listEstimate.getTotalPages());
+            response.put("totalElements", listEstimate.getTotalElements());
+            response.put("estimates", listEstimate.getContent());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching estimate list: " + e.getMessage());
         }
-        structure.setStructureDetail(structureDetail);
-        model.addAttribute("insideWallListSize", Integer.valueOf(structureDetail.getInsideWallList().size()));
-        model.addAttribute("ceilingListSize", Integer.valueOf(structureDetail.getCeilingList().size()));
-        model.addAttribute("doorListSize", Integer.valueOf(structureDetail.getDoorList().size()));
-        model.addAttribute("downpipeListSize", Integer.valueOf(structureDetail.getDownpipeList().size()));
-        model.addAttribute("canopyListSize", Integer.valueOf(structureDetail.getCanopyList().size()));
-        model.addAttribute("windowListSize", Integer.valueOf(structureDetail.getWindowList().size()));
-        model.addAttribute("structureForm", structure);
-        model.addAttribute("type", type);
-        return "/estimate/register";
     }
 
-    @RequestMapping(value = {"/register"}, method = {RequestMethod.POST})
-    public String register(@ModelAttribute("structureForm") Structure structure, StructureDetail structureDetail, @RequestParam(name = "mode", defaultValue = "") String mode, Model model) throws IOException {
-        UserCustom principal = (UserCustom)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (mode.equals(""))
-            structure.setUser(principal.getUser());
-        Structure result = this.estimateService.saveEstimate(structure);
-        if (result != null) {
+    @GetMapping("/list/contents")
+    public ResponseEntity<?> getEstimateContents(@RequestParam(defaultValue = "1") int page,
+                                                 @RequestParam(defaultValue = "7") int size) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            Long userNum = user.getNum();
+            Page<Structure> listEstimate = estimateService.listEstimate(page, size, userNum);
+            Map<String, Object> response = new HashMap<>();
+            response.put("page", page);
+            response.put("size", size);
+            response.put("totalPages", listEstimate.getTotalPages());
+            response.put("totalElements", listEstimate.getTotalElements());
+            response.put("estimates", listEstimate.getContent());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error fetching estimate contents: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> createEstimate(
+            @RequestBody EstimateRequestDTO request,
+            @RequestParam(defaultValue = "") String mode) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = (User) auth.getPrincipal();
+            Structure structure = request.getStructure();
+            StructureDetail structureDetail = request.getStructureDetail();
+
+            if (mode.isEmpty()) {
+                structure.setUser(user);
+            }
+
+            Structure result = estimateService.saveEstimate(structure);
+            if (result == null) {
+                return ResponseEntity.badRequest().body("Failed to save estimate");
+            }
+
             structureDetail = structure.getStructureDetail();
             structureDetail.setStructure(result);
             if (structureDetail.getInsideWallYn().equals("N")) {
@@ -126,11 +116,11 @@ public class EstimateController {
                 structureDetail.setCeilingPaper("");
                 structureDetail.setCeilingThick(0);
             }
-            this.estimateDetailService.saveEstimateDetail(structureDetail);
-            this.estimateDetailService.saveEstimateDetailEtc(structureDetail);
+            estimateDetailService.saveEstimateDetail(structureDetail);
+            estimateDetailService.saveEstimateDetailEtc(structureDetail);
             List<String> calList = EstimateCalculate.mainCal(structureDetail);
             if (calList.size() > 0) {
-                this.estimateService.deleteCal(Long.valueOf(result.getId()));
+                estimateService.deleteCal(Long.valueOf(result.getId()));
                 int index = 0;
                 for (String value : calList) {
                     Calculate calculate = new Calculate();
@@ -138,22 +128,22 @@ public class EstimateController {
                     calculate.setName(calculateArray[0]);
                     calculate.setStandard(calculateArray[1]);
                     calculate.setUnit(calculateArray[2]);
-                    calculate.setAmount((int)Double.parseDouble(calculateArray[3]));
+                    calculate.setAmount((int) Double.parseDouble(calculateArray[3]));
                     calculate.setTotal(Long.valueOf(calculateArray[4]).longValue());
                     calculate.setEPrice(Integer.parseInt(calculateArray[5]));
                     calculate.setUPrice(Integer.parseInt(calculateArray[6]));
                     calculate.setStructure(result);
                     calculate.setSort(index++);
-                    this.estimateService.saveCal(calculate);
+                    estimateService.saveCal(calculate);
                 }
                 if (structureDetail.getDoorYn().equals("Y")) {
                     int doorListCount = structureDetail.getDoorList().size();
                     for (int i = 0; i < doorListCount; i++) {
                         Calculate calculate = new Calculate();
-                        int w = ((Door)structureDetail.getDoorList().get(i)).getWidth();
-                        int h = ((Door)structureDetail.getDoorList().get(i)).getHeight();
-                        int e = ((Door)structureDetail.getDoorList().get(i)).getAmount();
-                        String st = ((Door)structureDetail.getDoorList().get(i)).getSubType();
+                        int w = ((Door) structureDetail.getDoorList().get(i)).getWidth();
+                        int h = ((Door) structureDetail.getDoorList().get(i)).getHeight();
+                        int e = ((Door) structureDetail.getDoorList().get(i)).getAmount();
+                        String st = ((Door) structureDetail.getDoorList().get(i)).getSubType();
                         String standard = "";
                         Price price = new Price();
                         String thick = String.valueOf(structureDetail.getOutsideWallThick());
@@ -164,7 +154,7 @@ public class EstimateController {
                             price = estimatePriceService.showPrice("D", "F", thick + "티판넬용", String.valueOf(w) + "*" + String.valueOf(h));
                             standard = "방화문";
                         } else if (st.equals("H")) {
-                            price = estimatePriceService.showPrice("D", "H", "마감"+ thick + "티", "");
+                            price = estimatePriceService.showPrice("D", "H", "마감" + thick + "티", "");
                             standard = "행거도어(EPS전용)";
                         }
                         int startPrice = 0, gapPrice = 0, maxPrice = 0, ePrice = 0, uPrice = 0;
@@ -184,17 +174,17 @@ public class EstimateController {
                         calculate.setEPrice(0);
                         calculate.setUPrice(uPrice);
                         calculate.setSort(index++);
-                        this.estimateService.saveCal(calculate);
+                        estimateService.saveCal(calculate);
                     }
                 }
                 if (structureDetail.getWindowYn().equals("Y")) {
                     int windowListCount = structureDetail.getWindowList().size();
                     for (int i = 0; i < windowListCount; i++) {
                         Calculate calculate = new Calculate();
-                        int w = ((Window)structureDetail.getWindowList().get(i)).getWidth();
-                        int h = ((Window)structureDetail.getWindowList().get(i)).getHeight();
-                        int e = ((Window)structureDetail.getWindowList().get(i)).getAmount();
-                        String type = ((Window)structureDetail.getWindowList().get(i)).getType();
+                        int w = ((Window) structureDetail.getWindowList().get(i)).getWidth();
+                        int h = ((Window) structureDetail.getWindowList().get(i)).getHeight();
+                        int e = ((Window) structureDetail.getWindowList().get(i)).getAmount();
+                        String type = ((Window) structureDetail.getWindowList().get(i)).getType();
                         Price price = new Price();
                         String thick = String.valueOf(structureDetail.getOutsideWallThick());
                         if (type.equals("S")) {
@@ -219,413 +209,378 @@ public class EstimateController {
                         calculate.setEPrice(0);
                         calculate.setUPrice(uPrice);
                         calculate.setSort(index++);
-                        this.estimateService.saveCal(calculate);
+                        estimateService.saveCal(calculate);
                     }
                 }
-                this.estimateService.excel("", Long.valueOf(result.getId()));
+                estimateService.excel("", Long.valueOf(result.getId()));
             }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", result.getId());
+            response.put("message", "Estimate created successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error creating estimate: " + e.getMessage());
         }
-        return "redirect:/estimate/calculate?id=" + result.getId();
     }
 
-    @RequestMapping(value = {"/calculate"}, method = {RequestMethod.GET})
-    public String calculate(Model model, StructureDetail structureDetail, @RequestParam(name = "mode", defaultValue = "") String mode, @RequestParam(name = "id", required = false) Long id) {
+    @GetMapping("/calculate/{id}")
+    public ResponseEntity<?> calculateById(@PathVariable("id") Long id,
+                                           @RequestParam(name = "mode", defaultValue = "") String mode
+    ) {
+        Map<String, Object> response = new HashMap<>();
+        StructureDetail structureDetail = new StructureDetail();
+
         if (id != null) {
-            StructureDetail detail = this.estimateDetailService.showEstimateDetailId(id);
+            StructureDetail detail = estimateDetailService.showEstimateDetailId(id);
+
             if (detail != null) {
                 int canopyCount = detail.getCanopyList().size();
                 int ceilingCount = detail.getCeilingList().size();
                 int doorCount = detail.getDoorList().size();
                 int insideWallCount = detail.getInsideWallList().size();
                 int windowCont = detail.getWindowList().size();
-                List<Calculate> doorPrice = this.estimateService.findByStructureIdAndType(Long.valueOf(detail.getStructure().getId()));
+                List<Calculate> doorPrice = estimateService.findByStructureIdAndType(Long.valueOf(detail.getStructure().getId()));
                 if (canopyCount > 0) {
                     int canopyTotal = 0;
                     for (int i = 0; i < canopyCount; i++)
-                        canopyTotal += ((Canopy)detail.getCanopyList().get(i)).getAmount();
-                    model.addAttribute("canopyTotal", Integer.valueOf(canopyTotal));
+                        canopyTotal += ((Canopy) detail.getCanopyList().get(i)).getAmount();
+                    response.put("canopyTotal", Integer.valueOf(canopyTotal));
                 }
                 if (ceilingCount > 0) {
                     int ceilingTotal = 0;
                     for (int i = 0; i < ceilingCount; i++)
-                        ceilingTotal += ((Ceiling)detail.getCeilingList().get(i)).getAmount();
-                    model.addAttribute("ceilingTotal", Integer.valueOf(ceilingTotal));
+                        ceilingTotal += ((Ceiling) detail.getCeilingList().get(i)).getAmount();
+                    response.put("ceilingTotal", Integer.valueOf(ceilingTotal));
                 }
                 if (doorCount > 0) {
                     int doorTotal = 0;
                     for (int i = 0; i < doorCount; i++)
-                        doorTotal += ((Door)detail.getDoorList().get(i)).getAmount();
-                    model.addAttribute("doorTotal", Integer.valueOf(doorTotal));
+                        doorTotal += ((Door) detail.getDoorList().get(i)).getAmount();
+                    response.put("doorTotal", Integer.valueOf(doorTotal));
                 }
                 if (insideWallCount > 0) {
                     int insideWallTotal = 0;
                     for (int i = 0; i < insideWallCount; i++)
-                        insideWallTotal += ((InsideWall)detail.getInsideWallList().get(i)).getAmount();
-                    model.addAttribute("insideWallTotal", Integer.valueOf(insideWallTotal));
+                        insideWallTotal += ((InsideWall) detail.getInsideWallList().get(i)).getAmount();
+
+                    response.put("insideWallTotal", Integer.valueOf(insideWallTotal));
                 }
                 if (windowCont > 0) {
                     int windowTotal = 0;
                     for (int i = 0; i < windowCont; i++)
-                        windowTotal += ((Window)detail.getWindowList().get(i)).getAmount();
-                    model.addAttribute("windowTotal", Integer.valueOf(windowTotal));
+                        windowTotal += ((Window) detail.getWindowList().get(i)).getAmount();
+                    response.put("windowTotal", Integer.valueOf(windowTotal));
                 }
+                // TODO: verify this
                 structureDetail = detail;
-                model.addAttribute("doorPriceCount", Integer.valueOf(doorPrice.size()));
+                response.put("doorPriceCount", Integer.valueOf(doorPrice.size()));
             }
         }
-        model.addAttribute("structureDetail", structureDetail);
-        model.addAttribute("mode", mode);
-        return "/estimate/calculate";
+        response.put("structureDetail", structureDetail);
+        response.put("mode", mode);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping({"/remove/{id}"})
-    @ResponseBody
-    public String structureRemove(@PathVariable Long id) {
-        String success = "success";
+    // TODO: need to change hard delete not soft delete
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> removeStructure(@PathVariable Long id) {
         try {
-            this.estimateService.updateStructureStatus(id, "D");
+            estimateService.updateStructureStatus(id, "D");
+            return ResponseEntity.ok("success");
         } catch (Exception e) {
-            success = "fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
         }
-        return success;
     }
 
-    @GetMapping({"/remove/{id}/{state}"})
-    @ResponseBody
-    public String structureUpdateState(@PathVariable Long id, @PathVariable String state) {
-        String success = "success";
+    @PutMapping("/{id}/state/{state}")
+    public ResponseEntity<String> updateStructureState(@PathVariable Long id, @PathVariable String state) {
         try {
-            this.estimateService.updateStructureStatus(id, state);
+            estimateService.updateStructureStatus(id, state);
+            return ResponseEntity.ok("success");
         } catch (Exception e) {
-            success = "fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
         }
-        return success;
     }
 
-    @GetMapping({"/copy/{id}"})
-    @ResponseBody
-    public String structureCopy(@PathVariable Long id) {
-        String success = "success";
+    @PostMapping("/{id}/copy")
+    public ResponseEntity<String> copyStructure(@PathVariable Long id) {
         try {
-            Structure structure = this.estimateService.showEstimateCopy(id);
+            Structure structure = estimateService.showEstimateCopy(id);
             structure.setId(0L);
-            structure.setPlaceName("[복사본]"+ structure.getPlaceName());
+            structure.setPlaceName("[복사본]" + structure.getPlaceName());
             structure.setCalculateList(null);
-            Structure result = this.estimateService.saveEstimate(structure);
+
+            Structure result = estimateService.saveEstimate(structure);
             if (result != null) {
-                List<Calculate> calList = this.estimateService.listCal(id);
-                calList = JpaCloner.clone(calList, new String[] { "*" });
-                for (int i = 0; i < calList.size(); i++) {
-                    Calculate calculate = new Calculate();
-                    calculate = calList.get(i);
+                // Copy Calculate list
+                List<Calculate> calList = estimateService.listCal(id);
+                calList = JpaCloner.clone(calList, new String[]{"*"});
+                for (Calculate calculate : calList) {
                     calculate.setStructure(result);
                     calculate.setId(0L);
-                    this.estimateService.saveCal(calculate);
+                    estimateService.saveCal(calculate);
                 }
-                StructureDetail structureDetail = this.estimateDetailService.showEstimateDetailCopy(id);
-                Long structureDetilIdOld = structureDetail.getId();
-                structureDetail.setId(Long.valueOf(0L));
+
+                // Copy Structure Detail
+                StructureDetail structureDetail = estimateDetailService.showEstimateDetailCopy(id);
+                Long oldDetailId = structureDetail.getId();
+                structureDetail.setId(0L);
                 structureDetail.setStructure(result);
                 structureDetail.setCanopyList(null);
-                StructureDetail detailResult = this.estimateDetailService.saveEstimateDetail(structureDetail);
-                this.estimateDetailService.copyEstimateDetailEtc(structureDetilIdOld, detailResult);
-                this.estimateService.excelCopy(id, Long.valueOf(result.getId()));
+
+                StructureDetail detailResult = estimateDetailService.saveEstimateDetail(structureDetail);
+                estimateDetailService.copyEstimateDetailEtc(oldDetailId, detailResult);
+
+                // Copy Excel
+                estimateService.excelCopy(id, result.getId());
             }
+
+            return ResponseEntity.ok("success");
         } catch (Exception e) {
-            success = "fail";
-            System.out.println(e);
+            System.err.println("Structure copy failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
         }
-        return success;
     }
 
-    @RequestMapping({"/fileDown/{bno}"})
-    private void fileDown(@PathVariable Long bno, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "type", defaultValue = "user") String type) throws Exception {
-        request.setCharacterEncoding("UTF-8");
+    @GetMapping("/file/{bno}/download")
+    public ResponseEntity<Resource> downloadEstimateFile(
+            @PathVariable Long bno,
+            @RequestParam(value = "type", defaultValue = "user") String type,
+            HttpServletRequest request
+    ) throws UnsupportedEncodingException {
         try {
-            ServletOutputStream servletOutputStream = null;
-            String fileUrl = M2Application.UPLOAD_DIR + "/estimate/";
+            // File metadata
             String fileName = "estimate" + bno + ".xlsx";
-            String oriFileName = fileName;
-            Structure structure = this.estimateService.showEstimate(bno);
-            oriFileName = structure.getPlaceName() + ".xlsx";
-            String savePath = fileUrl;
-            InputStream in = null;
-            OutputStream os = null;
-            File file = null;
-            boolean skip = false;
-            String client = "";
-            try {
-                file = new File(savePath, fileName);
-                in = new FileInputStream(file);
-            } catch (FileNotFoundException fe) {
-                skip = true;
+            String filePath = M2Application.UPLOAD_DIR + "/estimate/" + fileName;
+            File file = new File(filePath);
+
+            if (!file.exists()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-            client = request.getHeader("User-Agent");
-            response.reset();
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Description", "JSP Generated Data");
-            if (!skip) {
-                if (client.indexOf("MSIE") != -1) {
-                    response.setHeader("Content-Disposition", "attachment; filename=\"" +
-                            URLEncoder.encode(oriFileName, "UTF-8").replaceAll("\\+", "\\ ") + "\"");
-                } else if (client.indexOf("Trident") != -1) {
-                    response.setHeader("Content-Disposition", "attachment; filename=\"" +
-                            URLEncoder.encode(oriFileName, "UTF-8").replaceAll("\\+", "\\ ") + "\"");
-                } else {
-                    response.setHeader("Content-Disposition", "attachment; filename=\"" + new String(oriFileName
-                            .getBytes("UTF-8"), "ISO8859_1") + "\"");
-                    response.setHeader("Content-Type", "application/octet-stream; charset=utf-8");
-                }
-                response.setHeader("Content-Length", "" + file.length());
-                servletOutputStream = response.getOutputStream();
-                byte[] b = new byte[(int)file.length()];
-                int leng = 0;
-                while ((leng = in.read(b)) > 0)
-                    servletOutputStream.write(b, 0, leng);
+
+            Structure structure = estimateService.showEstimate(bno);
+            String displayName = structure.getPlaceName() + ".xlsx";
+
+            // Content-Type detection
+            String contentType = request.getServletContext().getMimeType(file.getAbsolutePath());
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            // Proper encoding for filename based on browser
+            String encodedFileName;
+            String userAgent = request.getHeader("User-Agent");
+
+            if (userAgent != null && (userAgent.contains("MSIE") || userAgent.contains("Trident") || userAgent.contains("Edge"))) {
+                encodedFileName = URLEncoder.encode(displayName, "UTF-8").replaceAll("\\+", " ");
             } else {
-                response.setContentType("text/html;charset=UTF-8");
-                System.out.println("<script language='javascript'>alert('파일을 찾을 수 없습니다');history.back();</script>");
+                encodedFileName = new String(displayName.getBytes("UTF-8"), "ISO-8859-1");
             }
-            in.close();
-            servletOutputStream.close();
+
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.length()))
+                    .body(resource);
+
         } catch (Exception e) {
-            System.out.println("ERROR : " + e.getMessage());
+            System.err.println("File download error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @RequestMapping(value = {"/step01"}, method = {RequestMethod.GET})
-    public String estimateStep01(Model model, @RequestParam(name = "type", required = false) String type, Structure structure, @RequestParam(name = "id", required = false) Long id) {
-        if (id != null) {
-            structure = this.estimateService.showEstimate(id);
-            type = structure.getStructureType();
-            StructureDetail structureDetail = this.estimateDetailService.showEstimateDetail(id);
-            model.addAttribute("structureDetail", structureDetail);
-        }
-        model.addAttribute("structureForm", structure);
-        model.addAttribute("type", type);
-        return "/estimate/step01";
-    }
+    // TODO: originally divided into 4 steps, but combined as one
+    @PostMapping
+    public ResponseEntity<?> createEstimate(@RequestBody EstimateRequestDTO request) {
+        try {
+            // STEP 01: Save Structure and associate user
+            UserCustom principal = (UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Structure structure = request.getStructure();
+            structure.setUser(principal.getUser());
+            Structure savedStructure = estimateService.saveEstimate(structure);
 
-    @RequestMapping(value = {"/step01"}, method = {RequestMethod.POST})
-    public String estimateStep01(@ModelAttribute("structureForm") Structure structure, StructureDetail structureDetail, @RequestParam(value = "returnUrl", defaultValue = "") String returnUrl, BindingResult bindingResult, Model model) {
-        UserCustom principal = (UserCustom)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        structure.setUser(principal.getUser());
-        Structure result = this.estimateService.saveEstimate(structure);
-        if (result != null) {
-            structureDetail = this.estimateDetailService.showEstimateDetail(Long.valueOf(result.getId()));
-            if (structureDetail == null) {
-                structureDetail = new StructureDetail();
-                structureDetail.setStructure(result);
-                structureDetail = this.estimateDetailService.saveEstimateDetail(structureDetail);
+            if (savedStructure == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save structure");
             }
-        }
-        if (returnUrl.equals(""))
-            returnUrl = "/estimate/step02?structure_detail_id=" + structureDetail.getId();
-        return "redirect:" + returnUrl;
-    }
 
-    @RequestMapping(value = {"/step02"}, method = {RequestMethod.GET})
-    public String estimateStep02(Model model, StructureDetail structureDetail, @RequestParam(name = "structure_detail_id", required = false) Long structure_detail_id) {
-        if (structure_detail_id != null) {
-            StructureDetail detail = this.estimateDetailService.showEstimateDetailId(structure_detail_id);
-            if (detail != null)
-                structureDetail = detail;
-        }
-        model.addAttribute("structureDetailForm", structureDetail);
-        return "/estimate/step02";
-    }
-
-    @RequestMapping(value = {"/step02"}, method = {RequestMethod.POST})
-    public String estimateStep02(@ModelAttribute("structureDetailForm") StructureDetail structureDetail, @RequestParam(value = "returnUrl", defaultValue = "") String returnUrl, BindingResult bindingResult, Model model) {
-        StructureDetail detail = this.estimateDetailService.showEstimateDetailId(structureDetail.getId());
-        detail.updateStep2(structureDetail);
-        StructureDetail result = this.estimateDetailService.saveEstimateDetail(detail);
-        if (returnUrl.equals(""))
-            returnUrl = "/estimate/step03?structure_detail_id=" + result.getId();
-        return "redirect:" + returnUrl;
-    }
-
-    @RequestMapping(value = {"/step03"}, method = {RequestMethod.GET})
-    public String estimateStep03(Model model, InsideWall insideWall, StructureDetail structureDetail, @RequestParam(name = "structure_detail_id", required = false) Long structure_detail_id) {
-        if (structure_detail_id != null) {
-            StructureDetail detail = this.estimateDetailService.showEstimateDetailId(structure_detail_id);
-            if (detail != null)
-                structureDetail = detail;
-        }
-        model.addAttribute("insideWallListSize", Integer.valueOf(structureDetail.getInsideWallList().size()));
-        model.addAttribute("ceilingListSize", Integer.valueOf(structureDetail.getCeilingList().size()));
-        model.addAttribute("doorListSize", Integer.valueOf(structureDetail.getDoorList().size()));
-        model.addAttribute("downpipeListSize", Integer.valueOf(structureDetail.getDownpipeList().size()));
-        model.addAttribute("canopyListSize", Integer.valueOf(structureDetail.getCanopyList().size()));
-        model.addAttribute("windowListSize", Integer.valueOf(structureDetail.getWindowList().size()));
-        model.addAttribute("structureDetailForm", structureDetail);
-        return "/estimate/step03";
-    }
-
-    @RequestMapping(value = {"/step03"}, method = {RequestMethod.POST})
-    public String estimateStep03(@ModelAttribute("structureDetailForm") StructureDetail structureDetail, @RequestParam(value = "returnUrl", defaultValue = "") String returnUrl, BindingResult bindingResult, Model model) {
-        StructureDetail detail = this.estimateDetailService.showEstimateDetailId(structureDetail.getId());
-        detail.updateGucci(structureDetail);
-        this.estimateDetailService.saveEstimateDetail(detail);
-        StructureDetail result = this.estimateDetailService.saveEstimateDetailEtc(structureDetail);
-        model.addAttribute("result", result);
-        if (returnUrl.equals(""))
-            returnUrl = "/estimate/step04?structure_detail_id=" + result.getId();
-        return "redirect:" + returnUrl;
-    }
-
-    @RequestMapping(value = {"/step04"}, method = {RequestMethod.GET})
-    public String estimateStep04(Model model, StructureDetail structureDetail, @RequestParam(name = "structure_detail_id", required = false) Long structure_detail_id) {
-        if (structure_detail_id != null) {
-            StructureDetail detail = this.estimateDetailService.showEstimateDetailId(structure_detail_id);
-            if (detail != null)
-                structureDetail = detail;
-        }
-        model.addAttribute("structureDetailForm", structureDetail);
-        return "/estimate/step04";
-    }
-
-    @RequestMapping(value = {"/step04"}, method = {RequestMethod.POST})
-    public String estimateStep04(@ModelAttribute("structureDetailForm") StructureDetail structureDetail, @RequestParam(value = "returnUrl", defaultValue = "") String returnUrl, BindingResult bindingResult, Model model) {
-        StructureDetail result = this.estimateDetailService.showEstimateDetailId(structureDetail.getId());
-        result.updateStep4(structureDetail);
-        result = this.estimateDetailService.saveEstimateDetail(result);
-        List<String> calList = EstimateCalculate.mainCal(result);
-        if (calList.size() > 0) {
-            this.estimateService.deleteCal(Long.valueOf(result.getStructure().getId()));
-            for (String value : calList) {
-                Calculate calculate = new Calculate();
-                String[] calculateArray = value.split("\\|");
-                calculate.setName(calculateArray[0]);
-                calculate.setStandard(calculateArray[1]);
-                calculate.setUnit(calculateArray[2]);
-                calculate.setAmount((int)Double.parseDouble(calculateArray[3]));
-                calculate.setTotal(Integer.parseInt(calculateArray[4]));
-                calculate.setStructure(result.getStructure());
-                this.estimateService.saveCal(calculate);
+            // STEP 02: Retrieve or initialize StructureDetail, then apply step 2 logic
+            StructureDetail detailInput = request.getStructureDetail();
+            StructureDetail detail = estimateDetailService.showEstimateDetailId(detailInput.getId());
+            if (detail == null) {
+                detail = new StructureDetail();
+                detail.setStructure(savedStructure);
             }
-            int doorListCount = result.getDoorList().size();
-            for (int i = 0; i < doorListCount; i++) {
-                Calculate calculate = new Calculate();
-                int w = ((Door)result.getDoorList().get(i)).getWidth();
-                int h = ((Door)result.getDoorList().get(i)).getHeight();
-                int e = ((Door)result.getDoorList().get(i)).getAmount();
-                String st = ((Door)result.getDoorList().get(i)).getSubType();
-                String standard = "";
-                if (st.equals("S")) {
-                    standard = "스윙도어";
-                } else if (st.equals("F")) {
-                    standard = "방화문";
-                } else if (st.equals("H")) {
-                    standard = "행거도어(EPS전용)";
+            detail.updateStep2(detailInput);
+
+            // STEP 03: Apply step 3 logic (gucci update and save ETC data)
+            detail.updateGucci(detailInput);
+            estimateDetailService.saveEstimateDetail(detail); // optional intermediate save
+            StructureDetail savedDetail = estimateDetailService.saveEstimateDetailEtc(detailInput);
+            savedDetail.setStructure(savedStructure);
+
+            // STEP 04: Apply step 4 logic (update + calculations)
+            savedDetail.updateStep4(detailInput);
+            savedDetail = estimateDetailService.saveEstimateDetail(savedDetail);
+
+            // Recalculate items and save
+            List<String> calList = EstimateCalculate.mainCal(savedDetail);
+            if (!calList.isEmpty()) {
+                estimateService.deleteCal(savedStructure.getId());
+
+                for (String value : calList) {
+                    String[] parts = value.split("\\|");
+                    Calculate cal = new Calculate();
+                    cal.setName(parts[0]);
+                    cal.setStandard(parts[1]);
+                    cal.setUnit(parts[2]);
+                    cal.setAmount((int) Double.parseDouble(parts[3]));
+                    cal.setTotal(Integer.parseInt(parts[4]));
+                    cal.setStructure(savedStructure);
+                    estimateService.saveCal(cal);
                 }
-                calculate.setName("도어");
-                calculate.setStandard(String.valueOf(w) + "*" + String.valueOf(h) + "," + standard);
-                calculate.setUnit("EA");
-                calculate.setAmount(e);
-                calculate.setTotal(0L);
-                calculate.setStructure(result.getStructure());
-                calculate.setType("D");
-                this.estimateService.saveCal(calculate);
+
+                // Door → Calculate
+                for (Door door : savedDetail.getDoorList()) {
+                    Calculate cal = new Calculate();
+                    String subtype = switch (door.getSubType()) {
+                        case "S" -> "스윙도어";
+                        case "F" -> "방화문";
+                        case "H" -> "행거도어(EPS전용)";
+                        default -> "기타";
+                    };
+                    cal.setName("도어");
+                    cal.setStandard(door.getWidth() + "*" + door.getHeight() + "," + subtype);
+                    cal.setUnit("EA");
+                    cal.setAmount(door.getAmount());
+                    cal.setTotal(0L);
+                    cal.setStructure(savedStructure);
+                    cal.setType("D");
+                    estimateService.saveCal(cal);
+                }
+
+                // Window → Calculate
+                for (Window window : savedDetail.getWindowList()) {
+                    Calculate cal = new Calculate();
+                    cal.setName("창호");
+                    cal.setStandard(window.getWidth() + "*" + window.getHeight());
+                    cal.setUnit("EA");
+                    cal.setAmount(window.getAmount());
+                    cal.setTotal(0L);
+                    cal.setStructure(savedStructure);
+                    cal.setType("D");
+                    estimateService.saveCal(cal);
+                }
             }
-            int windowListCount = result.getWindowList().size();
-            for (int j = 0; j < windowListCount; j++) {
-                Calculate calculate = new Calculate();
-                int w = ((Window)result.getWindowList().get(j)).getWidth();
-                int h = ((Window)result.getWindowList().get(j)).getHeight();
-                int e = ((Window)result.getWindowList().get(j)).getAmount();
-                calculate.setName("창호");
-                calculate.setStandard(String.valueOf(w) + "*" + String.valueOf(h));
-                calculate.setUnit("EA");
-                calculate.setAmount(e);
-                calculate.setTotal(0L);
-                calculate.setStructure(result.getStructure());
-                calculate.setType("D");
-                this.estimateService.saveCal(calculate);
-            }
+
+            // Final result
+            return ResponseEntity.ok(Map.of(
+                    "structureId", savedStructure.getId(),
+                    "structureDetailId", savedDetail.getId(),
+                    "message", "Estimate saved successfully"
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to save estimate: " + e.getMessage());
         }
-        model.addAttribute("result", result);
-        if (returnUrl.equals(""))
-            returnUrl = "/estimate/step05?structure_detail_id=" + result.getId();
-        return "redirect:" + returnUrl;
     }
 
-    @RequestMapping(value = {"/step05"}, method = {RequestMethod.GET})
-    public String estimateStep05(Model model, StructureDetail structureDetail, @RequestParam(name = "structure_detail_id", required = false) Long structure_detail_id) {
-        if (structure_detail_id != null) {
-            StructureDetail detail = this.estimateDetailService.showEstimateDetailId(structure_detail_id);
-            if (detail != null) {
-                int canopyCount = detail.getCanopyList().size();
-                int ceilingCount = detail.getCeilingList().size();
-                int doorCount = detail.getDoorList().size();
-                int insideWallCount = detail.getInsideWallList().size();
-                int windowCont = detail.getWindowList().size();
-                List<Calculate> doorPrice = this.estimateService.findByStructureIdAndType(Long.valueOf(detail.getStructure().getId()));
-                if (canopyCount > 0) {
-                    int canopyTotal = 0;
-                    for (int i = 0; i < canopyCount; i++)
-                        canopyTotal += ((Canopy)detail.getCanopyList().get(i)).getAmount();
-                    model.addAttribute("canopyTotal", Integer.valueOf(canopyTotal));
-                }
-                if (ceilingCount > 0) {
-                    int ceilingTotal = 0;
-                    for (int i = 0; i < ceilingCount; i++)
-                        ceilingTotal += ((Ceiling)detail.getCeilingList().get(i)).getAmount();
-                    model.addAttribute("ceilingTotal", Integer.valueOf(ceilingTotal));
-                }
-                if (doorCount > 0) {
-                    int doorTotal = 0;
-                    for (int i = 0; i < doorCount; i++)
-                        doorTotal += ((Door)detail.getDoorList().get(i)).getAmount();
-                    model.addAttribute("doorTotal", Integer.valueOf(doorTotal));
-                }
-                if (insideWallCount > 0) {
-                    int insideWallTotal = 0;
-                    for (int i = 0; i < insideWallCount; i++)
-                        insideWallTotal += ((InsideWall)detail.getInsideWallList().get(i)).getAmount();
-                    model.addAttribute("insideWallTotal", Integer.valueOf(insideWallTotal));
-                }
-                if (windowCont > 0) {
-                    int windowTotal = 0;
-                    for (int i = 0; i < windowCont; i++)
-                        windowTotal += ((Window)detail.getWindowList().get(i)).getAmount();
-                    model.addAttribute("windowTotal", Integer.valueOf(windowTotal));
-                }
-                structureDetail = detail;
-                model.addAttribute("doorPriceCount", Integer.valueOf(doorPrice.size()));
-            }
+    @GetMapping("/step05-summary")
+    public ResponseEntity<?> getEstimateStep05Summary(
+            @RequestParam(name = "structure_detail_id", required = false) Long structureDetailId) {
+
+        if (structureDetailId == null) {
+            return ResponseEntity.badRequest().body("structure_detail_id is required");
         }
-        model.addAttribute("structureDetail", structureDetail);
-        return "/estimate/step05";
+
+        StructureDetail detail = estimateDetailService.showEstimateDetailId(structureDetailId);
+        if (detail == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("StructureDetail not found");
+        }
+
+        EstimateResponseDTO dto = new EstimateResponseDTO();
+
+        // Count canopy
+        if (detail.getCanopyList() != null) {
+            dto.setCanopyTotal(detail.getCanopyList().stream()
+                    .mapToInt(Canopy::getAmount)
+                    .sum());
+        }
+
+        // Count ceiling
+        if (detail.getCeilingList() != null) {
+            dto.setCeilingTotal(detail.getCeilingList().stream()
+                    .mapToInt(Ceiling::getAmount)
+                    .sum());
+        }
+
+        // Count door
+        if (detail.getDoorList() != null) {
+            dto.setDoorTotal(detail.getDoorList().stream()
+                    .mapToInt(Door::getAmount)
+                    .sum());
+        }
+
+        // Count inside walls
+        if (detail.getInsideWallList() != null) {
+            dto.setInsideWallTotal(detail.getInsideWallList().stream()
+                    .mapToInt(InsideWall::getAmount)
+                    .sum());
+        }
+
+        // Count windows
+        if (detail.getWindowList() != null) {
+            dto.setWindowTotal(detail.getWindowList().stream()
+                    .mapToInt(Window::getAmount)
+                    .sum());
+        }
+
+        // Count door price items
+        List<Calculate> doorPrices = estimateService.findByStructureIdAndType(detail.getStructure().getId());
+        dto.setDoorPriceCount(doorPrices.size());
+
+        // Include structure detail
+        dto.setStructureDetail(detail);
+
+        return ResponseEntity.ok(dto);
     }
 
-    @GetMapping({"/remove/insideWall/{id}"})
-    @ResponseBody
-    public void insideWallRemove(@PathVariable Long id) {
-        this.estimateDetailService.deleteInsideWall(id);
+    @DeleteMapping("/inside-wall/{id}")
+    public ResponseEntity<Void> deleteInsideWall(@PathVariable Long id) {
+        estimateDetailService.deleteInsideWall(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping({"/remove/ceiling/{id}"})
-    @ResponseBody
-    public void ceilingRemove(@PathVariable Long id) {
-        this.estimateDetailService.deleteCeiling(id);
+    @DeleteMapping("/ceiling/{id}")
+    public ResponseEntity<Void> deleteCeiling(@PathVariable Long id) {
+        estimateDetailService.deleteCeiling(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping({"/remove/window/{id}"})
-    @ResponseBody
-    public void windowRemove(@PathVariable Long id) {
-        this.estimateDetailService.deleteWindow(id);
+    @DeleteMapping("/window/{id}")
+    public ResponseEntity<Void> deleteWindow(@PathVariable Long id) {
+        estimateDetailService.deleteWindow(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping({"/remove/door/{id}"})
-    @ResponseBody
-    public void doorRemove(@PathVariable Long id) {
-        this.estimateDetailService.deleteDoor(id);
+    @DeleteMapping("/door/{id}")
+    public ResponseEntity<Void> deleteDoor(@PathVariable Long id) {
+        estimateDetailService.deleteDoor(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping({"/remove/canopy/{id}"})
-    @ResponseBody
-    public void canopyRemove(@PathVariable Long id) {
-        this.estimateDetailService.deleteCanopy(id);
+    @DeleteMapping("/canopy/{id}")
+    public ResponseEntity<Void> deleteCanopy(@PathVariable Long id) {
+        estimateDetailService.deleteCanopy(id);
+        return ResponseEntity.noContent().build();
     }
+
+
 }
+
+
+

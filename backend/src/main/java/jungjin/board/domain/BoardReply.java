@@ -1,23 +1,24 @@
 package jungjin.board.domain;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jungjin.user.domain.User;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "m2_board_reply")
+@Getter
+@Setter
+@NoArgsConstructor
+@Accessors(chain = true)
 public class BoardReply implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -51,73 +52,9 @@ public class BoardReply implements Serializable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_board_id"))
     private Board board;
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setContents(String contents) {
-        this.contents = contents;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public void setReadcount(int readcount) {
-        this.readcount = readcount;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    public long getId() {
-        return this.id;
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public String getContents() {
-        return this.contents;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return this.createDate;
-    }
-
-    public int getReadcount() {
-        return this.readcount;
-    }
-
-    public Board getBoard() {
-        return this.board;
-    }
-
-    public void update(BoardReply upateBoardReply) {
-        this.title = upateBoardReply.title;
-        this.contents = upateBoardReply.contents;
+    public void update(BoardReply updateBoardReply) {
+        this.title = updateBoardReply.title;
+        this.contents = updateBoardReply.contents;
     }
 
     public void insert(BoardReply insertBoardReply) {

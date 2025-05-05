@@ -7,7 +7,7 @@ import jungjin.picture.domain.PictureFile;
 import jungjin.picture.repository.PictureAdminFileRepository;
 import jungjin.picture.repository.PictureFileRepository;
 import jungjin.picture.repository.PictureRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,14 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class PictureService {
-    @Autowired
+
     PictureRepository pictureRepository;
-
-    @Autowired
     PictureFileRepository pictureFileRepository;
-
-    @Autowired
     PictureAdminFileRepository pictureAdminFileRepository;
 
     public Page<Picture> listPicture(int page, int size) {

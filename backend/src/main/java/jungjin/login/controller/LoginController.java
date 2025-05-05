@@ -6,56 +6,44 @@ import jungjin.estimate.service.EstimateService;
 import jungjin.user.service.SecurityService;
 import jungjin.user.service.UserCustom;
 import jungjin.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
 public class LoginController {
-    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
+    private final EstimateService estimateService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    EstimateService estimateService;
-
-    @RequestMapping(value = {"/login"}, method = {RequestMethod.GET})
-    public String login(Model model, HttpServletRequest request) {
+    @GetMapping("/login")
+    public ResponseEntity<String> login(HttpServletRequest request) {
         request.getSession().removeAttribute("prevPage");
-        return "/login";
+        return ResponseEntity.ok("Login endpoint - session cleared");
     }
 
-    @RequestMapping(value = {"/main"}, method = {RequestMethod.GET})
-    public String main(@RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        UserCustom principal = (UserCustom)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    @GetMapping("/main")
+    public ResponseEntity<Page<Structure>> main(@RequestParam(value = "page", defaultValue = "1") int page) {
+        UserCustom principal = (UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userNum = principal.getUser().getNum();
-        Page<Structure> listEstimate = this.estimateService.listEstimate(page, 4, userNum);
-        model.addAttribute("listEstimate", listEstimate);
-        return "/main";
+        Page<Structure> listEstimate = estimateService.listEstimate(page, 4, userNum);
+        return ResponseEntity.ok(listEstimate);
     }
 
-    @RequestMapping(value = {"/main_new"}, method = {RequestMethod.GET})
-    public String main_new(@RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        UserCustom principal = (UserCustom)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    @GetMapping("/main-new")
+    public ResponseEntity<Page<Structure>> mainNew(@RequestParam(value = "page", defaultValue = "1") int page) {
+        UserCustom principal = (UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userNum = principal.getUser().getNum();
-        Page<Structure> listEstimate = this.estimateService.listEstimate(page, 4, userNum);
-        model.addAttribute("listEstimate", listEstimate);
-        return "/main_new";
+        Page<Structure> listEstimate = estimateService.listEstimate(page, 4, userNum);
+        return ResponseEntity.ok(listEstimate);
     }
 
-    @RequestMapping(value = {"/originalImg2"}, method = {RequestMethod.GET})
-    public String img() {
-        return "/originalImg";
+    @GetMapping("/original-img")
+    public ResponseEntity<String> imageStub() {
+        return ResponseEntity.ok("Image view placeholder endpoint");
     }
 }

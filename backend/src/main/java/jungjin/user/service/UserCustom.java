@@ -1,5 +1,6 @@
 package jungjin.user.service;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
 public class UserCustom implements UserDetails, CredentialsContainer {
+    @Serial
     private static final long serialVersionUID = 420L;
 
     private String password;
@@ -36,7 +38,7 @@ public class UserCustom implements UserDetails, CredentialsContainer {
 
     private final boolean enabled;
 
-    private User user;
+    private final User user;
 
     public UserCustom(String username, String password, Collection<? extends GrantedAuthority> authorities, User user) {
         this(username, password, true, true, true, true, authorities, user);
@@ -191,6 +193,7 @@ public class UserCustom implements UserDetails, CredentialsContainer {
         }
 
         public UserBuilder authorities(List<? extends GrantedAuthority> authorities) {
+            Assert.notNull(authorities, "authorities cannot be null");
             this.authorities = new ArrayList<>(authorities);
             return this;
         }

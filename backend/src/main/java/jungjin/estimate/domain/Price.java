@@ -1,15 +1,19 @@
 package jungjin.estimate.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Entity
 @Table(name = "m2_est_price")
+@Getter
+@Setter
+@NoArgsConstructor
+@Accessors(chain = true)
 public class Price {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -33,92 +37,12 @@ public class Price {
     @Column(name = "gap_price")
     private int gapPrice;
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setGubun(String gubun) {
-        this.gubun = gubun;
-    }
-
-    public void setSubGubun(String subGubun) {
-        this.subGubun = subGubun;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setSubType(String subType) {
-        this.subType = subType;
-    }
-
-    public void setStartPrice(int startPrice) {
-        this.startPrice = startPrice;
-    }
-
-    public void setGapPrice(int gapPrice) {
-        this.gapPrice = gapPrice;
-    }
-
-    public void setMaxThickPrice(int maxThickPrice) {
-        this.maxThickPrice = maxThickPrice;
-    }
-
-    public void setStandardPrice(int standardPrice) {
-        this.standardPrice = standardPrice;
-    }
-
-    public void setEPrice(int ePrice) {
-        this.ePrice = ePrice;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public String getGubun() {
-        return this.gubun;
-    }
-
-    public String getSubGubun() {
-        return this.subGubun;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public String getSubType() {
-        return this.subType;
-    }
-
-    public int getStartPrice() {
-        return this.startPrice;
-    }
-
-    public int getGapPrice() {
-        return this.gapPrice;
-    }
-
     @Column(name = "max_thick_price")
     private int maxThickPrice = 0;
-
-    public int getMaxThickPrice() {
-        return this.maxThickPrice;
-    }
 
     @Column(name = "standard_price")
     private int standardPrice = 0;
 
-    public int getStandardPrice() {
-        return this.standardPrice;
-    }
-
     @Column(nullable = false)
     private int ePrice = 0;
-
-    public int getEPrice() {
-        return this.ePrice;
-    }
 }
