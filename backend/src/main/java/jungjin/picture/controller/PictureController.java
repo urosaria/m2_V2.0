@@ -80,7 +80,7 @@ public class PictureController {
                         pictureService.savePictureFile(pictureFile);
                     }
                 } catch (IOException e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                    throw new RuntimeException("파일 업로드 중 오류가 발생했습니다.", e);
                 }
             }
         }

@@ -3,6 +3,7 @@ package jungjin.login.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jungjin.user.service.SecurityService;
+import jungjin.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,15 +32,16 @@ public class LoginAdminController {
             return ResponseEntity.ok("Login successful");
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+        throw new NotFoundException("Invalid username or password");
     }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
+        if (auth == null) {
+            throw new NotFoundException("No authenticated user found for logout");
         }
+        new SecurityContextLogoutHandler().logout(request, response, auth);
         return ResponseEntity.ok("Logout successful");
     }
 

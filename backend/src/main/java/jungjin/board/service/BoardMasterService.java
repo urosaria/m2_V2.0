@@ -2,7 +2,7 @@ package jungjin.board.service;
 
 import java.util.List;
 
-import jakarta.persistence.EntityNotFoundException;
+import jungjin.common.exception.NotFoundException;
 import jungjin.board.domain.BoardMaster;
 import jungjin.board.repository.BoardMasterRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +28,13 @@ public class BoardMasterService {
 
     public BoardMaster showBoardMaster(long id) {
         return boardMasterRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("BoardMaster with id " + id + " not found."));
+                .orElseThrow(() -> new NotFoundException("BoardMaster not found with id: " + id));
     }
 
     @Transactional
     public void updateBoardMaster(long id, BoardMaster updateBoardMaster) {
         BoardMaster boardMaster = boardMasterRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("BoardMaster with id " + id + " not found."));
+                .orElseThrow(() -> new NotFoundException("BoardMaster not found with id: " + id));
 
         boardMaster.update(updateBoardMaster);  // assumes a custom update method
         boardMasterRepository.save(boardMaster);
@@ -43,7 +43,7 @@ public class BoardMasterService {
     @Transactional
     public BoardMaster deleteBoardMaster(long id) {
         BoardMaster boardMaster = boardMasterRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("BoardMaster with id " + id + " not found."));
+                .orElseThrow(() -> new NotFoundException("BoardMaster not found with id: " + id));
 
         boardMaster.setStatus("D");
         return boardMasterRepository.save(boardMaster);

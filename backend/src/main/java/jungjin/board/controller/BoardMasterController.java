@@ -2,6 +2,8 @@ package jungjin.board.controller;
 
 import jungjin.board.domain.BoardMaster;
 import jungjin.board.service.BoardMasterService;
+import jungjin.common.exception.NotFoundException;
+import jungjin.common.exception.BusinessException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,7 @@ public class BoardMasterController {
             List<BoardMaster> masterList = boardMasterService.listBoardMaster();
             return ResponseEntity.ok(masterList);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error fetching board master list: " + e.getMessage());
+            throw new BusinessException("Error fetching board master list: " + e.getMessage());
         }
     }
 
@@ -32,7 +34,7 @@ public class BoardMasterController {
             boardMasterService.saveBoardMaster(boardMaster);
             return ResponseEntity.ok(boardMaster);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error creating board master: " + e.getMessage());
+            throw new BusinessException("Error creating board master: " + e.getMessage());
         }
     }
 
@@ -40,9 +42,12 @@ public class BoardMasterController {
     public ResponseEntity<?> getBoardMaster(@PathVariable("id") int id) {
         try {
             BoardMaster boardMaster = boardMasterService.showBoardMaster(id);
+            if (boardMaster == null) {
+                throw new NotFoundException("Board master not found with id: " + id);
+            }
             return ResponseEntity.ok(boardMaster);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error fetching board master: " + e.getMessage());
+            throw new BusinessException("Error fetching board master: " + e.getMessage());
         }
     }
 
@@ -55,7 +60,7 @@ public class BoardMasterController {
             BoardMaster updatedMaster = boardMasterService.showBoardMaster(id);
             return ResponseEntity.ok(updatedMaster);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error updating board master: " + e.getMessage());
+            throw new BusinessException("Error updating board master: " + e.getMessage());
         }
     }
 
@@ -64,11 +69,11 @@ public class BoardMasterController {
         try {
             BoardMaster boardMaster = boardMasterService.deleteBoardMaster(id);
             if (boardMaster == null) {
-                return ResponseEntity.badRequest().body("Failed to delete board master");
+                throw new NotFoundException("Board master not found with id: " + id);
             }
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error deleting board master: " + e.getMessage());
+            throw new BusinessException("Error deleting board master: " + e.getMessage());
         }
     }
 }

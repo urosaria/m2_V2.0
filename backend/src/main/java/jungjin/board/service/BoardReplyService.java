@@ -2,9 +2,9 @@ package jungjin.board.service;
 
 import java.util.List;
 
-import jakarta.persistence.EntityNotFoundException;
 import jungjin.board.domain.BoardReply;
 import jungjin.board.repository.BoardReplyRepository;
+import jungjin.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,25 +24,22 @@ public class BoardReplyService {
     }
 
     public BoardReply showBoardReply(Long id) {
-        return boardReplyRepository.findById(id).orElse(null);
+        return boardReplyRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("BoardReply with id " + id + " not found."));
     }
 
     @Transactional
     public void updateBoardReply(Long id, BoardReply updateBoard) {
-        BoardReply board = boardReplyRepository.findById(id).orElse(null);
-        if (board != null) {
-            board.update(updateBoard);
-            boardReplyRepository.save(board);
-        }
+        BoardReply board = boardReplyRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("BoardReply with id " + id + " not found."));
+        board.update(updateBoard);
+        boardReplyRepository.save(board);
     }
 
     @Transactional
     public BoardReply deleteBoardReply(Long id) {
-        BoardReply boardReply = boardReplyRepository.findById(id).orElse(null);
-        if (boardReply == null) {
-            throw new EntityNotFoundException("BoardReply with id " + id + " not found.");
-        }
-
+        BoardReply boardReply = boardReplyRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("BoardReply with id " + id + " not found."));
         boardReply.setStatus("D");
         return boardReplyRepository.save(boardReply);
     }

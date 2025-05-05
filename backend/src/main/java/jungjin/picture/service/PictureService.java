@@ -39,7 +39,11 @@ public class PictureService {
     }
 
     public Picture savePicture(Picture insertPicture) {
-        return (Picture)this.pictureRepository.save(insertPicture);
+        try {
+            return this.pictureRepository.save(insertPicture);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save Picture", e);
+        }
     }
 
     public Picture showPicture(Long id) {
@@ -47,7 +51,11 @@ public class PictureService {
     }
 
     public PictureFile savePictureFile(PictureFile insertPictureFile) {
-        return (PictureFile)this.pictureFileRepository.save(insertPictureFile);
+        try {
+            return this.pictureFileRepository.save(insertPictureFile);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save PictureFile", e);
+        }
     }
 
     public PictureFile fileDetailService(Long id) {
@@ -71,7 +79,11 @@ public class PictureService {
     }
 
     public PictureAdminFile savePictureAdminFile(PictureAdminFile pictureAdminFile) {
-        return (PictureAdminFile)this.pictureAdminFileRepository.save(pictureAdminFile);
+        try {
+            return this.pictureAdminFileRepository.save(pictureAdminFile);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save PictureAdminFile", e);
+        }
     }
 
     @Transactional

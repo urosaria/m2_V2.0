@@ -1,5 +1,7 @@
 package jungjin.user.controller;
 
+import jakarta.persistence.EntityNotFoundException;
+
 import jungjin.user.domain.Role;
 import jungjin.user.domain.User;
 import jungjin.user.service.RoleService;
@@ -29,6 +31,9 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User userForm) {
         Role userRole = roleService.showRole(2L);
+        if (userRole == null) {
+            throw new EntityNotFoundException("Default role not found");
+        }
         User result = userService.saveUser(userForm, userRole);
         return result != null ? ResponseEntity.status(HttpStatus.CREATED).body("success") : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
     }

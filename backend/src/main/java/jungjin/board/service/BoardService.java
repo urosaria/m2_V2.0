@@ -1,6 +1,7 @@
 package jungjin.board.service;
 
 import java.util.List;
+import jungjin.common.exception.NotFoundException;
 import jungjin.board.domain.Board;
 import jungjin.board.domain.BoardFile;
 import jungjin.board.repository.BoardFileRepository;
@@ -36,22 +37,24 @@ public class BoardService {
 
 	public Board showBoard(Long id) {
 		updateBoardReadcount(id);
-		return boardRepository.findById(id).orElse(null);
+		return boardRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException("Board not found with id: " + id));
 	}
 
 	@Transactional
 	public void updateBoard(Long id, Board updateBoard) {
-		Board board = boardRepository.findById(id).orElse(null);
+		Board board = boardRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException("Board not found with id: " + id));
 		board.update(updateBoard);
 		boardRepository.save(board);
 	}
 
 	@Transactional
 	public Board deleteBoard(Long id) {
-		Board board = boardRepository.findById(id).orElse(null);
+		Board board = boardRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException("Board not found with id: " + id));
 		board.setStatus("D");
-		board = (Board)boardRepository.save(board);
-		return board;
+		return boardRepository.save(board);
 	}
 
 	public BoardFile saveBoardFile(BoardFile boardFile) {
@@ -63,7 +66,8 @@ public class BoardService {
 	}
 
 	public BoardFile fileDetailService(Long id) {
-		return this.boardFileRepository.findById(id).orElse(null);
+		return this.boardFileRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException("BoardFile not found with id: " + id));
 	}
 
 	public void updateBoardReadcount(Long id) {

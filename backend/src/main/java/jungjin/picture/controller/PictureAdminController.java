@@ -28,7 +28,7 @@ public class PictureAdminController {
     private final UploadConfig uploadConfig;
 
     @GetMapping("/list")
-    public ResponseEntity<Page<Picture>> list(@RequestParam(defaultValue = "1") int page, User user) {
+    public ResponseEntity<Page<Picture>> list(@RequestParam(defaultValue = "1") int page) {
         Page<Picture> pictureList = pictureService.listPicture(page, 10);
         return ResponseEntity.ok(pictureList);
     }
