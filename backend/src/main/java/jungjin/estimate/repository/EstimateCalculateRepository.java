@@ -11,12 +11,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EstimateCalculateRepository extends JpaRepository<Calculate, Long> {
-    List<Calculate> findByStructureIdOrderBySortAsc(Long paramLong);
+
+    List<Calculate> findByStructureIdOrderBySortAsc(Long structureId);
 
     @Transactional
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from Calculate e where e.structure.id = :structureId")
-    void deleteByStructureId(@Param("structureId") Long paramLong);
+    void deleteByStructureId(@Param("structureId") Long structureId);
 
-    List<Calculate> findByStructureIdAndType(Long paramLong, String paramString);
+    List<Calculate> findByStructureIdAndType(Long structureId, String type);
 }

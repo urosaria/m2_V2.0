@@ -29,3 +29,14 @@ spring:
 # Custom application properties
 file:
   upload-dir: /Users/rosariayu/IdeaProjects/m2/src/main/webapp/upload
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.engine.jdbc.batch.internal.BatchingBatch: DEBUG
+    org.hibernate.stat: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.transaction: DEBUG
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: TRACE

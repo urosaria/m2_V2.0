@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EstimatePriceService {
 
-    EstimatePriceRepository estimatePriceRepository;
+    private final EstimatePriceRepository estimatePriceRepository;
 
     public Price showPrice(String gubun, String subGubun, String type, String subType) {
-        return this.estimatePriceRepository.findByGubunAndSubGubunAndTypeAndSubType(gubun, subGubun, type, subType);
+        return estimatePriceRepository.findByGubunAndSubGubunAndTypeAndSubType(gubun, subGubun, type, subType);
     }
 
 }

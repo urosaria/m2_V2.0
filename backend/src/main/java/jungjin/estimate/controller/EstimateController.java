@@ -9,6 +9,7 @@ import jungjin.config.UploadConfig;
 import jungjin.estimate.dto.EstimateRequestDTO;
 import jungjin.estimate.dto.EstimateResponseDTO;
 import jungjin.estimate.dto.EstimateListDTO;
+import jungjin.estimate.mapper.EstimateMapper;
 import jungjin.user.service.UserService;
 import org.springframework.core.io.Resource;
 
@@ -34,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import sk.nociar.jpacloner.JpaCloner;
 
 @RestController
-@RequestMapping("/api/estimates")
+@RequestMapping("/api/estimates/old")
 @RequiredArgsConstructor
 public class EstimateController {
 
@@ -43,6 +44,7 @@ public class EstimateController {
     private final EstimatePriceService estimatePriceService;
     private final UploadConfig uploadConfig;
     private final UserService userService;
+    private final EstimateMapper estimateMapper;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -89,146 +91,150 @@ public class EstimateController {
 
         return ResponseEntity.ok(response);
     }
-
-    @PostMapping("/register")
-    public ResponseEntity<?> createEstimate(
-            @RequestBody EstimateRequestDTO request,
-            @RequestParam(defaultValue = "") String mode) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            Structure structure = request.getStructure();
-            StructureDetail structureDetail = request.getStructureDetail();
-
-            if (mode.isEmpty()) {
-                //structure.setUser(user);
-            }
-
-            Structure result = estimateService.saveEstimate(structure);
-            if (result == null) {
-                return ResponseEntity.badRequest().body("Failed to save estimate");
-            }
-
-            structureDetail = structure.getStructureDetail();
-            structureDetail.setStructure(result);
-            if (structureDetail.getInsideWallYn().equals("N")) {
-                structureDetail.setInsideWallType("");
-                structureDetail.setInsideWallPaper("");
-                structureDetail.setInsideWallThick(0);
-            }
-            if (structureDetail.getCeilingYn().equals("N")) {
-                structureDetail.setCeilingType("");
-                structureDetail.setCeilingPaper("");
-                structureDetail.setCeilingThick(0);
-            }
-            estimateDetailService.saveEstimateDetail(structureDetail);
-            estimateDetailService.saveEstimateDetailEtc(structureDetail);
-            List<String> calList = EstimateCalculate.mainCal(structureDetail);
-            if (calList.size() > 0) {
-                estimateService.deleteCal(Long.valueOf(result.getId()));
-                int index = 0;
-                for (String value : calList) {
-                    Calculate calculate = new Calculate();
-                    String[] calculateArray = value.split("\\|");
-                    calculate.setName(calculateArray[0]);
-                    calculate.setStandard(calculateArray[1]);
-                    calculate.setUnit(calculateArray[2]);
-                    calculate.setAmount((int) Double.parseDouble(calculateArray[3]));
-                    calculate.setTotal(Long.valueOf(calculateArray[4]).longValue());
-                    calculate.setEPrice(Integer.parseInt(calculateArray[5]));
-                    calculate.setUPrice(Integer.parseInt(calculateArray[6]));
-                    calculate.setStructure(result);
-                    calculate.setSort(index++);
-                    estimateService.saveCal(calculate);
-                }
-                if (structureDetail.getDoorYn().equals("Y")) {
-                    int doorListCount = structureDetail.getDoorList().size();
-                    for (int i = 0; i < doorListCount; i++) {
-                        Calculate calculate = new Calculate();
-                        int w = ((Door) structureDetail.getDoorList().get(i)).getWidth();
-                        int h = ((Door) structureDetail.getDoorList().get(i)).getHeight();
-                        int e = ((Door) structureDetail.getDoorList().get(i)).getAmount();
-                        String st = ((Door) structureDetail.getDoorList().get(i)).getSubType();
-                        String standard = "";
-                        Price price = new Price();
-                        String thick = String.valueOf(structureDetail.getOutsideWallThick());
-                        if (st.equals("S")) {
-                            price = estimatePriceService.showPrice("D", "S", thick + "티판넬용", String.valueOf(w) + "*" + String.valueOf(h));
-                            standard = "스윙도어";
-                        } else if (st.equals("F")) {
-                            price = estimatePriceService.showPrice("D", "F", thick + "티판넬용", String.valueOf(w) + "*" + String.valueOf(h));
-                            standard = "방화문";
-                        } else if (st.equals("H")) {
-                            price = estimatePriceService.showPrice("D", "H", "마감" + thick + "티", "");
-                            standard = "행거도어(EPS전용)";
-                        }
-                        int startPrice = 0, gapPrice = 0, maxPrice = 0, ePrice = 0, uPrice = 0;
-                        long total = 0L;
-                        if (price != null) {
-                            startPrice = price.getStartPrice();
-                            total = (startPrice * e);
-                            uPrice = startPrice;
-                        }
-                        calculate.setName("도어");
-                        calculate.setStandard(String.valueOf(w) + "*" + String.valueOf(h) + "," + standard);
-                        calculate.setUnit("EA");
-                        calculate.setAmount(e);
-                        calculate.setTotal(total);
-                        calculate.setStructure(result);
-                        calculate.setType("D");
-                        calculate.setEPrice(0);
-                        calculate.setUPrice(uPrice);
-                        calculate.setSort(index++);
-                        estimateService.saveCal(calculate);
-                    }
-                }
-                if (structureDetail.getWindowYn().equals("Y")) {
-                    int windowListCount = structureDetail.getWindowList().size();
-                    for (int i = 0; i < windowListCount; i++) {
-                        Calculate calculate = new Calculate();
-                        int w = ((Window) structureDetail.getWindowList().get(i)).getWidth();
-                        int h = ((Window) structureDetail.getWindowList().get(i)).getHeight();
-                        int e = ((Window) structureDetail.getWindowList().get(i)).getAmount();
-                        String type = ((Window) structureDetail.getWindowList().get(i)).getType();
-                        Price price = new Price();
-                        String thick = String.valueOf(structureDetail.getOutsideWallThick());
-                        if (type.equals("S")) {
-                            price = estimatePriceService.showPrice("W", "S", thick + "티판넬용", "16mm유리");
-                        } else if (type.equals("D")) {
-                            price = estimatePriceService.showPrice("W", "D", "225T", "16mm유리");
-                        }
-                        int startPrice = 0, gapPrice = 0, maxPrice = 0, uPrice = 0;
-                        long total = 0L;
-                        if (price != null) {
-                            startPrice = price.getStartPrice();
-                            total = (startPrice * e);
-                            uPrice = startPrice;
-                        }
-                        calculate.setName("창호");
-                        calculate.setStandard(String.valueOf(w) + "*" + String.valueOf(h));
-                        calculate.setUnit("EA");
-                        calculate.setAmount(e);
-                        calculate.setTotal(total);
-                        calculate.setStructure(result);
-                        calculate.setType("D");
-                        calculate.setEPrice(0);
-                        calculate.setUPrice(uPrice);
-                        calculate.setSort(index++);
-                        estimateService.saveCal(calculate);
-                    }
-                }
-                estimateService.excel("", Long.valueOf(result.getId()));
-            }
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", result.getId());
-            response.put("message", "Estimate created successfully");
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error creating estimate: " + e.getMessage());
-        }
-    }
+// seems like
+//    @PostMapping("/register")
+//    public ResponseEntity<?> createEstimate(
+//            @RequestBody EstimateRequestDTO request,
+//            @RequestParam(defaultValue = "") String mode) {
+//        try {
+//            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//            User user = (User) auth.getPrincipal();
+////            if (mode.isEmpty()) {
+////                //structure.setUser(user);
+////            }
+//            Structure structure = estimateMapper.toStructure(request);
+//            if (mode.isEmpty()) {
+//                structure.setUser(user);
+//            }
+//
+//            Structure result = estimateService.saveEstimate(structure);
+//            if (result == null) {
+//                return ResponseEntity.badRequest().body("Failed to save estimate");
+//            }
+//
+//            StructureDetail structureDetail = estimateMapper.toStructureDetail(request);
+//            structureDetail.setStructure(result);
+//
+//            structureDetail = structure.getStructureDetail();
+//            structureDetail.setStructure(result);
+//            if (structureDetail.getInsideWallYn().equals("N")) {
+//                structureDetail.setInsideWallType("");
+//                structureDetail.setInsideWallPaper("");
+//                structureDetail.setInsideWallThick(0);
+//            }
+//            if (structureDetail.getCeilingYn().equals("N")) {
+//                structureDetail.setCeilingType("");
+//                structureDetail.setCeilingPaper("");
+//                structureDetail.setCeilingThick(0);
+//            }
+//            estimateDetailService.saveEstimateDetail(structureDetail);
+//            estimateDetailService.saveEstimateDetailEtc(structureDetail);
+//            List<String> calList = EstimateCalculate.mainCal(structureDetail);
+//            if (calList.size() > 0) {
+//                estimateService.deleteCal(Long.valueOf(result.getId()));
+//                int index = 0;
+//                for (String value : calList) {
+//                    Calculate calculate = new Calculate();
+//                    String[] calculateArray = value.split("\\|");
+//                    calculate.setName(calculateArray[0]);
+//                    calculate.setStandard(calculateArray[1]);
+//                    calculate.setUnit(calculateArray[2]);
+//                    calculate.setAmount((int) Double.parseDouble(calculateArray[3]));
+//                    calculate.setTotal(Long.valueOf(calculateArray[4]).longValue());
+//                    calculate.setEPrice(Integer.parseInt(calculateArray[5]));
+//                    calculate.setUPrice(Integer.parseInt(calculateArray[6]));
+//                    calculate.setStructure(result);
+//                    calculate.setSort(index++);
+//                    estimateService.saveCal(calculate);
+//                }
+//                if (structureDetail.getDoorYn().equals("Y")) {
+//                    int doorListCount = structureDetail.getDoorList().size();
+//                    for (int i = 0; i < doorListCount; i++) {
+//                        Calculate calculate = new Calculate();
+//                        int w = ((Door) structureDetail.getDoorList().get(i)).getWidth();
+//                        int h = ((Door) structureDetail.getDoorList().get(i)).getHeight();
+//                        int e = ((Door) structureDetail.getDoorList().get(i)).getAmount();
+//                        String st = ((Door) structureDetail.getDoorList().get(i)).getSubType();
+//                        String standard = "";
+//                        Price price = new Price();
+//                        String thick = String.valueOf(structureDetail.getOutsideWallThick());
+//                        if (st.equals("S")) {
+//                            price = estimatePriceService.showPrice("D", "S", thick + "티판넬용", String.valueOf(w) + "*" + String.valueOf(h));
+//                            standard = "스윙도어";
+//                        } else if (st.equals("F")) {
+//                            price = estimatePriceService.showPrice("D", "F", thick + "티판넬용", String.valueOf(w) + "*" + String.valueOf(h));
+//                            standard = "방화문";
+//                        } else if (st.equals("H")) {
+//                            price = estimatePriceService.showPrice("D", "H", "마감" + thick + "티", "");
+//                            standard = "행거도어(EPS전용)";
+//                        }
+//                        int startPrice = 0, gapPrice = 0, maxPrice = 0, ePrice = 0, uPrice = 0;
+//                        long total = 0L;
+//                        if (price != null) {
+//                            startPrice = price.getStartPrice();
+//                            total = (startPrice * e);
+//                            uPrice = startPrice;
+//                        }
+//                        calculate.setName("도어");
+//                        calculate.setStandard(String.valueOf(w) + "*" + String.valueOf(h) + "," + standard);
+//                        calculate.setUnit("EA");
+//                        calculate.setAmount(e);
+//                        calculate.setTotal(total);
+//                        calculate.setStructure(result);
+//                        calculate.setType("D");
+//                        calculate.setEPrice(0);
+//                        calculate.setUPrice(uPrice);
+//                        calculate.setSort(index++);
+//                        estimateService.saveCal(calculate);
+//                    }
+//                }
+//                if (structureDetail.getWindowYn().equals("Y")) {
+//                    int windowListCount = structureDetail.getWindowList().size();
+//                    for (int i = 0; i < windowListCount; i++) {
+//                        Calculate calculate = new Calculate();
+//                        int w = ((Window) structureDetail.getWindowList().get(i)).getWidth();
+//                        int h = ((Window) structureDetail.getWindowList().get(i)).getHeight();
+//                        int e = ((Window) structureDetail.getWindowList().get(i)).getAmount();
+//                        String type = ((Window) structureDetail.getWindowList().get(i)).getType();
+//                        Price price = new Price();
+//                        String thick = String.valueOf(structureDetail.getOutsideWallThick());
+//                        if (type.equals("S")) {
+//                            price = estimatePriceService.showPrice("W", "S", thick + "티판넬용", "16mm유리");
+//                        } else if (type.equals("D")) {
+//                            price = estimatePriceService.showPrice("W", "D", "225T", "16mm유리");
+//                        }
+//                        int startPrice = 0, gapPrice = 0, maxPrice = 0, uPrice = 0;
+//                        long total = 0L;
+//                        if (price != null) {
+//                            startPrice = price.getStartPrice();
+//                            total = (startPrice * e);
+//                            uPrice = startPrice;
+//                        }
+//                        calculate.setName("창호");
+//                        calculate.setStandard(String.valueOf(w) + "*" + String.valueOf(h));
+//                        calculate.setUnit("EA");
+//                        calculate.setAmount(e);
+//                        calculate.setTotal(total);
+//                        calculate.setStructure(result);
+//                        calculate.setType("D");
+//                        calculate.setEPrice(0);
+//                        calculate.setUPrice(uPrice);
+//                        calculate.setSort(index++);
+//                        estimateService.saveCal(calculate);
+//                    }
+//                }
+//                estimateService.excel("", Long.valueOf(result.getId()));
+//            }
+//
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("id", result.getId());
+//            response.put("message", "Estimate created successfully");
+//
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("Error creating estimate: " + e.getMessage());
+//        }
+//    }
 
     @GetMapping("/calculate/{id}")
     public ResponseEntity<?> calculateById(@PathVariable("id") Long id,
@@ -399,159 +405,159 @@ public class EstimateController {
     }
 
     // TODO: originally divided into 4 steps, but combined as one
-    @PostMapping
-    public ResponseEntity<?> createEstimate(@RequestBody EstimateRequestDTO request) {
-        try {
-            // STEP 01: Save Structure and associate user
-            UserCustom principal = (UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Structure structure = request.getStructure();
-            //structure.setUser(principal.getUser());
-            Structure savedStructure = estimateService.saveEstimate(structure);
-
-            if (savedStructure == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save structure");
-            }
-
-            // STEP 02: Retrieve or initialize StructureDetail, then apply step 2 logic
-            StructureDetail detailInput = request.getStructureDetail();
-            StructureDetail detail = estimateDetailService.showEstimateDetailId(detailInput.getId());
-            if (detail == null) {
-                detail = new StructureDetail();
-                detail.setStructure(savedStructure);
-            }
-            detail.updateStep2(detailInput);
-
-            // STEP 03: Apply step 3 logic (gucci update and save ETC data)
-            detail.updateGucci(detailInput);
-            estimateDetailService.saveEstimateDetail(detail); // optional intermediate save
-            StructureDetail savedDetail = estimateDetailService.saveEstimateDetailEtc(detailInput);
-            savedDetail.setStructure(savedStructure);
-
-            // STEP 04: Apply step 4 logic (update + calculations)
-            savedDetail.updateStep4(detailInput);
-            savedDetail = estimateDetailService.saveEstimateDetail(savedDetail);
-
-            // Recalculate items and save
-            List<String> calList = EstimateCalculate.mainCal(savedDetail);
-            if (!calList.isEmpty()) {
-                estimateService.deleteCal(savedStructure.getId());
-
-                for (String value : calList) {
-                    String[] parts = value.split("\\|");
-                    Calculate cal = new Calculate();
-                    cal.setName(parts[0]);
-                    cal.setStandard(parts[1]);
-                    cal.setUnit(parts[2]);
-                    cal.setAmount((int) Double.parseDouble(parts[3]));
-                    cal.setTotal(Integer.parseInt(parts[4]));
-                    cal.setStructure(savedStructure);
-                    estimateService.saveCal(cal);
-                }
-
-                // Door → Calculate
-                for (Door door : savedDetail.getDoorList()) {
-                    Calculate cal = new Calculate();
-                    String subtype = switch (door.getSubType()) {
-                        case "S" -> "스윙도어";
-                        case "F" -> "방화문";
-                        case "H" -> "행거도어(EPS전용)";
-                        default -> "기타";
-                    };
-                    cal.setName("도어");
-                    cal.setStandard(door.getWidth() + "*" + door.getHeight() + "," + subtype);
-                    cal.setUnit("EA");
-                    cal.setAmount(door.getAmount());
-                    cal.setTotal(0L);
-                    cal.setStructure(savedStructure);
-                    cal.setType("D");
-                    estimateService.saveCal(cal);
-                }
-
-                // Window → Calculate
-                for (Window window : savedDetail.getWindowList()) {
-                    Calculate cal = new Calculate();
-                    cal.setName("창호");
-                    cal.setStandard(window.getWidth() + "*" + window.getHeight());
-                    cal.setUnit("EA");
-                    cal.setAmount(window.getAmount());
-                    cal.setTotal(0L);
-                    cal.setStructure(savedStructure);
-                    cal.setType("D");
-                    estimateService.saveCal(cal);
-                }
-            }
-
-            // Final result
-            return ResponseEntity.ok(Map.of(
-                    "structureId", savedStructure.getId(),
-                    "structureDetailId", savedDetail.getId(),
-                    "message", "Estimate saved successfully"
-            ));
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to save estimate: " + e.getMessage());
-        }
-    }
+//    @PostMapping
+//    public ResponseEntity<?> createEstimate(@RequestBody EstimateRequestDTO request) {
+//        try {
+//            // STEP 01: Save Structure and associate user
+//            UserCustom principal = (UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            Structure structure = estimateMapper.toStructure(request);
+//            //structure.setUser(principal.getUser());
+//            Structure savedStructure = estimateService.saveEstimate(structure);
+//
+//            if (savedStructure == null) {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save structure");
+//            }
+//
+//            // STEP 02: Retrieve or initialize StructureDetail, then apply step 2 logic
+//            StructureDetail detailInput = estimateMapper.toStructureDetail(request);
+//            StructureDetail detail = estimateDetailService.showEstimateDetailId(detailInput.getId());
+//            if (detail == null) {
+//                detail = new StructureDetail();
+//                detail.setStructure(savedStructure);
+//            }
+//            detail.updateStep2(detailInput);
+//
+//            // STEP 03: Apply step 3 logic (gucci update and save ETC data)
+//            detail.updateGucci(detailInput);
+//            estimateDetailService.saveEstimateDetail(detail); // optional intermediate save
+//            StructureDetail savedDetail = estimateDetailService.saveEstimateDetailEtc(detailInput);
+//            savedDetail.setStructure(savedStructure);
+//
+//            // STEP 04: Apply step 4 logic (update + calculations)
+//            savedDetail.updateStep4(detailInput);
+//            savedDetail = estimateDetailService.saveEstimateDetail(savedDetail);
+//
+//            // Recalculate items and save
+//            List<String> calList = EstimateCalculate.mainCal(savedDetail);
+//            if (!calList.isEmpty()) {
+//                estimateService.deleteCal(savedStructure.getId());
+//
+//                for (String value : calList) {
+//                    String[] parts = value.split("\\|");
+//                    Calculate cal = new Calculate();
+//                    cal.setName(parts[0]);
+//                    cal.setStandard(parts[1]);
+//                    cal.setUnit(parts[2]);
+//                    cal.setAmount((int) Double.parseDouble(parts[3]));
+//                    cal.setTotal(Integer.parseInt(parts[4]));
+//                    cal.setStructure(savedStructure);
+//                    estimateService.saveCal(cal);
+//                }
+//
+//                // Door → Calculate
+//                for (Door door : savedDetail.getDoorList()) {
+//                    Calculate cal = new Calculate();
+//                    String subtype = switch (door.getSubType()) {
+//                        case "S" -> "스윙도어";
+//                        case "F" -> "방화문";
+//                        case "H" -> "행거도어(EPS전용)";
+//                        default -> "기타";
+//                    };
+//                    cal.setName("도어");
+//                    cal.setStandard(door.getWidth() + "*" + door.getHeight() + "," + subtype);
+//                    cal.setUnit("EA");
+//                    cal.setAmount(door.getAmount());
+//                    cal.setTotal(0L);
+//                    cal.setStructure(savedStructure);
+//                    cal.setType("D");
+//                    estimateService.saveCal(cal);
+//                }
+//
+//                // Window → Calculate
+//                for (Window window : savedDetail.getWindowList()) {
+//                    Calculate cal = new Calculate();
+//                    cal.setName("창호");
+//                    cal.setStandard(window.getWidth() + "*" + window.getHeight());
+//                    cal.setUnit("EA");
+//                    cal.setAmount(window.getAmount());
+//                    cal.setTotal(0L);
+//                    cal.setStructure(savedStructure);
+//                    cal.setType("D");
+//                    estimateService.saveCal(cal);
+//                }
+//            }
+//
+//            // Final result
+//            return ResponseEntity.ok(Map.of(
+//                    "structureId", savedStructure.getId(),
+//                    "structureDetailId", savedDetail.getId(),
+//                    "message", "Estimate saved successfully"
+//            ));
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Failed to save estimate: " + e.getMessage());
+//        }
+//    }
 
     @GetMapping("/step05-summary")
     public ResponseEntity<?> getEstimateStep05Summary(
             @RequestParam(name = "structure_detail_id", required = false) Long structureDetailId) {
 
-        if (structureDetailId == null) {
-            return ResponseEntity.badRequest().body("structure_detail_id is required");
-        }
+//        if (structureDetailId == null) {
+//            return ResponseEntity.badRequest().body("structure_detail_id is required");
+//        }
+//
+//        StructureDetail detail = estimateDetailService.showEstimateDetailId(structureDetailId);
+//        if (detail == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("StructureDetail not found");
+//        }
+//
+//        EstimateResponseDTO dto = new EstimateResponseDTO();
+//
+//        // Count canopy
+//        if (detail.getCanopyList() != null) {
+//            dto.setCanopyTotal(detail.getCanopyList().stream()
+//                    .mapToInt(Canopy::getAmount)
+//                    .sum());
+//        }
+//
+//        // Count ceiling
+//        if (detail.getCeilingList() != null) {
+//            dto.setCeilingTotal(detail.getCeilingList().stream()
+//                    .mapToInt(Ceiling::getAmount)
+//                    .sum());
+//        }
+//
+//        // Count door
+//        if (detail.getDoorList() != null) {
+//            dto.setDoorTotal(detail.getDoorList().stream()
+//                    .mapToInt(Door::getAmount)
+//                    .sum());
+//        }
+//
+//        // Count inside walls
+//        if (detail.getInsideWallList() != null) {
+//            dto.setInsideWallTotal(detail.getInsideWallList().stream()
+//                    .mapToInt(InsideWall::getAmount)
+//                    .sum());
+//        }
+//
+//        // Count windows
+//        if (detail.getWindowList() != null) {
+//            dto.setWindowTotal(detail.getWindowList().stream()
+//                    .mapToInt(Window::getAmount)
+//                    .sum());
+//        }
+//
+//        // Count door price items
+//        List<Calculate> doorPrices = estimateService.findByStructureIdAndType(detail.getStructure().getId());
+//        dto.setDoorPriceCount(doorPrices.size());
+//
+//        // Include structure detail
+//        dto.setStructureDetail(detail);
 
-        StructureDetail detail = estimateDetailService.showEstimateDetailId(structureDetailId);
-        if (detail == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("StructureDetail not found");
-        }
-
-        EstimateResponseDTO dto = new EstimateResponseDTO();
-
-        // Count canopy
-        if (detail.getCanopyList() != null) {
-            dto.setCanopyTotal(detail.getCanopyList().stream()
-                    .mapToInt(Canopy::getAmount)
-                    .sum());
-        }
-
-        // Count ceiling
-        if (detail.getCeilingList() != null) {
-            dto.setCeilingTotal(detail.getCeilingList().stream()
-                    .mapToInt(Ceiling::getAmount)
-                    .sum());
-        }
-
-        // Count door
-        if (detail.getDoorList() != null) {
-            dto.setDoorTotal(detail.getDoorList().stream()
-                    .mapToInt(Door::getAmount)
-                    .sum());
-        }
-
-        // Count inside walls
-        if (detail.getInsideWallList() != null) {
-            dto.setInsideWallTotal(detail.getInsideWallList().stream()
-                    .mapToInt(InsideWall::getAmount)
-                    .sum());
-        }
-
-        // Count windows
-        if (detail.getWindowList() != null) {
-            dto.setWindowTotal(detail.getWindowList().stream()
-                    .mapToInt(Window::getAmount)
-                    .sum());
-        }
-
-        // Count door price items
-        List<Calculate> doorPrices = estimateService.findByStructureIdAndType(detail.getStructure().getId());
-        dto.setDoorPriceCount(doorPrices.size());
-
-        // Include structure detail
-        dto.setStructureDetail(detail);
-
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(null);
     }
 
     @DeleteMapping("/inside-wall/{id}")

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,11 +20,12 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
+@EntityListeners(AuditingEntityListener.class)
 public class Structure {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "title")
     private String title;
@@ -76,8 +79,8 @@ public class Structure {
     @JoinColumn(name = "user_num", nullable = false)
     private User user;
 
-    @NotNull
-    @Column(name = "create_date")
+    @CreatedDate
+    @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
 
     @Column(name = "status_date")
@@ -93,6 +96,6 @@ public class Structure {
     @OneToMany(mappedBy = "structure", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calculate> calculateList = new ArrayList<>();
 
-    @Transient
+    @OneToOne(mappedBy = "structure", cascade = CascadeType.ALL, orphanRemoval = true)
     private StructureDetail structureDetail;
 }

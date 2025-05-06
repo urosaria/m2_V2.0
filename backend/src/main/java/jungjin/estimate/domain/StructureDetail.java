@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,22 +19,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
+@EntityListeners(AuditingEntityListener.class)
 public class StructureDetail {
-
-    public StructureDetail setStructure(Structure structure) {
-        this.structure = structure;
-        return this;
-    }
-
-    public StructureDetail setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public StructureDetail setCanopyList(List<Canopy> canopyList) {
-        this.canopyList = canopyList;
-        return this;
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -92,13 +80,12 @@ public class StructureDetail {
     @Column(name = "ceiling_thick")
     private int ceilingThick;
 
-    @NotNull
     @OneToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_est_structure_detail"))
+    @JoinColumn(name = "structure_id")
     private Structure structure;
 
-    @NotNull
-    @Column(name = "create_date")
+    @CreatedDate
+    @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
 
     @Column(name = "gucci")
@@ -113,26 +100,26 @@ public class StructureDetail {
     @Column(name = "gucci_amount")
     private int gucciAmount;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
+    @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Canopy> canopyList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
+    @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ceiling> ceilingList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
+    @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Door> doorList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
+    @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Downpipe> downpipeList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
+    @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InsideWall> insideWallList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "structureDetail")
+    @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Window> windowList = new ArrayList<>();
 
     public void insert(StructureDetail structureDetail) {
-        this.createDate = LocalDateTime.now();
+        //this.createDate = LocalDateTime.now();
         this.id = structureDetail.id;
         this.insideWallYn = structureDetail.insideWallYn;
         this.ceilingYn = structureDetail.ceilingYn;
