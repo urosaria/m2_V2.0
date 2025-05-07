@@ -36,12 +36,13 @@ public enum CityCode {
         return name;
     }
 
-    public static String getNameByCode(String code) {
+    public static CityCode fromCode(String code) {
         for (CityCode c : values()) {
             if (c.code.equals(code)) {
-                return c.name;
+                return c;
             }
         }
-        return ""; // or return "알 수 없음";
+        throw new IllegalArgumentException("Invalid code: " + code);
     }
+
 }

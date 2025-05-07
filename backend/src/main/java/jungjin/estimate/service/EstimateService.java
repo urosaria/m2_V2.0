@@ -12,9 +12,9 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
+import jungjin.estimate.mapper.EstimateMapper;
 import org.springframework.transaction.annotation.Transactional;
 import jungjin.HandlebarsHelper;
-import jungjin.M2Application;
 import jungjin.config.UploadConfig;
 import jungjin.estimate.domain.Calculate;
 import jungjin.estimate.domain.Structure;
@@ -38,7 +38,6 @@ import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,16 +48,20 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EstimateService {
     private final EstimateRepository estimateRepository;
-    private final  EstimateDetailRepository estimateDetailRepository;
+    private final EstimateDetailRepository estimateDetailRepository;
     private final EstimateCalculateRepository estimateCalculateRepository;
     private final UploadConfig uploadConfig;
+    private final EstimateMapper estimateMapper;
 
     @PersistenceContext
     private EntityManager entityManager;
 
+
+
+
     public Page<Structure> listEstimateAll(int page, int size) {
         PageRequest request = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createDate"));
-        return this.estimateRepository.findAll((Pageable)request);
+        return estimateRepository.findAll((Pageable)request);
     }
 
     public Page<Structure> listEstimateStatus(String searchCondition, String searchText, String status, int page, int size) {
@@ -66,30 +69,30 @@ public class EstimateService {
         Page<Structure> structures = null;
         if (!searchCondition.equals("") && !status.equals("")) {
             if (searchCondition.equals("AT") || searchCondition.equals("BT") || searchCondition.equals("BE") || searchCondition.equals("BB") || searchCondition.equals("AB") || searchCondition.equals("AE")) {
-                structures = this.estimateRepository.findByStructureTypeAndStatus(searchCondition, status, (Pageable)request);
+                structures = estimateRepository.findByStructureTypeAndStatus(searchCondition, status, (Pageable)request);
             } else if (searchCondition.equals("placeName")) {
-                structures = this.estimateRepository.findByPlaceNameContainingAndStatus(searchText, status, (Pageable)request);
+                structures = estimateRepository.findByPlaceNameContainingAndStatus(searchText, status, (Pageable)request);
             } else if (searchCondition.equals("name")) {
-                structures = this.estimateRepository.findByUserNameContainingAndStatus(searchText, status, (Pageable)request);
+                structures = estimateRepository.findByUserNameContainingAndStatus(searchText, status, (Pageable)request);
             } else if (searchCondition.equals("phone")) {
-                structures = this.estimateRepository.findByUserPhoneContainingAndStatus(searchText, status, (Pageable)request);
+                structures = estimateRepository.findByUserPhoneContainingAndStatus(searchText, status, (Pageable)request);
             } else if (searchCondition.equals("mail")) {
-                structures = this.estimateRepository.findByUserEmailContainingAndStatus(searchText, status, (Pageable)request);
+                structures = estimateRepository.findByUserEmailContainingAndStatus(searchText, status, (Pageable)request);
             }
         } else if (!searchCondition.equals("")) {
             if (searchCondition.equals("AT") || searchCondition.equals("BT") || searchCondition.equals("BE") || searchCondition.equals("BB") || searchCondition.equals("AB") || searchCondition.equals("AE")) {
-                structures = this.estimateRepository.findByStructureType(searchCondition, (Pageable)request);
+                structures = estimateRepository.findByStructureType(searchCondition, (Pageable)request);
             } else if (searchCondition.equals("placeName")) {
-                structures = this.estimateRepository.findByPlaceNameContaining(searchText, (Pageable)request);
+                structures = estimateRepository.findByPlaceNameContaining(searchText, (Pageable)request);
             } else if (searchCondition.equals("name")) {
-                structures = this.estimateRepository.findByUserNameContaining(searchText, (Pageable)request);
+                structures = estimateRepository.findByUserNameContaining(searchText, (Pageable)request);
             } else if (searchCondition.equals("phone")) {
-                structures = this.estimateRepository.findByUserPhoneContaining(searchText, (Pageable)request);
+                structures = estimateRepository.findByUserPhoneContaining(searchText, (Pageable)request);
             } else if (searchCondition.equals("mail")) {
-                structures = this.estimateRepository.findByUserEmailContaining(searchText, (Pageable)request);
+                structures = estimateRepository.findByUserEmailContaining(searchText, (Pageable)request);
             }
         } else if (!status.equals("")) {
-            structures = this.estimateRepository.findByStatus(status, (Pageable)request);
+            structures = estimateRepository.findByStatus(status, (Pageable)request);
         }
         return structures;
     }
@@ -97,7 +100,7 @@ public class EstimateService {
     @Transactional
     public Page<Structure> listEstimate(int page, int size, Long userNum) {
         PageRequest request = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createDate"));
-        Page<Structure> structures = this.estimateRepository.findByUserNumAndStatusNot(userNum, "D", (Pageable)request);
+        Page<Structure> structures = estimateRepository.findByUserNumAndStatusNot(userNum, "D", (Pageable)request);
         
         // Initialize user data to prevent lazy loading issues
         structures.getContent().forEach(structure -> {
@@ -111,56 +114,56 @@ public class EstimateService {
 
     public Structure saveEstimate(Structure insertEstimate) {
         insertEstimate.setCreateDate(LocalDateTime.now());
-        return (Structure)this.estimateRepository.save(insertEstimate);
+        return (Structure)estimateRepository.save(insertEstimate);
     }
 
     public Structure showEstimate(Long id) {
-        return this.estimateRepository.findById(id).orElse(null);
+        return estimateRepository.findById(id).orElse(null);
     }
 
     public Structure showEstimateCopy(Long id) {
-        Structure structure = this.estimateRepository.findById(id).orElse(null);
+        Structure structure = estimateRepository.findById(id).orElse(null);
         if (structure == null) {
             throw new EntityNotFoundException("Structure with id " + id + " not found.");
         }
 
-        this.entityManager.detach(structure); // detach from persistence context
+        entityManager.detach(structure); // detach from persistence context
         return structure;
     }
 
     public Calculate saveCal(Calculate calculate) {
-        return (Calculate)this.estimateCalculateRepository.save(calculate);
+        return (Calculate)estimateCalculateRepository.save(calculate);
     }
 
     public void saveCalCopy(Calculate calculate) {
-        this.estimateCalculateRepository.save(calculate);
+        estimateCalculateRepository.save(calculate);
     }
 
     public void deleteCal(Long structureId) {
-        this.estimateCalculateRepository.deleteByStructureId(structureId);
+        estimateCalculateRepository.deleteByStructureId(structureId);
     }
 
     public void updateStructureStatus(Long id, String status) {
         if (status.equals("Q")) {
             LocalDateTime statusDate = LocalDateTime.now();
-            this.estimateRepository.updateStructureStatusQ(id, status, statusDate);
+            estimateRepository.updateStructureStatusQ(id, status, statusDate);
         } else {
-            this.estimateRepository.updateStructureStatus(id, status);
+            estimateRepository.updateStructureStatus(id, status);
         }
     }
 
     public List<Calculate> listCal(Long structureId) {
-        List<Calculate> listCal = this.estimateCalculateRepository.findByStructureIdOrderBySortAsc(structureId);
+        List<Calculate> listCal = estimateCalculateRepository.findByStructureIdOrderBySortAsc(structureId);
         return listCal;
     }
 
     public List<Calculate> findByStructureIdAndType(Long structureId) {
-        return this.estimateCalculateRepository.findByStructureIdAndType(structureId, "D");
+        return estimateCalculateRepository.findByStructureIdAndType(structureId, "D");
     }
 
     public void excel(String path, Long structure_id) throws IOException {
-        StructureDetail structureDetail = this.estimateDetailRepository.findByStructureId(structure_id);
-        List<Calculate> listCal = this.estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
+        StructureDetail structureDetail = estimateDetailRepository.findByStructureId(structure_id);
+        List<Calculate> listCal = estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
         FileInputStream fis = new FileInputStream(uploadConfig + "/estimate/sample/sample.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         XSSFFormulaEvaluator xSSFFormulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
@@ -502,8 +505,8 @@ public class EstimateService {
     }
 
     public void excel_backup(String path, Long structure_id) throws IOException {
-        StructureDetail structureDetail = this.estimateDetailRepository.findByStructureId(structure_id);
-        List<Calculate> listCal = this.estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
+        StructureDetail structureDetail = estimateDetailRepository.findByStructureId(structure_id);
+        List<Calculate> listCal = estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
         FileInputStream fis = new FileInputStream(uploadConfig + "/estimate/sample/sample.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         XSSFFormulaEvaluator xSSFFormulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
@@ -826,8 +829,8 @@ public class EstimateService {
     }
 
     public void excel_old(String path, Long structure_id) throws IOException {
-        StructureDetail structureDetail = this.estimateDetailRepository.findByStructureId(structure_id);
-        List<Calculate> listCal = this.estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
+        StructureDetail structureDetail = estimateDetailRepository.findByStructureId(structure_id);
+        List<Calculate> listCal = estimateCalculateRepository.findByStructureIdOrderBySortAsc(structure_id);
         FileInputStream fis = new FileInputStream(uploadConfig + "/estimate/sample/sample.xlsx");
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
         int columnindex = 0;

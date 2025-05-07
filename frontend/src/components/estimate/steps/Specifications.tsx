@@ -1,76 +1,107 @@
 import React from 'react';
-import { Typography, TextField, IconButton, List, ListItem as MuiListItem, Stack, Box } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import { Structure, ListItem } from '../../../types/estimate';
-
-type StructureDetail = Structure['structureDetail'];
+import {
+  Box,
+  Stack,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Grid,
+  Paper,
+  SelectChangeEvent
+} from '@mui/material';
+import { FrontendStructure } from '../../../types/estimate';
 
 interface SpecificationsProps {
-  structure: Pick<Structure, 'structureDetail'>;
-  onFieldChange: (field: keyof StructureDetail, value: string) => void;
-  onListItemChange: (listName: keyof StructureDetail, index: number, field: keyof ListItem, value: string) => void;
-  onAddListItem: (listName: keyof StructureDetail) => void;
-  onDeleteListItem: (listName: keyof StructureDetail, index: number) => void;
+  structure: FrontendStructure;
+  setStructure: React.Dispatch<React.SetStateAction<FrontendStructure>>;
+  onFieldChange: (field: keyof FrontendStructure['structureDetail'], value: string | number) => void;
 }
 
 const Specifications: React.FC<SpecificationsProps> = ({
   structure,
-  onFieldChange,
-  onListItemChange,
-  onAddListItem,
-  onDeleteListItem
+  onFieldChange
 }) => {
-  const renderList = (title: string, listName: keyof Structure['structureDetail'], list: ListItem[]) => (
-    <Box sx={{ width: '100%', mt: 2 }}>
-      <Typography variant="subtitle1" gutterBottom>
-        {title}
-      </Typography>
-      <List>
-        {list.map((item, index) => (
-          <MuiListItem key={index} disableGutters>
-            <Stack direction="row" spacing={2} sx={{ width: '100%' }} alignItems="center">
-              <TextField
-                label="길이"
-                type="number"
-                value={item.width || ''}
-                onChange={(e) => onListItemChange(listName, index, 'width', e.target.value)}
-                fullWidth
-              />
-              <TextField
-                label="높이"
-                type="number"
-                value={item.height || ''}
-                onChange={(e) => onListItemChange(listName, index, 'height', e.target.value)}
-                fullWidth
-              />
-              <TextField
-                label="수량"
-                type="number"
-                value={item.quantity || ''}
-                onChange={(e) => onListItemChange(listName, index, 'quantity', e.target.value)}
-                fullWidth
-              />
-              <IconButton onClick={() => onDeleteListItem(listName, index)}>
-                <DeleteIcon />
-              </IconButton>
-            </Stack>
-          </MuiListItem>
-        ))}
-      </List>
-      <IconButton onClick={() => onAddListItem(listName)} color="primary">
-        <AddIcon />
-      </IconButton>
-    </Box>
-  );
+  const renderBoardSection = (
+    title: string,
+    typeField: 'insideWallType' | 'outsideWallType' | 'roofType' | 'ceilingType',
+    paperField: 'insideWallPaper' | 'outsideWallPaper' | 'roofPaper' | 'ceilingPaper',
+    thickField: 'insideWallThick' | 'outsideWallThick' | 'roofThick' | 'ceilingThick',
+    thickOptions: number[]
+  ) => {
+    const { structureDetail } = structure;
+
+    return (
+      <Box>
+        <Typography variant="h6" gutterBottom>{title}</Typography>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <FormControl fullWidth>
+              <InputLabel>보드종류</InputLabel>
+              <Select
+                value={structureDetail[typeField] || ''}
+                onChange={(e: SelectChangeEvent<string>) => onFieldChange(typeField, e.target.value)}
+                label="보드종류"
+              >
+                <MenuItem value="E">EPS</MenuItem>
+                <MenuItem value="G">그라스울</MenuItem>
+                <MenuItem value="W">우레탄</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <FormControl fullWidth>
+              <InputLabel>검사서</InputLabel>
+              <Select
+                value={structureDetail[paperField] || ''}
+                onChange={(e: SelectChangeEvent<string>) => onFieldChange(paperField, e.target.value)}
+                label="검사서"
+              >
+                {structureDetail[typeField] === 'E' && [
+                  <MenuItem key="E1" value="E1">비난연</MenuItem>,
+                  <MenuItem key="E2" value="E2">난연</MenuItem>,
+                  <MenuItem key="E3" value="E3">가등급</MenuItem>
+                ]}
+                {structureDetail[typeField] === 'G' && [
+                  <MenuItem key="G1" value="G1">48K</MenuItem>,
+                  <MenuItem key="G2" value="G2">64K</MenuItem>
+                ]}
+                {structureDetail[typeField] === 'W' && [
+                  <MenuItem key="W1" value="W1">난연</MenuItem>
+                ]}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <FormControl fullWidth>
+              <InputLabel>두께</InputLabel>
+              <Select
+                value={structureDetail[thickField]?.toString() || ''}
+                onChange={(e: SelectChangeEvent<string>) => onFieldChange(thickField, Number(e.target.value))}
+                label="두께"
+              >
+                {thickOptions.map((thickness) => (
+                  <MenuItem key={thickness} value={thickness}>{thickness}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Box>
+    );
+  };
 
   return (
-    <Stack spacing={3}>
-      {renderList('내벽', 'insideWallList', structure.structureDetail.insideWallList)}
-      {renderList('천장', 'ceilingList', structure.structureDetail.ceilingList)}
-      {renderList('문', 'doorList', structure.structureDetail.doorList)}
-      {renderList('창문', 'windowList', structure.structureDetail.windowList)}
-      {renderList('케노피', 'canopyList', structure.structureDetail.canopyList)}
+    <Stack spacing={4} sx={{ p: { xs: 2, sm: 3 } }}>
+      {renderBoardSection('내벽', 'insideWallType', 'insideWallPaper', 'insideWallThick', [50, 75, 100, 125, 150])}
+      {renderBoardSection('외벽', 'outsideWallType', 'outsideWallPaper', 'outsideWallThick', [50, 75, 100, 125, 150, 175])}
+      {structure.structureType !== 'SL' &&
+        renderBoardSection('지붕', 'roofType', 'roofPaper', 'roofThick', [50, 75, 100, 125, 150, 175, 200, 225, 260])}
+      {renderBoardSection('천장', 'ceilingType', 'ceilingPaper', 'ceilingThick', [50, 75, 100, 125])}
     </Stack>
   );
 };

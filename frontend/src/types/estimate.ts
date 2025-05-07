@@ -6,20 +6,83 @@ export interface PaginatedResponse<T> {
   number: number;
 }
 
-export type BuildingType = 'A' | 'B' | 'B1' | 'BBox' | 'Box';
+export type Status = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+
+export type StructureType = 'AT' | 'BT' | 'BE' | 'AB' | 'BB' | 'AE' | 'AG' | 'BG' | 'AX' | 'BX' | 'BBX' | 'SL';
+
+export const structureTypeNames: { [key in StructureType]: string } = {
+  'AT': 'A 트러스',
+  'BT': 'B 트러스',
+  'BE': 'B 처마형',
+  'AB': 'A 박스형',
+  'BB': 'B 박스형',
+  'AE': 'A 처마형',
+  'AG': 'A 기역자',
+  'BG': 'B 기역자',
+  'AX': 'A 확장',
+  'BX': 'B 확장',
+  'BBX': 'B 박스확장',
+  'SL': '슬라브'
+};
+
+export const cityOptions = [
+  { value: '10', label: '서울' },
+  { value: '40', label: '인천' },
+  { value: '60', label: '부산' },
+  { value: '70', label: '대구' },
+  { value: '50', label: '광주' },
+  { value: '30', label: '대전' },
+  { value: '68', label: '울산' },
+  { value: '41', label: '경기' },
+  { value: '20', label: '강원' },
+  { value: '36', label: '충북' },
+  { value: '31', label: '충남' },
+  { value: '56', label: '전북' },
+  { value: '51', label: '전남' },
+  { value: '71', label: '경북' },
+  { value: '62', label: '경남' },
+  { value: '69', label: '제주' },
+] as const;
+
+export type CityName = typeof cityOptions[number]['value'];
 
 export type YesNo = 'Y' | 'N';
 
 export interface ListItem {
-  width: string;
-  height: string;
-  quantity: string;
+  id: number;
+  width?: number;
+  height?: number;
+  length?: number;
+  quantity?: number;
+  amount?: number;
+  type?: string;
+  subType?: string;
+  selectWh?: string;
 }
 
+export type InsulationType = 'E' | 'G' | 'W';
+export const insulationTypeOptions: { value: InsulationType; label: string }[] = [
+  { value: 'E', label: 'EPS' },
+  { value: 'G', label: '그라스울' },
+  { value: 'W', label: '우레탄' },
+];
+
+export type InsulationPaperType = 'E1' | 'E2' | 'E3' | 'G1' | 'G2' | 'W1';
+export const insulationPaperTypeOptions: { value: InsulationPaperType; label: string }[] = [
+  { value: 'E1', label: '비난연' },
+  { value: 'E2', label: '난연' },
+  { value: 'E3', label: '가등급' },
+  { value: 'G1', label: '48K' },
+  { value: 'G2', label: '64K' },
+  { value: 'W1', label: '난연' },
+];
+
 export interface MaterialDetail {
-  type: string;
-  thickness: string;
-  inspection: string;
+  type: InsulationType;
+  amount: number;
+  thickness?: string;
+  inspection?: boolean;
+  paper?: InsulationPaperType;
 }
 
 export interface MaterialSelection {
@@ -27,10 +90,16 @@ export interface MaterialSelection {
   outsideWall: MaterialDetail;
   roof: MaterialDetail;
   ceiling: MaterialDetail;
+  door: MaterialDetail;
+  window: MaterialDetail;
+  canopy: MaterialDetail;
 }
 
+export type WallThickness = 50 | 75 | 100 | 125 | 150;
+export type CeilingThickness = 50 | 75 | 100 | 125;
+export type RoofThickness = 50 | 75 | 100 | 125 | 150 | 175 | 200 | 225 | 260;
+
 export interface StructureDetail {
-  id: number;
   insideWallYn: YesNo;
   ceilingYn: YesNo;
   windowYn: YesNo;
@@ -38,86 +107,96 @@ export interface StructureDetail {
   canopyYn: YesNo;
   gucci: 75 | 100 | 125;
   gucciAmount: number;
-  gucciInside?: 75 | 100 | 125;
+  gucciInside?: number;
   gucciInsideAmount?: number;
-  insideWallType?: 'E' | 'G' | 'W';
-  insideWallPaper?: string;
-  insideWallThick?: number;
-  outsideWallType: string;
-  outsideWallPaper: string;
-  outsideWallThick: number;
-  roofType: string;
-  roofPaper: string;
-  roofThick: number;
-  ceilingType?: 'E' | 'G' | 'W';
-  ceilingPaper?: string;
-  ceilingThick?: number;
+  outsideWallType: InsulationType;
+  outsideWallPaper: InsulationPaperType;
+  outsideWallThick: WallThickness;
+  roofType: InsulationType;
+  roofPaper: InsulationPaperType;
+  roofThick: RoofThickness;
+  insideWallType?: InsulationType;
+  insideWallPaper?: InsulationPaperType;
+  insideWallThick: WallThickness | undefined;
+  ceilingType?: InsulationType;
+  ceilingPaper?: InsulationPaperType;
+  ceilingThick: CeilingThickness | undefined;
   insideWallList: ListItem[];
   ceilingList: ListItem[];
   doorList: ListItem[];
   windowList: ListItem[];
   canopyList: ListItem[];
+  downpipeList: ListItem[];
 }
 
 export interface Structure {
   id: number;
-  title: string;
-  createdAt: string;
-  status: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
-  totalAmount: number;
-  structureType: BuildingType;
-  cityName: string;
-  placeName: string;
+  userId: string;
+  status: Status;
+  structureType: StructureType;
   width: number;
   length: number;
   height: number;
   trussHeight: number;
-  eavesLength?: number;
-  rearTrussHeight?: number;
-  insideWidth?: number;
-  insideLength?: number;
-  rooftopSideHeight?: number;
-  rooftopWidth?: number;
-  rooftopLength?: number;
-  rooftopHeight?: number;
+  eavesLength: number;
+  rearTrussHeight: number;
+  insideWidth: number;
+  insideLength: number;
+  rooftopSideHeight: number;
+  rooftopWidth: number;
+  rooftopLength: number;
+  rooftopHeight: number;
+  cityName?: CityName;
+  placeName?: string;
   structureDetail: StructureDetail;
   materials: MaterialSelection;
+  createdAt?: string;
+  totalAmount?: number;
+  calculateList?: CalculateItem[];
 }
 
-export interface InsideWall {
-  type: 'STANDARD' | 'PREMIUM';
-  id: number;
-  width: number;
-  height: number;
-  quantity: number;
-}
-
-export interface Ceiling {
-  id: number;
-  width: number;
-  height: number;
-  quantity: number;
-}
-
-export interface Door {
-  id: number;
-  width: number;
-  height: number;
-  quantity: number;
+export interface CalculateItem {
+  name: string;
+  standard: string;
+  unit: string;
+  amount: number;
+  uPrice: number;
   type: string;
+  ePrice: number;
+  total: number;
+  sort: number;
+  price?: number;
 }
 
-export interface Window {
-  id: number;
-  width: number;
-  height: number;
-  quantity: number;
-  type: string;
+export interface Calculate extends CalculateItem {}
+
+export interface FrontendStructure extends Omit<Structure, 'id' | 'userId'> {
+  id?: number;
+  userId?: string;
 }
 
-export interface Canopy {
-  id: number;
-  width: number;
-  height: number;
-  quantity: number;
-}
+export type NumericFields = keyof Pick<
+  Structure,
+  | 'width'
+  | 'length'
+  | 'height'
+  | 'trussHeight'
+  | 'eavesLength'
+  | 'rearTrussHeight'
+  | 'insideWidth'
+  | 'insideLength'
+  | 'rooftopSideHeight'
+  | 'rooftopWidth'
+  | 'rooftopLength'
+  | 'rooftopHeight'
+>;
+
+export type TextFields = keyof Pick<Structure, 'placeName'>;
+
+export type ListFields =
+  | 'insideWallList'
+  | 'ceilingList'
+  | 'doorList'
+  | 'windowList'
+  | 'canopyList'
+  | 'downpipeList';
