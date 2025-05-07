@@ -37,67 +37,14 @@ const EstimateList: React.FC = () => {
 
   const loadEstimates = React.useCallback(async () => {
     if (testMode === 'json') {
-      setEstimates(sampleEstimates.content.map(estimate => ({
-        id: 0,
-        userId: '',
-        ...estimate,
-        status: estimate.status,
-        structureType: estimate.structureType,
-        materials: {
-          insideWall: { type: 'E', amount: 0 },
-          outsideWall: { type: 'E', amount: 0 },
-          roof: { type: 'E', amount: 0 },
-          ceiling: { type: 'E', amount: 0 },
-          door: { type: 'E', amount: 0 },
-          window: { type: 'E', amount: 0 },
-          canopy: { type: 'E', amount: 0 },
-        },
-        structureDetail: {
-          ...estimate.structureDetail,
-          insideWallYn: estimate.structureDetail.insideWallYn as 'Y' | 'N',
-          ceilingYn: estimate.structureDetail.ceilingYn as 'Y' | 'N',
-          windowYn: estimate.structureDetail.windowYn as 'Y' | 'N',
-          doorYn: estimate.structureDetail.doorYn as 'Y' | 'N',
-          canopyYn: estimate.structureDetail.canopyYn as 'Y' | 'N',
-          outsideWallType: estimate.structureDetail.outsideWallType as 'E' | 'G' | 'W',
-          gucci: estimate.structureDetail.gucci as 75 | 100 | 125,
-          roofType: estimate.structureDetail.roofType as 'E' | 'G' | 'W',
-          insideWallList: [],
-          doorList: [],
-          windowList: [],
-          ceilingList: [],
-          canopyList: []
-        }
-      })));
+      setEstimates(sampleEstimates);
       setTotalPages(1);
       return;
     }
 
     try {
       const data = await estimateService.getEstimates(page);
-      setEstimates(data.content.map(estimate => ({
-        id: estimate.id || 0,
-        userId: estimate.userId || '',
-        ...estimate,
-        status: estimate.status,
-        structureType: estimate.structureType,
-        structureDetail: {
-          ...estimate.structureDetail,
-          insideWallYn: estimate.structureDetail.insideWallYn as 'Y' | 'N',
-          ceilingYn: estimate.structureDetail.ceilingYn as 'Y' | 'N',
-          windowYn: estimate.structureDetail.windowYn as 'Y' | 'N',
-          doorYn: estimate.structureDetail.doorYn as 'Y' | 'N',
-          canopyYn: estimate.structureDetail.canopyYn as 'Y' | 'N',
-          outsideWallType: estimate.structureDetail.outsideWallType as 'E' | 'G' | 'W',
-          gucci: estimate.structureDetail.gucci as 75 | 100 | 125,
-          roofType: estimate.structureDetail.roofType as 'E' | 'G' | 'W',
-          insideWallList: [],
-          doorList: [],
-          windowList: [],
-          ceilingList: [],
-          canopyList: []
-        }
-      })));
+      setEstimates(data.content);
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Failed to load estimates:', error);
@@ -175,80 +122,80 @@ const EstimateList: React.FC = () => {
   };
 
   return (
-      <Box sx={{ py: 3 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'space-between', mb: 3 }}>
-              <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddEstimate}>
-                새 견적서 작성
-              </Button>
-              <Button variant="outlined" startIcon={<SearchIcon />} onClick={() => {}}>
-                견적서 검색
-              </Button>
-            </Box>
-
-            <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-                  gap: 3,
-                }}
-            >
-              {estimates.map((estimate) => (
-                  <Card key={estimate.id}>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {`견적서 ${estimate.id || '(임시)'}`}
-                      </Typography>
-                      <Typography color="text.secondary">
-                        날짜: ${estimate.createdAt}
-                      </Typography>
-                      <Typography sx={{ color: getStatusColor(estimate.status) }}>
-                        상태: {getStatusText(estimate.status)}
-                      </Typography>
-                      <Typography variant="h6" sx={{ mt: 2 }}>
-                        {formatAmount(estimate.totalAmount || 0)}
-                      </Typography>
-                    </CardContent>
-                    <Divider />
-                    <CardActions>
-                      <IconButton size="small" onClick={() => estimate.id && handleEdit(estimate.id)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => estimate.id && handleDeleteClick(estimate.id)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </CardActions>
-                  </Card>
-              ))}
-            </Box>
-
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={(_, value) => setPage(value)}
-                  color="primary"
-              />
-            </Box>
+    <Box sx={{ py: 3 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'space-between', mb: 3 }}>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddEstimate}>
+              새 견적서 작성
+            </Button>
+            <Button variant="outlined" startIcon={<SearchIcon />} onClick={() => {}}>
+              견적서 검색
+            </Button>
           </Box>
 
-          <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-            <DialogTitle>견적서 삭제</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                이 견적서를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setDeleteDialogOpen(false)}>취소</Button>
-              <Button onClick={handleDeleteConfirm} color="error" autoFocus>
-                삭제
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Container>
-      </Box>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+              gap: 3,
+            }}
+          >
+            {estimates.map((estimate) => (
+              <Card key={estimate.id}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    {`견적서 ${estimate.id || '(임시)'}`}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    날짜: {estimate.createdAt}
+                  </Typography>
+                  <Typography sx={{ color: getStatusColor(estimate.status) }}>
+                    상태: {getStatusText(estimate.status)}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mt: 2 }}>
+                    {formatAmount(estimate.totalAmount || 0)}
+                  </Typography>
+                </CardContent>
+                <Divider />
+                <CardActions>
+                  <IconButton size="small" onClick={() => estimate.id && handleEdit(estimate.id)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton size="small" onClick={() => estimate.id && handleDeleteClick(estimate.id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </CardActions>
+              </Card>
+            ))}
+          </Box>
+
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              color="primary"
+            />
+          </Box>
+        </Box>
+
+        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+          <DialogTitle>견적서 삭제</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              이 견적서를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialogOpen(false)}>취소</Button>
+            <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+              삭제
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </Box>
   );
 };
 

@@ -21,6 +21,7 @@ import BuildingInfo from './steps/BuildingInfo';
 import MaterialSelectionStep from './steps/MaterialSelection';
 import Specifications from './steps/Specifications';
 import Summary from './steps/Summary';
+import { sampleEstimates } from '../../data/sampleEstimates';
 
 const steps = ['기본정보', '건물정보', '자재선택', '상세정보', '요약'];
 
@@ -186,7 +187,7 @@ const EstimateForm: React.FC = () => {
             />
           );      
         case 4:
-        return <Summary structure={structure} onSubmit={handleSubmit} />;
+        return <Summary structure={sampleEstimates[0]} onSubmit={handleSubmit} />;
       default:
         return <div>Unknown Step</div>;
     }

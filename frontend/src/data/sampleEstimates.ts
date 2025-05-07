@@ -1,133 +1,106 @@
-import { PaginatedResponse, FrontendStructure } from '../types/estimate';
+// sampleEstimate.ts
+import { FrontendStructure } from '../types/estimate';
 
-export const sampleEstimates: PaginatedResponse<FrontendStructure> = {
-  content: [
-    {
-      id: 1,
-      userId: 'user1',
-      createdAt: '2024-01-01T00:00:00Z',
-      status: 'DRAFT',
-      totalAmount: 1000000,
-      structureType: 'AT',
-      cityName: '10',
-      placeName: '현장 1',
-      width: 5000,
-      length: 10000,
-      height: 3000,
-      trussHeight: 1000,
-      eavesLength: 0,
-      rearTrussHeight: 0,
-      insideWidth: 0,
-      insideLength: 0,
-      rooftopSideHeight: 0,
-      rooftopWidth: 0,
-      rooftopLength: 0,
-      rooftopHeight: 0,
-      structureDetail: {
-        insideWallYn: 'Y',
-        ceilingYn: 'Y',
-        windowYn: 'N',
-        doorYn: 'N',
-        canopyYn: 'N',
-        gucci: 75,
-        gucciAmount: 2,
-        outsideWallType: 'E',
-        outsideWallPaper: 'E1',
-        outsideWallThick: 50,
-        roofType: 'E',
-        roofPaper: 'E1',
-        roofThick: 50,
-        insideWallType: 'E',
-        insideWallPaper: 'E2',
-        insideWallThick: 75,
-        ceilingType: 'E',
-        ceilingPaper: 'E2',
-        ceilingThick: 75,
-        insideWallList: [
-          { id: 1, width: 3000, height: 2400, quantity: 2 }
-        ],
-        ceilingList: [
-          { id: 1, length: 4000, height: 200, quantity: 1 }
-        ],
-        doorList: [
-          { id: 1, width: 900, height: 2100, quantity: 1, type: 'D', subType: 'S' }
-        ],
-        windowList: [
-          { id: 1, width: 1200, height: 1000, quantity: 2, type: 'S' }
-        ],
-        canopyList: [
-          { id: 1, length: 3000, quantity: 1 }
-        ],
-        downpipeList: [
-          { id: 1, width: 100, height: 3000, quantity: 2 }
-        ]
-      },
-      materials: {
-        insideWall: {
-          type: 'E',
-          amount: 10,
-          paper: 'E2',
-          thickness: '75'
-        },
-        outsideWall: {
-          type: 'E',
-          amount: 12,
-          paper: 'E1',
-          thickness: '50'
-        },
-        roof: {
-          type: 'E',
-          amount: 15,
-          paper: 'E1',
-          thickness: '50'
-        },
-        ceiling: {
-          type: 'E',
-          amount: 8,
-          paper: 'E2',
-          thickness: '75'
-        },
-        door: {
-          type: 'E',
-          amount: 2
-        },
-        window: {
-          type: 'E',
-          amount: 4
-        },
-        canopy: {
-          type: 'E',
-          amount: 1
-        }
-      },
-      calculateList: [
-        {
-          name: '상부판넬',
-          standard: '75T',
-          type: 'P',
-          unit: '㎡',
-          amount: 100,
-          sort: 1,
-          uPrice: 50000,
-          ePrice: 50000,
-          total: 5000000,
-        },
-        {
-          name: '하부판넬',
-          standard: '75T',
-          type: 'P',
-          unit: '㎡',
-          amount: 100,
-          sort: 2,
-          uPrice: 50000,
-          ePrice: 50000,
-          total: 5000000,
-        }
-      ]
-    }
-  ],
-  totalPages: 1,
-  totalElements: 1,
-  size: 7,
-  number: 1
-};
+export const sampleEstimates: FrontendStructure[] = [
+  {
+    id: 1,
+    userId: 'test-user',
+    status: 'PENDING',
+    structureType: 'AG',
+    width: 6000,
+    length: 10000,
+    height: 3000,
+    trussHeight: 1500,
+    eavesLength: 600,
+    rearTrussHeight: 1400,
+    insideWidth: 5800,
+    insideLength: 9800,
+    rooftopSideHeight: 0,
+    rooftopWidth: 0,
+    rooftopLength: 0,
+    rooftopHeight: 0,
+    cityName: '10',
+    placeName: '테스트 장소',
+    structureDetail: {} as any,
+    materials: {} as any,
+    createdAt: new Date().toISOString(),
+    totalAmount: 0,
+    calculateList: [
+      { name: '지붕판넬', standard: '우레탄,난연,150', type: 'P', unit: 'M²', amount: 39, sort: 0, ePrice: 0, uPrice: 0, total: 1513200 },
+      { name: '외벽판넬', standard: 'EPS,비난연,100', type: 'P', unit: 'M²', amount: 94, sort: 0, ePrice: 0, uPrice: 0, total: 1024600 },
+      { name: '내벽판넬', standard: 'EPS,비난연,75', type: 'P', unit: 'M²', amount: 29, sort: 0, ePrice: 0, uPrice: 0, total: 269700 },
+      { name: '천장판넬', standard: 'EPS,비난연,0', type: 'P', unit: 'M²', amount: 1, sort: 0, ePrice: 0, uPrice: 0, total: 6900 },
+      { name: '천장부자재', standard: '', type: 'P', unit: 'M²', amount: 1, sort: 0, ePrice: 0, uPrice: 0, total: 10000 },
+      { name: '캐노피판넬', standard: 'EPS,소골,비난연,50', type: 'P', unit: 'M²', amount: 4, sort: 0, ePrice: 0, uPrice: 0, total: 37200 },
+      { name: '용마루상부', standard: 'W=640', type: 'P', unit: 'EA', amount: 3, sort: 0, ePrice: 0, uPrice: 0, total: 0 },
+      { name: '용마루하부', standard: 'W=420', type: 'P', unit: 'EA', amount: 3, sort: 0, ePrice: 0, uPrice: 0, total: 31500 },
+      { name: '크로샤', standard: '', type: 'P', unit: 'EA', amount: 14, sort: 0, ePrice: 0, uPrice: 0, total: 8400 },
+      { name: '미돌출박공', standard: 'w=470', type: 'P', unit: 'EA', amount: 4, sort: 0, ePrice: 0, uPrice: 0, total: 47000 },
+      { name: '물받이', standard: 'w=740', type: 'P', unit: 'EA', amount: 6, sort: 0, ePrice: 0, uPrice: 0, total: 111000 },
+      { name: '물받이받침대', standard: '', type: 'P', unit: 'EA', amount: 18, sort: 0, ePrice: 0, uPrice: 0, total: 234000 },
+      { name: '의자베이스', standard: 'w=200', type: 'P', unit: 'EA', amount: 9, sort: 0, ePrice: 0, uPrice: 0, total: 0 },
+      { name: '외부코너', standard: 'w=340', type: 'P', unit: 'EA', amount: 8, sort: 0, ePrice: 0, uPrice: 0, total: 68000 },
+      { name: '유바', standard: 'w=200', type: 'P', unit: 'EA', amount: 24, sort: 0, ePrice: 0, uPrice: 0, total: 96000 },
+      { name: '캐노피삼각대', standard: '아이보리,은회색', type: 'P', unit: 'EA', amount: 4, sort: 0, ePrice: 0, uPrice: 0, total: 32000 },
+      { name: '캐노피상부마감', standard: '', type: 'P', unit: 'EA', amount: 2, sort: 0, ePrice: 0, uPrice: 0, total: 13000 },
+      { name: '캐노피정면마감', standard: '', type: 'P', unit: 'EA', amount: 2, sort: 0, ePrice: 0, uPrice: 0, total: 18000 },
+      { name: '캐노피측면마감', standard: '', type: 'P', unit: 'set', amount: 2, sort: 0, ePrice: 0, uPrice: 0, total: 32000 },
+      { name: '기타부재료', standard: '볼트,피스,실리콘 등', type: 'P', unit: 'M²', amount: 167, sort: 0, ePrice: 0, uPrice: 0, total: 250500 },
+      { name: '장비대', standard: '지게차,스카이,렌탈', type: 'P', unit: 'M²', amount: 167, sort: 0, ePrice: 0, uPrice: 0, total: 417500 },
+      { name: '운반비', standard: '판넬,부자재 등', type: 'P', unit: 'M²', amount: 167, sort: 0, ePrice: 0, uPrice: 0, total: 417500 },
+      { name: '폐기물', standard: '', type: 'P', unit: 'M²', amount: 167, sort: 0, ePrice: 0, uPrice: 0, total: 250500 },
+      { name: '도어', standard: '900×2100, 스윙도어', type: 'D', unit: 'EA', amount: 1, sort: 0, ePrice: 0, uPrice: 0, total: 0 },
+      { name: '창호', standard: '1200×1000', type: 'D', unit: 'EA', amount: 2, sort: 0, ePrice: 0, uPrice: 0, total: 0 }
+    ]
+  }, {
+    id: 2,
+    userId: 'test-user',
+    status: 'PENDING',
+    structureType: 'AG',
+    width: 6000,
+    length: 10000,
+    height: 3000,
+    trussHeight: 1500,
+    eavesLength: 600,
+    rearTrussHeight: 1400,
+    insideWidth: 5800,
+    insideLength: 9800,
+    rooftopSideHeight: 0,
+    rooftopWidth: 0,
+    rooftopLength: 0,
+    rooftopHeight: 0,
+    cityName: '10',
+    placeName: '테스트 장소',
+    structureDetail: {} as any,
+    materials: {} as any,
+    createdAt: new Date().toISOString(),
+    totalAmount: 0,
+    calculateList: [
+      { name: '지붕판넬', standard: '우레탄,난연,150', type: 'P', unit: 'M²', amount: 39, sort: 0, ePrice: 0, uPrice: 0, total: 1513200 },
+      { name: '외벽판넬', standard: 'EPS,비난연,100', type: 'P', unit: 'M²', amount: 94, sort: 0, ePrice: 0, uPrice: 0, total: 1024600 },
+      { name: '내벽판넬', standard: 'EPS,비난연,75', type: 'P', unit: 'M²', amount: 29, sort: 0, ePrice: 0, uPrice: 0, total: 269700 },
+      { name: '천장판넬', standard: 'EPS,비난연,0', type: 'P', unit: 'M²', amount: 1, sort: 0, ePrice: 0, uPrice: 0, total: 6900 },
+      { name: '천장부자재', standard: '', type: 'P', unit: 'M²', amount: 1, sort: 0, ePrice: 0, uPrice: 0, total: 10000 },
+      { name: '캐노피판넬', standard: 'EPS,소골,비난연,50', type: 'P', unit: 'M²', amount: 4, sort: 0, ePrice: 0, uPrice: 0, total: 37200 },
+      { name: '용마루상부', standard: 'W=640', type: 'P', unit: 'EA', amount: 3, sort: 0, ePrice: 0, uPrice: 0, total: 0 },
+      { name: '용마루하부', standard: 'W=420', type: 'P', unit: 'EA', amount: 3, sort: 0, ePrice: 0, uPrice: 0, total: 31500 },
+      { name: '크로샤', standard: '', type: 'P', unit: 'EA', amount: 14, sort: 0, ePrice: 0, uPrice: 0, total: 8400 },
+      { name: '미돌출박공', standard: 'w=470', type: 'P', unit: 'EA', amount: 4, sort: 0, ePrice: 0, uPrice: 0, total: 47000 },
+      { name: '물받이', standard: 'w=740', type: 'P', unit: 'EA', amount: 6, sort: 0, ePrice: 0, uPrice: 0, total: 111000 },
+      { name: '물받이받침대', standard: '', type: 'P', unit: 'EA', amount: 18, sort: 0, ePrice: 0, uPrice: 0, total: 234000 },
+      { name: '의자베이스', standard: 'w=200', type: 'P', unit: 'EA', amount: 9, sort: 0, ePrice: 0, uPrice: 0, total: 0 },
+      { name: '외부코너', standard: 'w=340', type: 'P', unit: 'EA', amount: 8, sort: 0, ePrice: 0, uPrice: 0, total: 68000 },
+      { name: '유바', standard: 'w=200', type: 'P', unit: 'EA', amount: 24, sort: 0, ePrice: 0, uPrice: 0, total: 96000 },
+      { name: '캐노피삼각대', standard: '아이보리,은회색', type: 'P', unit: 'EA', amount: 4, sort: 0, ePrice: 0, uPrice: 0, total: 32000 },
+      { name: '캐노피상부마감', standard: '', type: 'P', unit: 'EA', amount: 2, sort: 0, ePrice: 0, uPrice: 0, total: 13000 },
+      { name: '캐노피정면마감', standard: '', type: 'P', unit: 'EA', amount: 2, sort: 0, ePrice: 0, uPrice: 0, total: 18000 },
+      { name: '캐노피측면마감', standard: '', type: 'P', unit: 'set', amount: 2, sort: 0, ePrice: 0, uPrice: 0, total: 32000 },
+      { name: '기타부재료', standard: '볼트,피스,실리콘 등', type: 'P', unit: 'M²', amount: 167, sort: 0, ePrice: 0, uPrice: 0, total: 250500 },
+      { name: '장비대', standard: '지게차,스카이,렌탈', type: 'P', unit: 'M²', amount: 167, sort: 0, ePrice: 0, uPrice: 0, total: 417500 },
+      { name: '운반비', standard: '판넬,부자재 등', type: 'P', unit: 'M²', amount: 167, sort: 0, ePrice: 0, uPrice: 0, total: 417500 },
+      { name: '폐기물', standard: '', type: 'P', unit: 'M²', amount: 167, sort: 0, ePrice: 0, uPrice: 0, total: 250500 },
+      { name: '도어', standard: '900×2100, 스윙도어', type: 'D', unit: 'EA', amount: 1, sort: 0, ePrice: 0, uPrice: 0, total: 0 },
+      { name: '창호', standard: '1200×1000', type: 'D', unit: 'EA', amount: 2, sort: 0, ePrice: 0, uPrice: 0, total: 0 }
+    ]
+  }
+]

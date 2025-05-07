@@ -14,11 +14,19 @@ export const estimateService = {
   getTestMode: (): TestMode => {
     return (localStorage.getItem('testMode') as TestMode) || 'service';
   },
+
   getEstimates: async (page: number = 1, size: number = 7): Promise<PaginatedResponse<FrontendStructure>> => {
     const testMode = estimateService.getTestMode();
     if (testMode === 'json') {
-      return sampleEstimates;
+      return {
+        content: sampleEstimates.slice((page - 1) * size, page * size),
+        totalElements: sampleEstimates.length,
+        totalPages: Math.ceil(sampleEstimates.length / size),
+        number: page,
+        size: size
+      };
     }
+  
     const response = await axios.get<PaginatedResponse<FrontendStructure>>(`${API_URL}/list`, {
       params: { page, size }
     });
