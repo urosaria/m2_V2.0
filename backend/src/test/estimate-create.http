@@ -43,3 +43,114 @@ Content-Type: application/json
   "insideWallList": [{ "length": 3000, "height": 2400, "amount": 4 }],
   "windowList": [{ "width": 1200, "height": 1000, "amount": 2, "type": "SLIDING" }]
 }
+
+### UPDATE Estimate
+PUT http://localhost:8080/api/estimates/1
+Content-Type: application/json
+
+{
+  "title": "Updated Title",
+  "cityName": "10",
+  "placeName": "Updated Location",
+  "structureType": "AG",
+  "width": 6000,
+  "length": 10000,
+  "height": 3000,
+  "trussHeight": 1500,
+  "eavesLength": 600,
+  "rearTrussHeight": 1400,
+  "insideWidth": 5800,
+  "insideLength": 9800,
+  "rooftopSideHeight": 0,
+  "rooftopWidth": 0,
+  "rooftopLength": 0,
+  "rooftopHeight": 0,
+  "insideWallYn": "Y",
+  "ceilingYn": "Y",
+  "windowYn": "Y",
+  "doorYn": "Y",
+  "canopyYn": "Y",
+  "downpipeYn": "N",
+  "insideWallType": "E",
+  "insideWallPaper": "E1",
+  "insideWallThick": 75,
+  "outsideWallType": "E",
+  "outsideWallPaper": "E1",
+  "outsideWallThick": 75,
+  "roofType": "E",
+  "roofPaper": "E1",
+  "roofThick": 75,
+  "ceilingType": "E",
+  "ceilingPaper": "E1",
+  "canopyList": [],
+  "ceilingList": [],
+  "doorList": [],
+  "downpipeList": [],
+  "insideWallList": [],
+  "windowList": [],
+  "calculateList": []
+}
+
+### Update Estimate
+PUT http://localhost:8080/api/estimates/1102
+Content-Type: application/json
+
+{
+  "title": "업데이트된 견적서 111",
+  "cityName": "SEOUL",
+  "placeName": "서울 강남구",
+  "structureType": "AG",
+  "width": 6000,
+  "length": 10000,
+  "height": 3000,
+  "trussHeight": 1500,
+  "eavesLength": 500,
+  "rearTrussHeight": 1300,
+  "insideWidth": 5800,
+  "insideLength": 9800,
+  "rooftopSideHeight": 0,
+  "rooftopWidth": 0,
+  "rooftopLength": 0,
+  "rooftopHeight": 0,
+
+  "insideWallYn": "Y",
+  "ceilingYn": "Y",
+  "windowYn": "Y",
+  "doorYn": "Y",
+  "canopyYn": "Y",
+  "downpipeYn": "Y",
+
+  "insideWallType": "E",
+  "insideWallPaper": "E1",
+  "insideWallThick": 75,
+  "outsideWallType": "E",
+  "outsideWallPaper": "E1",
+  "outsideWallThick": 75,
+  "roofType": "E",
+  "roofPaper": "E1",
+  "roofThick": 75,
+  "ceilingType": "E",
+  "ceilingPaper": "E1",
+
+  "canopyList": [
+    { "length": 2000, "amount": 20 }
+  ],
+  "ceilingList": [
+    { "length": 3000, "height": 2500, "amount": 20 }
+  ],
+  "doorList": [
+    { "width": 900, "height": 2100, "amount": 20, "type": "O", "subType": "S" }
+  ],
+  "downpipeList": [
+    { "width": 200, "height": 3000, "amount": 20}
+  ],
+  "insideWallList": [
+    { "length": 5000, "height": 2500, "amount": 20 }
+  ],
+  "windowList": [
+    { "width": 1200, "height": 1000, "amount": 20, "type": "S" }
+  ]
+}
+
+### DELETE Estimate
+DELETE http://localhost:8080/api/estimates/1102

@@ -1,7 +1,6 @@
 package jungjin.estimate.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.EntityNotFoundException;
 import jungjin.estimate.domain.Calculate;
 import jungjin.estimate.domain.Structure;
 import jungjin.estimate.dto.EstimateRequestDTO;
@@ -39,4 +38,31 @@ public class EstimateServiceV2 {
 
         return estimateMapper.toResponseDTO(savedStructure);
     }
+
+    public EstimateResponseDTO getEstimateById(Long id) {
+        Structure structure = estimateRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("structure not found"));
+
+        return estimateMapper.toResponseDTO(structure);
+    }
+
+    public EstimateResponseDTO updateEstimate(Long id, EstimateRequestDTO request) {
+        Structure existing = estimateRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Structure not found with id: " + id));
+
+        Structure updated = estimateMapper.updateEntity(existing, request);
+        Structure saved = estimateRepository.save(updated);
+        List<Calculate> calculates = estimateCalculateService.calculateAndSave(updated);
+        saved.setCalculateList(calculates);
+
+        return estimateMapper.toResponseDTO(saved);
+    }
+
+    @Transactional
+    public void deleteEstimate(Long id) {
+        Structure structure = estimateRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Structure not found with id: " + id));
+        estimateRepository.delete(structure);
+    }
+
 }

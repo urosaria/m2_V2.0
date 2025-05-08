@@ -129,6 +129,64 @@ public class EstimateMapper {
                 .setStructureDetail(parent);
     }
 
+    public Structure updateEntity(Structure entity, EstimateRequestDTO dto) {
+        entity.setTitle(dto.getTitle())
+                .setCityName(dto.getCityName().toString())
+                .setPlaceName(dto.getPlaceName())
+                .setStructureType(dto.getStructureType().toString())
+                .setWidth(dto.getWidth())
+                .setLength(dto.getLength())
+                .setHeight(dto.getHeight())
+                .setTrussHeight(dto.getTrussHeight())
+                .setEavesLength(dto.getEavesLength())
+                .setRearTrussHeight(dto.getRearTrussHeight())
+                .setInsideWidth(dto.getInsideWidth())
+                .setInsideLength(dto.getInsideLength())
+                .setRooftopSideHeight(dto.getRooftopSideHeight())
+                .setRooftopWidth(dto.getRooftopWidth())
+                .setRooftopHeight(dto.getRooftopHeight())
+                .setRooftopLength(dto.getRooftopLength());
+
+        StructureDetail detail = entity.getStructureDetail();
+        detail.setInsideWallYn(dto.getInsideWallYn())
+                .setCeilingYn(dto.getCeilingYn())
+                .setWindowYn(dto.getWindowYn())
+                .setDoorYn(dto.getDoorYn())
+                .setCanopyYn(dto.getCanopyYn())
+                .setDownpipeYn(dto.getDownpipeYn())
+                .setInsideWallType(toStringSafe(dto.getInsideWallType()))
+                .setInsideWallPaper(toStringSafe(dto.getInsideWallPaper()))
+                .setInsideWallThick(dto.getInsideWallThick())
+                .setOutsideWallType(toStringSafe(dto.getOutsideWallType()))
+                .setOutsideWallPaper(toStringSafe(dto.getOutsideWallPaper()))
+                .setOutsideWallThick(dto.getOutsideWallThick())
+                .setRoofType(toStringSafe(dto.getRoofType()))
+                .setRoofPaper(toStringSafe(dto.getRoofPaper()))
+                .setRoofThick(dto.getRoofThick())
+                .setCeilingType(toStringSafe(dto.getCeilingType()))
+                .setCeilingPaper(toStringSafe(dto.getCeilingPaper()));
+
+        detail.getCanopyList().clear();
+        detail.getCanopyList().addAll(dto.getCanopyList().stream().map(d -> toCanopy(d, detail)).toList());
+
+        detail.getCeilingList().clear();
+        detail.getCeilingList().addAll(dto.getCeilingList().stream().map(d -> toCeiling(d, detail)).toList());
+
+        detail.getDoorList().clear();
+        detail.getDoorList().addAll(dto.getDoorList().stream().map(d -> toDoor(d, detail)).toList());
+
+        detail.getDownpipeList().clear();
+        detail.getDownpipeList().addAll(dto.getDownpipeList().stream().map(d -> toDownpipe(d, detail)).toList());
+
+        detail.getInsideWallList().clear();
+        detail.getInsideWallList().addAll(dto.getInsideWallList().stream().map(d -> toInsideWall(d, detail)).toList());
+
+        detail.getWindowList().clear();
+        detail.getWindowList().addAll(dto.getWindowList().stream().map(d -> toWindow(d, detail)).toList());
+
+        return entity;
+    }
+
     public EstimateResponseDTO toResponseDTO(Structure structure) {
         StructureDetail detail = structure.getStructureDetail();
         EstimateResponseDTO dto = new EstimateResponseDTO();

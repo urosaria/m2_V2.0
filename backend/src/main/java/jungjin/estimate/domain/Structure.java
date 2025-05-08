@@ -1,13 +1,13 @@
 package jungjin.estimate.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jungjin.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -82,6 +82,10 @@ public class Structure {
     @CreatedDate
     @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
+
+    @LastModifiedDate
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     @Column(name = "status_date")
     private LocalDateTime statusDate;
