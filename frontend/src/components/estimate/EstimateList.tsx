@@ -122,14 +122,37 @@ const EstimateList: React.FC = () => {
   };
 
   return (
-    <Box sx={{ py: 3 }}>
+    <Box sx={{ py: { xs: 2, sm: 3 } }}>
       <Container maxWidth="lg">
-        <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'space-between', mb: 3 }}>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddEstimate}>
+        <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 2 },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'stretch', sm: 'center' },
+            mb: { xs: 2, sm: 3 }
+          }}>
+            <Button 
+              variant="contained" 
+              startIcon={<AddIcon />} 
+              onClick={handleAddEstimate}
+              sx={{ 
+                height: 48,
+                fontSize: { xs: '1rem', sm: '1.1rem' }
+              }}
+            >
               새 견적서 작성
             </Button>
-            <Button variant="outlined" startIcon={<SearchIcon />} onClick={() => {}}>
+            <Button 
+              variant="outlined" 
+              startIcon={<SearchIcon />} 
+              onClick={() => {}}
+              sx={{ 
+                height: 48,
+                fontSize: { xs: '1rem', sm: '1.1rem' }
+              }}
+            >
               견적서 검색
             </Button>
           </Box>
@@ -137,34 +160,88 @@ const EstimateList: React.FC = () => {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-              gap: 3,
+              gridTemplateColumns: { 
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(3, 1fr)'
+              },
+              gap: { xs: 2, sm: 3 },
             }}
           >
             {estimates.map((estimate) => (
-              <Card key={estimate.id}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
+              <Card 
+                key={estimate.id}
+                sx={{ 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => theme.shadows[4]
+                  }
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1, pb: 1 }}>
+                  <Typography 
+                    variant="h6" 
+                    gutterBottom
+                    sx={{ 
+                      fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                      fontWeight: 600 
+                    }}
+                  >
                     {`견적서 ${estimate.id || '(임시)'}`}
                   </Typography>
-                  <Typography color="text.secondary">
-                    날짜: {estimate.createdAt}
+                  <Typography 
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+                  >
+                    날짜: ${estimate.createdAt || ''}
                   </Typography>
-                  <Typography sx={{ color: getStatusColor(estimate.status) }}>
+                  <Typography 
+                    sx={{ 
+                      color: getStatusColor(estimate.status),
+                      fontSize: { xs: '0.875rem', sm: '1rem' },
+                      mt: 1
+                    }}
+                  >
                     상태: {getStatusText(estimate.status)}
                   </Typography>
-                  <Typography variant="h6" sx={{ mt: 2 }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      mt: 2,
+                      fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                      fontWeight: 700,
+                      color: 'primary.main'
+                    }}
+                  >
                     {formatAmount(estimate.totalAmount || 0)}
                   </Typography>
                 </CardContent>
                 <Divider />
-                <CardActions>
-                  <IconButton size="small" onClick={() => estimate.id && handleEdit(estimate.id)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => estimate.id && handleDeleteClick(estimate.id)}>
-                    <DeleteIcon />
-                  </IconButton>
+                <CardActions sx={{ 
+                  justifyContent: 'flex-end',
+                  gap: 1,
+                  p: 1
+                }}>
+                  <Button
+                    startIcon={<EditIcon />}
+                    onClick={() => estimate.id && handleEdit(estimate.id)}
+                    size="small"
+                    sx={{ minWidth: 90 }}
+                  >
+                    수정
+                  </Button>
+                  <Button
+                    startIcon={<DeleteIcon />}
+                    onClick={() => estimate.id && handleDeleteClick(estimate.id)}
+                    color="error"
+                    size="small"
+                    sx={{ minWidth: 90 }}
+                  >
+                    삭제
+                  </Button>
                 </CardActions>
               </Card>
             ))}

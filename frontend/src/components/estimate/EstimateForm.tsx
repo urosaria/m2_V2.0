@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MobileStepNavigation from './navigation/MobileStepNavigation';
 import {
   Box,
   Button,
@@ -7,14 +8,13 @@ import {
   StepLabel,
   Stepper,
   Typography,
-  useTheme,
   Container,
   Paper,
-  CardContent,
   Alert,
   Snackbar,
+  useTheme,
 } from '@mui/material';
-import { Structure, FrontendStructure, structureTypeNames } from '../../types/estimate';
+import { FrontendStructure } from '../../types/estimate';
 import { estimateService } from '../../services/estimateService';
 import BasicInfo from './steps/BasicInfo';
 import BuildingInfo from './steps/BuildingInfo';
@@ -83,6 +83,7 @@ const EstimateForm: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [structure, setStructure] = useState<FrontendStructure>(initialStructure);
   const [error, setError] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleNext = useCallback(() => setActiveStep((prev) => prev + 1), []);
   const handleBack = useCallback(() => setActiveStep((prev) => prev - 1), []);
@@ -93,6 +94,7 @@ const EstimateForm: React.FC = () => {
       setError(null);
       await estimateService.createEstimate(structure);
       navigate('/estimates');
+      setSnackbarOpen(true);
     } catch (error: any) {
       setError(error?.response?.data?.message || '견적서 생성 중 오류가 발생했습니다.');
       console.error('Error creating estimate:', error);
@@ -170,70 +172,159 @@ const EstimateForm: React.FC = () => {
             }));
           }}
         />;
-        case 3:
-          return (
-            <Specifications
-              structure={structure}
-              setStructure={setStructure}
-              onFieldChange={(field, value) => {
-                setStructure(prev => ({
-                  ...prev,
-                  structureDetail: {
-                    ...prev.structureDetail,
-                    [field]: value
-                  }
-                }));
-              }}
-            />
-          );      
-        case 4:
+      case 3:
+        return (
+          <Specifications
+            structure={structure}
+            setStructure={setStructure}
+            onFieldChange={(field, value) => {
+              setStructure(prev => ({
+                ...prev,
+                structureDetail: {
+                  ...prev.structureDetail,
+                  [field]: value
+                }
+              }));
+            }}
+          />
+        );
+      case 4:
         return <Summary structure={sampleEstimates[0]} onSubmit={handleSubmit} />;
       default:
         return <div>Unknown Step</div>;
     }
   };
 
+  const handleSnackbarClose = useCallback(() => {
+    setSnackbarOpen(false);
+  }, []);
+
   return (
     <Container maxWidth="lg">
-      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
-        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
+      {activeStep === steps.length ? (
+        <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 }, position: 'relative', mb: { xs: 8, sm: 0 } }}>
+          <Box sx={{ 
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2
+          }}>
+            <Typography variant="h6" gutterBottom>
+              견적서가 생성되었습니다.
+            </Typography>
+            <Button 
+              variant="outlined"
+              onClick={() => setActiveStep(0)}
+              sx={{ minWidth: 120 }}
+            >
+              처음으로
+            </Button>
+          </Box>
+        </Paper>
+      ) : (
+        <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 }, position: 'relative', mb: { xs: 8, sm: 0 } }}>
+          <Box sx={{ 
+            width: '100%',
+            // overflowX: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
+            <Box sx={{ width: '100%', mb: 4 }}>
+              <Stepper activeStep={activeStep} alternativeLabel>
+                {steps.map((label) => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </Box>
+
+            <Box sx={{ width: '100%', mt: 2 }}>
+              {getStepContent(activeStep)}
+
+              {/* Desktop Navigation */}
+              <Box sx={{ display: { xs: 'none', sm: 'flex' }, pt: 2, width: '100%', justifyContent: 'space-between' }}>
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  sx={{ minWidth: 120 }}
+                >
+                  이전
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+                  sx={{ minWidth: 120 }}
+                >
+                  {activeStep === steps.length - 1 ? '완료' : '다음'}
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        </Paper>
+      )}
+
+      {/* Mobile Navigation */}
+      {activeStep < steps.length && (
+        <Box 
+          component="div"
+          sx={{ 
+            display: { xs: 'block', sm: 'none' },
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            width: '100%',
+            zIndex: 1000,
+            bgcolor: 'background.paper',
+            borderTop: '1px solid',
+            borderColor: 'divider'
+          }}
+        >
+          <MobileStepNavigation
+            onBack={handleBack}
+            onNext={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+            isFirstStep={activeStep === 0}
+            isLastStep={activeStep === steps.length - 1}
+            nextLabel={activeStep === steps.length - 1 ? '완료' : '다음'}
+          />
+        </Box>
+      )}
+
+      {/* Snackbars */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: '100%', fontSize: { xs: '0.875rem', sm: '1rem' } }}
+        >
+          견적서가 저장되었습니다.
+        </Alert>
+      </Snackbar>
+
+      <Snackbar 
+        open={!!error} 
+        autoHideDuration={6000} 
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setError(null)} 
+          severity="error" 
+          sx={{ width: '100%', fontSize: { xs: '0.875rem', sm: '1rem' } }}
+        >
           {error}
         </Alert>
       </Snackbar>
-      <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${theme.palette.divider}`, px: 3, py: 2 }}>
-          <Typography variant="h6">자동판넬견적</Typography>
-          <Box>
-            {activeStep !== 0 && <Button onClick={handleBack} sx={{ mr: 1 }}>Back</Button>}
-            <Button 
-              variant="contained" 
-              onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-              disabled={loading}
-            >
-              {activeStep === steps.length - 1 ? (loading ? '제출 중...' : '제출') : '다음'}
-            </Button>
-          </Box>
-        </Box>
-
-        <Box sx={{ borderBottom: `1px solid ${theme.palette.divider}`, py: 2 }}>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Box>
-
-        <CardContent
-          sx={{
-            px: { xs: 1.5, sm: 3 }, 
-            pt: { xs: 2, sm: 3 }    
-          }}
-        >
-          <form onSubmit={handleSubmit}>{getStepContent(activeStep)}</form>
-        </CardContent>
-      </Paper>
     </Container>
   );
 };

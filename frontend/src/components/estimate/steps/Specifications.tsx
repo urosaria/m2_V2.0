@@ -8,10 +8,10 @@ import {
   Select,
   MenuItem,
   TextField,
-  Grid,
   Paper,
   SelectChangeEvent
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { FrontendStructure } from '../../../types/estimate';
 
 interface SpecificationsProps {

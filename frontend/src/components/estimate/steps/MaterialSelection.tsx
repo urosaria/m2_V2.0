@@ -5,7 +5,11 @@ import {
   AccordionDetails,
   Typography,
   Box,
+  Container,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { MaterialSelection, MaterialDetail, StructureDetail, ListItem } from '../../../types/estimate';
 import DrainSection from './material/DrainSection';
@@ -40,7 +44,7 @@ const MaterialSelectionStep: React.FC<MaterialSelectionProps> = ({
   ] as const;
 
   return (
-    <Box>
+    <Container maxWidth="lg" sx={{ pb: { xs: 10, sm: 4 } }}>
       <DrainSection
         structureDetail={structureDetail}
         onStructureDetailChange={onStructureDetailChange}
@@ -63,7 +67,8 @@ const MaterialSelectionStep: React.FC<MaterialSelectionProps> = ({
           </AccordionDetails>
         </Accordion>
       ))}
-    </Box>
+
+    </Container>
   );
 };
 

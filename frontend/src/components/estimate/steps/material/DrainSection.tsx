@@ -7,8 +7,8 @@ import {
   MenuItem,
   TextField,
   Typography,
-  Grid
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { StructureDetail } from '../../../../types/estimate';
 
 type GucciSize = 75 | 100 | 125;

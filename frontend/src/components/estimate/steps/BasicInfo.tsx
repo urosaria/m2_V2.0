@@ -12,6 +12,7 @@ import {
   InputAdornment,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
+
 import {
   FrontendStructure,
   structureTypeNames,
@@ -49,29 +50,66 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
         name={field}
         label={label}
         type="number"
-        inputProps={{ min: 0, pattern: '[0-9]*', inputMode: 'numeric' }}
+        size="medium"
+        inputProps={{ 
+          min: 0, 
+          pattern: '[0-9]*', 
+          inputMode: 'numeric',
+          style: { fontSize: '1rem' }
+        }}
         value={structure[field] || ''}
         onChange={handleNumberChange(field)}
-        InputProps={{ endAdornment: <InputAdornment position="end">mm</InputAdornment> }}
+        InputProps={{ 
+          endAdornment: <InputAdornment position="end">mm</InputAdornment>,
+          sx: {
+            height: { xs: '48px', sm: '56px' }
+          }
+        }}
+        sx={{
+          '& .MuiInputLabel-root': {
+            fontSize: { xs: '0.875rem', sm: '1rem' }
+          },
+          '& .MuiOutlinedInput-root': {
+            fontSize: { xs: '1rem', sm: '1.1rem' }
+          }
+        }}
       />
     </Grid>
   );
 
   return (
-    <Stack spacing={3}>
-      <Grid container spacing={2}>
-        <Grid size={12}>
+    <Box sx={{ maxWidth: 'md', mx: 'auto', width: '100%' }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
-            <InputLabel id="structureType-label">구조물 타입</InputLabel>
+            <InputLabel 
+              id="structureType-label"
+              sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+            >
+              구조물 타입
+            </InputLabel>
             <Select
               labelId="structureType-label"
               id="structureType"
               value={structure.structureType || ''}
               label="구조물 타입"
               onChange={handleSelectChange('structureType')}
+              sx={{
+                height: { xs: '48px', sm: '56px' },
+                '& .MuiSelect-select': {
+                  fontSize: { xs: '1rem', sm: '1.1rem' }
+                }
+              }}
             >
               {Object.entries(structureTypeNames).map(([key, value]) => (
-                <MenuItem key={key} value={key as StructureType}>
+                <MenuItem 
+                  key={key} 
+                  value={key as StructureType}
+                  sx={{ 
+                    fontSize: { xs: '1rem', sm: '1.1rem' },
+                    py: 1.5
+                  }}
+                >
                   {value} ({key})
                 </MenuItem>
               ))}
@@ -79,18 +117,36 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
           </FormControl>
         </Grid>
 
-        <Grid size={12}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
-            <InputLabel id="city-label">지역 선택</InputLabel>
+            <InputLabel 
+              id="city-label"
+              sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+            >
+              지역 선택
+            </InputLabel>
             <Select
               labelId="city-label"
               id="cityName"
               value={structure.cityName || ''}
               label="지역 선택"
               onChange={handleSelectChange('cityName')}
+              sx={{
+                height: { xs: '48px', sm: '56px' },
+                '& .MuiSelect-select': {
+                  fontSize: { xs: '1rem', sm: '1.1rem' }
+                }
+              }}
             >
               {cityOptions.map((city) => (
-                <MenuItem key={city.value} value={city.value}>
+                <MenuItem 
+                  key={city.value} 
+                  value={city.value}
+                  sx={{ 
+                    fontSize: { xs: '1rem', sm: '1.1rem' },
+                    py: 1.5
+                  }}
+                >
                   {city.label}
                 </MenuItem>
               ))}
@@ -98,46 +154,62 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
           </FormControl>
         </Grid>
 
-        <Grid size={12}>
+        <Grid size={{ xs: 12 }}>
           <TextField
-            required
             fullWidth
             id="placeName"
             name="placeName"
-            label="현장이름"
+            label="현장명"
             value={structure.placeName || ''}
             onChange={handleTextChange('placeName')}
+            size="medium"
+            InputProps={{ 
+              sx: {
+                height: { xs: '48px', sm: '56px' }
+              }
+            }}
+            sx={{
+              '& .MuiInputLabel-root': {
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              },
+              '& .MuiOutlinedInput-root': {
+                fontSize: { xs: '1rem', sm: '1.1rem' }
+              }
+            }}
           />
         </Grid>
 
-        {renderNumberField('width', '건물폭 (mm)')}
-        {renderNumberField('length', '건물길이 (mm)')}
-        {renderNumberField('height', '건물높이 (mm)')}
+        <Grid size={{ xs: 12 }}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
+            {renderNumberField('width', '건물폭 (mm)')}
+            {renderNumberField('length', '건물길이 (mm)')}
+            {renderNumberField('height', '건물높이 (mm)')}
 
-        {structure.structureType !== 'SL' && renderNumberField('trussHeight', '트러스높이 (mm)')}
+            {structure.structureType !== 'SL' && renderNumberField('trussHeight', '트러스높이 (mm)')}
 
-        {(structure.structureType === 'AE' || structure.structureType === 'BE') &&
-          renderNumberField('eavesLength', '처마길이 (mm)')}
+            {(structure.structureType === 'AE' || structure.structureType === 'BE') && renderNumberField('eavesLength', '처마길이 (mm)')}
 
-        {structure.structureType === 'BE' && renderNumberField('rearTrussHeight', '배면트러스높이 (mm)')}
+            {structure.structureType === 'BE' && renderNumberField('rearTrussHeight', '배면트러스높이 (mm)')}
 
-        {(structure.structureType === 'AG' || structure.structureType === 'BG') && (
-          <>
-            {renderNumberField('insideWidth', '건물내폭 (mm)')}
-            {renderNumberField('insideLength', '건물내길이 (mm)')}
-          </>
-        )}
+            {(structure.structureType === 'AG' || structure.structureType === 'BG') && (
+              <>
+                {renderNumberField('insideWidth', '건물내폭 (mm)')}
+                {renderNumberField('insideLength', '건물내길이 (mm)')}
+              </>
+            )}
 
-        {structure.structureType === 'SL' && (
-          <>
-            {renderNumberField('rooftopSideHeight', '옥탑난간높이 (mm)')}
-            {renderNumberField('rooftopWidth', '옥탑폭 (mm)')}
-            {renderNumberField('rooftopLength', '옥탑길이 (mm)')}
-            {renderNumberField('rooftopHeight', '옥탑높이 (mm)')}
-          </>
-        )}
+            {structure.structureType === 'SL' && (
+              <>
+                {renderNumberField('rooftopSideHeight', '옥탑난간높이 (mm)')}
+                {renderNumberField('rooftopWidth', '옥탑폭 (mm)')}
+                {renderNumberField('rooftopLength', '옥탑길이 (mm)')}
+                {renderNumberField('rooftopHeight', '옥탑높이 (mm)')}
+              </>
+            )}
+          </Grid>
+        </Grid>
       </Grid>
-    </Stack>
+    </Box>
   );
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableHead, TableRow, TableCell, TableBody, Paper, Typography } from '@mui/material';
+import { Table, Box, TableHead, TableRow, TableCell, TableBody, Paper, Typography } from '@mui/material';
 import { CalculateItem } from '../../../../types/estimate';
 
 interface PanelTableProps {
@@ -13,12 +13,15 @@ const PanelTable: React.FC<PanelTableProps> = ({ items }) => {
   if (filtered.length === 0) return null;
 
   return (
-    <Paper elevation={2} sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        패널 공사
-      </Typography>
-      <Table size="small">
-        <TableHead>
+    <Paper elevation={2} sx={{ width: '100%' }}>
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6" gutterBottom>
+          패널 공사
+        </Typography>
+      </Box>
+      <Box sx={{ overflowX: 'auto', width: '100%' }}>
+        <Table size="small" sx={{ minWidth: '500px' }}>
+    <TableHead>
           <TableRow>
             <TableCell>품명</TableCell>
             <TableCell>규격</TableCell>
@@ -42,9 +45,9 @@ const PanelTable: React.FC<PanelTableProps> = ({ items }) => {
             <TableCell align="right">{subtotal.toLocaleString()}</TableCell>
           </TableRow>
         </TableBody>
-      </Table>
-    </Paper>
-  );
+    </Table>
+  </Box>
+</Paper>  );
 };
 
 export default PanelTable;

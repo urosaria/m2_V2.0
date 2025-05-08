@@ -151,19 +151,19 @@ const ListSection: React.FC<ListSectionProps> = ({
 
       case 'canopyList':
         return (
-          <>
+          <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6, md: 6 }}>
               <TextField {...commonProps('length', '캐노피길이 (mm)', item.length)} />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 6 }}>
               <TextField {...commonProps('amount', '캐노피수량 (EA)', item.amount)} />
             </Grid>
-          </>
+          </Grid>
         );
 
       case 'downpipeList':
         return (
-          <>
+          <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField {...commonProps('width', '선홈통폭 (mm)', item.width)} />
             </Grid>
@@ -173,7 +173,7 @@ const ListSection: React.FC<ListSectionProps> = ({
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField {...commonProps('amount', '선홈통수량 (EA)', item.amount)} />
             </Grid>
-          </>
+          </Grid>
         );
 
       default:
