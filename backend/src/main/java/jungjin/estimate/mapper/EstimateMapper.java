@@ -17,9 +17,9 @@ public class EstimateMapper {
         Structure structure = new Structure();
         structure.setUser(user);
         structure.setTitle(dto.getTitle())
-                .setCityName(dto.getCityName().toString())
+                .setCityName(dto.getCityName())
                 .setPlaceName(dto.getPlaceName())
-                .setStructureType(dto.getStructureType().toString())
+                .setStructureType(Enum.valueOf(StructureTypeCode.class, dto.getStructureType()))
                 .setWidth(dto.getWidth())
                 .setLength(dto.getLength())
                 .setHeight(dto.getHeight())
@@ -51,18 +51,21 @@ public class EstimateMapper {
                 .setDoorYn(dto.getDoorYn())
                 .setCanopyYn(dto.getCanopyYn())
                 .setDownpipeYn(dto.getDownpipeYn())
-                .setInsideWallType(toStringSafe(dto.getInsideWallType()))
-                .setInsideWallPaper(toStringSafe(dto.getInsideWallPaper()))
-                .setInsideWallThick(dto.getInsideWallThick())
-                .setOutsideWallType(toStringSafe(dto.getOutsideWallType()))
-                .setOutsideWallPaper(toStringSafe(dto.getOutsideWallPaper()))
-                .setOutsideWallThick(dto.getOutsideWallThick())
-                .setRoofType(toStringSafe(dto.getRoofType()))
-                .setRoofPaper(toStringSafe(dto.getRoofPaper()))
-                .setRoofThick(dto.getRoofThick())
-                .setCeilingType(toStringSafe(dto.getCeilingType()))
-                .setCeilingPaper(toStringSafe(dto.getCeilingPaper()));
 
+                .setInsideWallType(toEnumSafe(InsulationTypeCode.class, dto.getInsideWallType()))
+                .setInsideWallPaper(toEnumSafe(InsulationSubTypeCode.class, dto.getInsideWallPaper()))
+                .setInsideWallThick(dto.getInsideWallThick())
+
+                .setOutsideWallType(toEnumSafe(InsulationTypeCode.class, dto.getOutsideWallType()))
+                .setOutsideWallPaper(toEnumSafe(InsulationSubTypeCode.class, dto.getOutsideWallPaper()))
+                .setOutsideWallThick(dto.getOutsideWallThick())
+
+                .setRoofType(toEnumSafe(InsulationTypeCode.class, dto.getRoofType()))
+                .setRoofPaper(toEnumSafe(InsulationSubTypeCode.class, dto.getRoofPaper()))
+                .setRoofThick(dto.getRoofThick())
+
+                .setCeilingType(toEnumSafe(InsulationTypeCode.class, dto.getCeilingType()))
+                .setCeilingPaper(toEnumSafe(InsulationSubTypeCode.class, dto.getCeilingPaper()));
 
         // Convert and assign subcomponents
         detail.setCanopyList(dto.getCanopyList().stream().map(d -> toCanopy(d, detail)).toList());
@@ -131,9 +134,9 @@ public class EstimateMapper {
 
     public Structure updateEntity(Structure entity, EstimateRequestDTO dto) {
         entity.setTitle(dto.getTitle())
-                .setCityName(dto.getCityName().toString())
+                .setCityName(dto.getCityName())
                 .setPlaceName(dto.getPlaceName())
-                .setStructureType(dto.getStructureType().toString())
+                .setStructureType(StructureTypeCode.valueOf(dto.getStructureType()))
                 .setWidth(dto.getWidth())
                 .setLength(dto.getLength())
                 .setHeight(dto.getHeight())
@@ -148,24 +151,30 @@ public class EstimateMapper {
                 .setRooftopLength(dto.getRooftopLength());
 
         StructureDetail detail = entity.getStructureDetail();
+
         detail.setInsideWallYn(dto.getInsideWallYn())
                 .setCeilingYn(dto.getCeilingYn())
                 .setWindowYn(dto.getWindowYn())
                 .setDoorYn(dto.getDoorYn())
                 .setCanopyYn(dto.getCanopyYn())
                 .setDownpipeYn(dto.getDownpipeYn())
-                .setInsideWallType(toStringSafe(dto.getInsideWallType()))
-                .setInsideWallPaper(toStringSafe(dto.getInsideWallPaper()))
-                .setInsideWallThick(dto.getInsideWallThick())
-                .setOutsideWallType(toStringSafe(dto.getOutsideWallType()))
-                .setOutsideWallPaper(toStringSafe(dto.getOutsideWallPaper()))
-                .setOutsideWallThick(dto.getOutsideWallThick())
-                .setRoofType(toStringSafe(dto.getRoofType()))
-                .setRoofPaper(toStringSafe(dto.getRoofPaper()))
-                .setRoofThick(dto.getRoofThick())
-                .setCeilingType(toStringSafe(dto.getCeilingType()))
-                .setCeilingPaper(toStringSafe(dto.getCeilingPaper()));
 
+                .setInsideWallType(toEnumSafe(InsulationTypeCode.class, dto.getInsideWallType()))
+                .setInsideWallPaper(toEnumSafe(InsulationSubTypeCode.class, dto.getInsideWallPaper()))
+                .setInsideWallThick(dto.getInsideWallThick())
+
+                .setOutsideWallType(toEnumSafe(InsulationTypeCode.class, dto.getOutsideWallType()))
+                .setOutsideWallPaper(toEnumSafe(InsulationSubTypeCode.class, dto.getOutsideWallPaper()))
+                .setOutsideWallThick(dto.getOutsideWallThick())
+
+                .setRoofType(toEnumSafe(InsulationTypeCode.class, dto.getRoofType()))
+                .setRoofPaper(toEnumSafe(InsulationSubTypeCode.class, dto.getRoofPaper()))
+                .setRoofThick(dto.getRoofThick())
+
+                .setCeilingType(toEnumSafe(InsulationTypeCode.class, dto.getCeilingType()))
+                .setCeilingPaper(toEnumSafe(InsulationSubTypeCode.class, dto.getCeilingPaper()));
+
+        // Replace subcomponents
         detail.getCanopyList().clear();
         detail.getCanopyList().addAll(dto.getCanopyList().stream().map(d -> toCanopy(d, detail)).toList());
 
@@ -191,11 +200,12 @@ public class EstimateMapper {
         StructureDetail detail = structure.getStructureDetail();
         EstimateResponseDTO dto = new EstimateResponseDTO();
 
-        // Structure fields
+        // Top-level fields
+        dto.setId(structure.getId());
         dto.setTitle(structure.getTitle());
-        dto.setCityName(CityCode.valueOf(structure.getCityName()));
+        dto.setCityName(CityCode.fromCode(structure.getCityName().getCode()));
         dto.setPlaceName(structure.getPlaceName());
-        dto.setStructureType(StructureTypeCode.valueOf(structure.getStructureType()));
+        dto.setStructureType(StructureTypeCode.valueOf(structure.getStructureType().name()));
         dto.setWidth(structure.getWidth());
         dto.setLength(structure.getLength());
         dto.setHeight(structure.getHeight());
@@ -208,7 +218,10 @@ public class EstimateMapper {
         dto.setRooftopWidth(structure.getRooftopWidth());
         dto.setRooftopHeight(structure.getRooftopHeight());
         dto.setRooftopLength(structure.getRooftopLength());
+        dto.setCreatedAt(structure.getCreateDate());
+        dto.setUpdatedAt(structure.getUpdateDate());
 
+        // Detail (nullable)
         if (detail != null) {
             dto.setInsideWallYn(detail.getInsideWallYn());
             dto.setCeilingYn(detail.getCeilingYn());
@@ -217,21 +230,23 @@ public class EstimateMapper {
             dto.setCanopyYn(detail.getCanopyYn());
             dto.setDownpipeYn(detail.getDownpipeYn());
 
-            dto.setInsideWallType(toEnumSafe(InsulationTypeCode.class, detail.getInsideWallType()));
-            dto.setInsideWallPaper(toEnumSafe(InsulationSubTypeCode.class, detail.getInsideWallPaper()));
+
+            dto.setInsideWallType(toEnumSafe(detail.getInsideWallType()));
+            dto.setInsideWallPaper(toEnumSafe(detail.getInsideWallPaper()));
             dto.setInsideWallThick(detail.getInsideWallThick());
 
-            dto.setOutsideWallType(toEnumSafe(InsulationTypeCode.class, detail.getOutsideWallType()));
-            dto.setOutsideWallPaper(toEnumSafe(InsulationSubTypeCode.class, detail.getOutsideWallPaper()));
+            dto.setOutsideWallType(toEnumSafe(detail.getOutsideWallType()));
+            dto.setOutsideWallPaper(toEnumSafe(detail.getOutsideWallPaper()));
             dto.setOutsideWallThick(detail.getOutsideWallThick());
 
-            dto.setRoofType(toEnumSafe(InsulationTypeCode.class, detail.getRoofType()));
-            dto.setRoofPaper(toEnumSafe(InsulationSubTypeCode.class, detail.getRoofPaper()));
+            dto.setRoofType(toEnumSafe(detail.getRoofType()));
+            dto.setRoofPaper(toEnumSafe(detail.getRoofPaper()));
             dto.setRoofThick(detail.getRoofThick());
 
-            dto.setCeilingType(toEnumSafe(InsulationTypeCode.class, detail.getCeilingType()));
+            dto.setCeilingType(toEnumSafe(detail.getCeilingType()));
+            dto.setCeilingPaper(toEnumSafe(detail.getCeilingPaper()));
 
-            // Sub-lists
+            // Subcomponents
             dto.setCanopyList(detail.getCanopyList().stream().map(this::toComponentDTO).toList());
             dto.setCeilingList(detail.getCeilingList().stream().map(this::toComponentDTO).toList());
             dto.setDoorList(detail.getDoorList().stream().map(this::toComponentDTO).toList());
@@ -240,27 +255,29 @@ public class EstimateMapper {
             dto.setWindowList(detail.getWindowList().stream().map(this::toComponentDTO).toList());
         }
 
-        // Calculates
+        // Calculate items (optional)
         if (structure.getCalculateList() != null) {
-            dto.setCalculateList(structure.getCalculateList().stream()
-                    .map(this::toCalculateDTO)
-                    .toList());
+            dto.setCalculateList(
+                    structure.getCalculateList().stream()
+                            .map(this::toCalculateDTO)
+                            .toList()
+            );
         }
 
         return dto;
     }
 
-    private <T extends Enum<T>> T toEnumSafe(Class<T> enumClass, String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-
+    public <T extends Enum<T>> T toEnumSafe(Class<T> enumClass, String value) {
+        if (value == null || value.isBlank()) return null;
         try {
             return Enum.valueOf(enumClass, value);
         } catch (IllegalArgumentException ex) {
-            // Optionally log or handle the unknown enum value
             return null;
         }
+    }
+
+    public <T extends Enum<T>> T toEnumSafe(T enumValue) {
+        return enumValue;
     }
 
     private CalculateDTO toCalculateDTO(Calculate cal) {

@@ -1,5 +1,6 @@
 package jungjin.estimate.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jungjin.estimate.domain.*;
 import lombok.Data;
 import lombok.Getter;
@@ -11,14 +12,14 @@ import java.util.List;
 
 @Setter
 @Getter
-@Data
 @NoArgsConstructor
 public class EstimateRequestDTO {
     // For Structure
     private String title;
     private CityCode cityName;
+    @NotBlank(message = "Title is required.")
     private String placeName;
-    private StructureTypeCode structureType;
+    private String structureType;
     private int width;
     private int length;
     private int height;
@@ -39,17 +40,17 @@ public class EstimateRequestDTO {
     private String doorYn = "N";
     private String canopyYn = "N";
     private String downpipeYn = "N";
-    private InsulationTypeCode insideWallType;
-    private InsulationSubTypeCode insideWallPaper;
+    private String insideWallType;
+    private String insideWallPaper;
     private int insideWallThick;
-    private InsulationTypeCode outsideWallType;
-    private InsulationSubTypeCode outsideWallPaper;
+    private String outsideWallType;
+    private String outsideWallPaper;
     private int outsideWallThick;
-    private InsulationTypeCode roofType;
-    private InsulationSubTypeCode roofPaper;
+    private String roofType;
+    private String roofPaper;
     private int roofThick;
-    private InsulationTypeCode ceilingType;
-    private InsulationSubTypeCode ceilingPaper;
+    private String ceilingType;
+    private String ceilingPaper;
     private int ceilingThick;
     private int gucci;
     private int gucciInside = 0;

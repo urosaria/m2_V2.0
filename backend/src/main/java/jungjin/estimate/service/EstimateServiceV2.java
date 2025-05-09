@@ -10,6 +10,10 @@ import jungjin.estimate.repository.EstimateRepository;
 import jungjin.user.domain.User;
 import jungjin.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,20 @@ public class EstimateServiceV2 {
     private final EstimateRepository estimateRepository;
     private final EstimateCalculateServiceV2 estimateCalculateService;
     private final UserService userService;
+
+    public Page<EstimateResponseDTO> getUserEstimates(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        //TODO: need to setup get userId via token
+        Long userId = 2L;
+        Page<Structure> structures = estimateRepository.findByUserNum(userId, pageable);
+        return structures.map(estimateMapper::toResponseDTO);
+    }
+
+    public Page<EstimateResponseDTO> getAllEstimates(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Structure> structures = estimateRepository.findAll(pageable);
+        return structures.map(estimateMapper::toResponseDTO);
+    }
 
     public EstimateResponseDTO createEstimate(EstimateRequestDTO request) {
         // Convert DTO to entity

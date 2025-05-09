@@ -1,0 +1,9 @@
+### 1. Get Estimate List (Paginated)
+GET http://localhost:8080/api/estimates/admin?page=0&size=10
+Accept: application/json
+
+###
+
+### 2. Get Single Estimate by ID
+GET http://localhost:8080/api/estimates/admin/1
+Accept: application/json

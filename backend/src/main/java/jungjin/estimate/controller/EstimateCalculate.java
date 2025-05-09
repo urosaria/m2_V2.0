@@ -154,7 +154,7 @@ public class EstimateCalculate {
         sc = structureDetail.getStructure().getEavesLength();
         oomt = structureDetail.getOutsideWallThick();
         roomt = structureDetail.getRoofThick();
-        oomk = structureDetail.getOutsideWallType();
+        oomk = structureDetail.getOutsideWallType().name();
         gd = structureDetail.getGucci();
         ge = structureDetail.getGucciAmount();
         swi = structureDetail.getStructure().getInsideWidth();
@@ -165,7 +165,7 @@ public class EstimateCalculate {
         sth = structureDetail.getStructure().getRooftopHeight();
         gdi = structureDetail.getGucciInside();
         gei = structureDetail.getGucciInsideAmount();
-        String type = structureDetail.getStructure().getStructureType();
+        String type = structureDetail.getStructure().getStructureType().name();
         List<Door> doorList = structureDetail.getDoorList();
         _daCal(doorList);
         List<Window> windowList = structureDetail.getWindowList();
@@ -184,8 +184,8 @@ public class EstimateCalculate {
         List<String> calArray = new ArrayList<>();
         _RA = (long)Math.ceil(_RA / 1000000.0D);
         if (_RA != 0L) {
-            String roofType = structureDetail.getRoofType();
-            String roofPaper = structureDetail.getRoofPaper();
+            String roofType = structureDetail.getRoofType().name();
+            String roofPaper = structureDetail.getRoofPaper().name();
             int roofThick = structureDetail.getRoofThick();
             String standard = _pStandard(roofType, roofPaper) + String.valueOf(roofThick);
             Price price = estimatePriceService.showPrice("P", "R", roofType, roofPaper);
@@ -209,8 +209,8 @@ public class EstimateCalculate {
         }
         _OA = (long)Math.ceil(_OA / 1000000.0D);
         if (_OA != 0L) {
-            String outsideWallType = structureDetail.getOutsideWallType();
-            String outsideWallPaper = structureDetail.getOutsideWallPaper();
+            String outsideWallType = structureDetail.getOutsideWallType().name();
+            String outsideWallPaper = structureDetail.getOutsideWallPaper().name();
             int outsideWallThick = structureDetail.getOutsideWallThick();
             String standard = _pStandard(outsideWallType, outsideWallPaper) + String.valueOf(outsideWallThick);
             Price price = estimatePriceService.showPrice("P", "O", outsideWallType, outsideWallPaper);
@@ -228,8 +228,8 @@ public class EstimateCalculate {
         }
         _NA = (long)Math.ceil(_NA / 1000000.0D);
         if (_NA != 0L) {
-            String insideWallType = structureDetail.getInsideWallType();
-            String insideWallPaper = structureDetail.getInsideWallPaper();
+            String insideWallType = structureDetail.getInsideWallType().name();
+            String insideWallPaper = structureDetail.getInsideWallPaper().name();
             int insideWallThick = structureDetail.getInsideWallThick();
             String standard = _pStandard(insideWallType, insideWallPaper) + String.valueOf(insideWallThick);
             Price price = estimatePriceService.showPrice("P", "I", insideWallType, insideWallPaper);
@@ -247,8 +247,8 @@ public class EstimateCalculate {
         }
         _CA = (long)Math.ceil(_CA / 1000000.0D);
         if (_CA != 0L) {
-            String ceilingType = structureDetail.getCeilingType();
-            String ceilingPaper = structureDetail.getCeilingPaper();
+            String ceilingType = structureDetail.getCeilingType().name();
+            String ceilingPaper = structureDetail.getCeilingPaper().name();
             int ceilingThick = structureDetail.getCeilingThick();
             String standard = _pStandard(ceilingType, ceilingPaper) + String.valueOf(ceilingThick);
             Price price = estimatePriceService.showPrice("P", "C", ceilingType, ceilingPaper);

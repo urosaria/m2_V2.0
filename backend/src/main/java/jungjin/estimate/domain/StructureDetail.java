@@ -44,38 +44,47 @@ public class StructureDetail {
     @Column(name = "downpipe_yn")
     private String downpipeYn = "N";
 
-    @Column(name = "inside_wall_type")
-    private String insideWallType;
 
+    @Convert(converter = InsulationTypeCodeConverter.class)
+    @Column(name = "inside_wall_type")
+    private InsulationTypeCode insideWallType;
+
+    @Convert(converter = InsulationSubTypeCodeConverter.class)
     @Column(name = "inside_wall_paper")
-    private String insideWallPaper;
+    private InsulationSubTypeCode insideWallPaper;
 
     @Column(name = "inside_wall_thick")
     private int insideWallThick;
 
+    @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "outside_wall_type")
-    private String outsideWallType;
+    private InsulationTypeCode outsideWallType;
 
+    @Convert(converter = InsulationSubTypeCodeConverter.class)
     @Column(name = "outside_wall_paper")
-    private String outsideWallPaper;
+    private InsulationSubTypeCode outsideWallPaper;
 
     @Column(name = "outside_wall_thick")
     private int outsideWallThick;
 
+    @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "roof_type")
-    private String roofType;
+    private InsulationTypeCode roofType;
 
+    @Convert(converter = InsulationSubTypeCodeConverter.class)
     @Column(name = "roof_paper")
-    private String roofPaper;
+    private InsulationSubTypeCode roofPaper;
 
     @Column(name = "roof_thick")
     private int roofThick;
 
+    @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "ceiling_type")
-    private String ceilingType;
+    private InsulationTypeCode ceilingType;
 
+    @Convert(converter = InsulationSubTypeCodeConverter.class)
     @Column(name = "ceiling_paper")
-    private String ceilingPaper;
+    private InsulationSubTypeCode ceilingPaper;
 
     @Column(name = "ceiling_thick")
     private int ceilingThick;

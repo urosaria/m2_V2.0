@@ -4,6 +4,7 @@ import jungjin.estimate.domain.*;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class EstimateResponseDTO {
     // For Structure
+    private Long id;
     private String title;
     private CityCode cityName;
     private String placeName;
@@ -27,6 +29,8 @@ public class EstimateResponseDTO {
     private int rooftopWidth = 0;
     private int rooftopHeight = 0;
     private int rooftopLength = 0;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     // For structure detail
     private String insideWallYn = "N";

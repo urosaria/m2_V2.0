@@ -37,9 +37,9 @@ public class EstimateListDTO {
         dto.setId(structure.getId());
         dto.setTitle(structure.getTitle());
         dto.setStatus(structure.getStatus());
-        dto.setCityName(structure.getCityName());
+        dto.setCityName(structure.getCityName().getCode());
         dto.setPlaceName(structure.getPlaceName());
-        dto.setStructureType(structure.getStructureType());
+        dto.setStructureType(structure.getStructureType().name());
         dto.setWidth(structure.getWidth());
         dto.setLength(structure.getLength());
         dto.setHeight(structure.getHeight());

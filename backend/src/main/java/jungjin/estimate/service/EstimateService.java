@@ -198,7 +198,7 @@ public class EstimateService {
         lastStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         XSSFRow xSSFRow = sheet.getRow(0);
         Cell cell = xSSFRow.getCell(0);
-        cell.setCellValue("[" + HandlebarsHelper.cityNameKr(structureDetail.getStructure().getCityName()) + "]" + structureDetail.getStructure().getPlaceName());
+        cell.setCellValue("[" + HandlebarsHelper.cityNameKr(structureDetail.getStructure().getCityName().getCode()) + "]" + structureDetail.getStructure().getPlaceName());
         cell = xSSFRow.getCell(11);
         CharSequence createDate = HandlebarsHelper.formatDate(structureDetail.getCreateDate(), "yyyy-MM-dd hh:mm");
         cell.setCellValue(createDate.toString());
@@ -529,7 +529,7 @@ public class EstimateService {
         totalCellStyle.setDataFormat(df.getFormat("#,##0"));
         XSSFRow xSSFRow = sheet.getRow(0);
         Cell cell = xSSFRow.getCell(0);
-        cell.setCellValue("[" + HandlebarsHelper.cityNameKr(structureDetail.getStructure().getCityName()) + "]" + structureDetail.getStructure().getPlaceName());
+        cell.setCellValue("[" + HandlebarsHelper.cityNameKr(structureDetail.getStructure().getCityName().getCode()) + "]" + structureDetail.getStructure().getPlaceName());
         cell = xSSFRow.getCell(11);
         CharSequence createDate = HandlebarsHelper.formatDate(structureDetail.getCreateDate(), "yyyy-MM-dd hh:mm");
         cell.setCellValue(createDate.toString());
@@ -852,7 +852,7 @@ public class EstimateService {
         totalCellStyle.setDataFormat(df.getFormat("#,##0"));
         XSSFRow xSSFRow = sheet.getRow(0);
         Cell cell = xSSFRow.getCell(0);
-        cell.setCellValue("[" + HandlebarsHelper.cityNameKr(structureDetail.getStructure().getCityName()) + "]" + structureDetail.getStructure().getPlaceName());
+        cell.setCellValue("[" + HandlebarsHelper.cityNameKr(structureDetail.getStructure().getCityName().getCode()) + "]" + structureDetail.getStructure().getPlaceName());
         cell = xSSFRow.getCell(11);
         CharSequence createDate = HandlebarsHelper.formatDate(structureDetail.getCreateDate(), "yyyy-MM-dd hh:mm");
         cell.setCellValue(createDate.toString());

@@ -30,14 +30,16 @@ public class Structure {
     @Column(name = "title")
     private String title;
 
+    @Convert(converter = CityCodeConverter.class)
     @Column(name = "city_name")
-    private String cityName;
+    private CityCode cityName;
 
     @Column(name = "place_name")
     private String placeName;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "structure_type")
-    private String structureType;
+    private StructureTypeCode structureType;
 
     @Column(name = "width")
     private int width;

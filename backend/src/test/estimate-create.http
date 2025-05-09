@@ -1,10 +1,13 @@
+### list Estimate
+GET http://localhost:8080/api/estimates
+
 ### Create Estimate Test
 POST http://localhost:8080/api/estimates
 Content-Type: application/json
 
 {
   "title": "Test Estimate",
-  "cityName": "SEOUL",
+  "cityName": "30",
   "placeName": "Test Site A",
   "structureType": "AT",
   "width": 5000,

@@ -5,10 +5,9 @@ import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class CityCodeConverter implements AttributeConverter<CityCode, String> {
-
     @Override
-    public String convertToDatabaseColumn(CityCode attribute) {
-        return attribute != null ? attribute.getCode() : null;
+    public String convertToDatabaseColumn(CityCode cityCode) {
+        return cityCode != null ? cityCode.getCode() : null;
     }
 
     @Override
