@@ -1,6 +1,5 @@
 package jungjin.estimate.dto;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,7 @@ public class CalculateDTO {
     private String unit;
     private int amount;
     private int uPrice;
-    private String type = "P";
+    private String type;
     private int ePrice;
     private long total;
     private int sort;

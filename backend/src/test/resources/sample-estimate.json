@@ -1,0 +1,393 @@
+{
+  "title": null,
+  "cityName": "10",
+  "placeName": "test",
+  "structureType": "AT",
+  "width": 11,
+  "length": 22,
+  "height": 111,
+  "trussHeight": 11,
+  "eavesLength": 0,
+  "rearTrussHeight": 0,
+  "insideWidth": 0,
+  "insideLength": 0,
+  "rooftopSideHeight": 0,
+  "rooftopWidth": 0,
+  "rooftopHeight": 0,
+  "rooftopLength": 0,
+  "createdAt": "2025-05-10T16:30:15.030494",
+  "updatedAt": "2025-05-10T16:30:15.030494",
+  "structureDetail": {
+    "insideWallYn": "Y",
+    "ceilingYn": "Y",
+    "windowYn": "Y",
+    "doorYn": "Y",
+    "canopyYn": "Y",
+    "downpipeYn": "N",
+    "insideWallType": "E",
+    "insideWallPaper": "E1",
+    "insideWallThick": 50,
+    "outsideWallType": "E",
+    "outsideWallPaper": "E3",
+    "outsideWallThick": 50,
+    "roofType": "E",
+    "roofPaper": "E2",
+    "roofThick": 50,
+    "ceilingType": "E",
+    "ceilingPaper": "E1",
+    "ceilingThick": 75,
+    "gucci": 75,
+    "gucciInside": 0,
+    "gucciInsideAmount": 0,
+    "gucciAmount": 111,
+    "canopyList": [
+      {
+        "id": 1508,
+        "length": 11,
+        "amount": 1,
+        "width": 0,
+        "height": 0,
+        "type": null,
+        "subType": null,
+        "selectWh": null
+      }
+    ],
+    "ceilingList": [
+      {
+        "id": 1508,
+        "length": 11,
+        "amount": 1,
+        "width": 0,
+        "height": 11,
+        "type": null,
+        "subType": null,
+        "selectWh": null
+      }
+    ],
+    "doorList": [
+      {
+        "id": 1508,
+        "length": 0,
+        "amount": 0,
+        "width": 0,
+        "height": 0,
+        "type": "O",
+        "subType": "S",
+        "selectWh": null
+      }
+    ],
+    "downpipeList": [
+      {
+        "id": 1508,
+        "length": 0,
+        "amount": 1,
+        "width": 11,
+        "height": 11,
+        "type": null,
+        "subType": null,
+        "selectWh": null
+      }
+    ],
+    "insideWallList": [
+      {
+        "id": 1508,
+        "length": 11,
+        "amount": 1,
+        "width": 0,
+        "height": 11,
+        "type": null,
+        "subType": null,
+        "selectWh": null
+      }
+    ],
+    "windowList": [
+      {
+        "id": 1508,
+        "length": 0,
+        "amount": 1,
+        "width": 11,
+        "height": 11,
+        "type": "S",
+        "subType": null,
+        "selectWh": null
+      }
+    ]
+  },
+  "calculateList": [
+    {
+      "name": "지붕판넬",
+      "standard": "EPS,난연,50",
+      "unit": "M²",
+      "amount": 1,
+      "type": "P",
+      "total": 11500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "외벽판넬",
+      "standard": "EPS,가등급,50",
+      "unit": "M²",
+      "amount": 1,
+      "type": "P",
+      "total": 12500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "내벽판넬",
+      "standard": "EPS,비난연,50",
+      "unit": "M²",
+      "amount": 1,
+      "type": "P",
+      "total": 8500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "천장판넬",
+      "standard": "EPS,비난연,0",
+      "unit": "M²",
+      "amount": 1,
+      "type": "P",
+      "total": 6900,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "천장부자재",
+      "standard": " ",
+      "unit": "M²",
+      "amount": 1,
+      "type": "P",
+      "total": 10000,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "캐노피판넬",
+      "standard": "EPS,소골,비난연,50",
+      "unit": "M²",
+      "amount": 1,
+      "type": "P",
+      "total": 9300,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "용마루상부",
+      "standard": "W=640",
+      "unit": "EA",
+      "amount": 1,
+      "type": "P",
+      "total": 0,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "용마루하부",
+      "standard": "W=420",
+      "unit": "EA",
+      "amount": 1,
+      "type": "P",
+      "total": 10500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "크로샤",
+      "standard": " ",
+      "unit": "EA",
+      "amount": 2,
+      "type": "P",
+      "total": 1200,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "미돌출박공",
+      "standard": "w=370",
+      "unit": "EA",
+      "amount": 2,
+      "type": "P",
+      "total": 18500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "물받이",
+      "standard": "w=690",
+      "unit": "EA",
+      "amount": 2,
+      "type": "P",
+      "total": 34500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "물받이받침대",
+      "standard": " ",
+      "unit": "EA",
+      "amount": 4,
+      "type": "P",
+      "total": 36000,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "의자베이스",
+      "standard": "w=150",
+      "unit": "EA",
+      "amount": 1,
+      "type": "P",
+      "total": 0,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "외부코너",
+      "standard": "w=290",
+      "unit": "EA",
+      "amount": 4,
+      "type": "P",
+      "total": 29000,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "유바",
+      "standard": "w=150",
+      "unit": "EA",
+      "amount": 4,
+      "type": "P",
+      "total": 12000,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "캐노피삼각대",
+      "standard": "아이보리,은회색",
+      "unit": "EA",
+      "amount": 1,
+      "type": "P",
+      "total": 8000,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "캐노피상부마감",
+      "standard": " ",
+      "unit": "EA",
+      "amount": 1,
+      "type": "P",
+      "total": 6500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "캐노피정면마감",
+      "standard": " ",
+      "unit": "EA",
+      "amount": 1,
+      "type": "P",
+      "total": 9000,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "캐노피측면마감",
+      "standard": " ",
+      "unit": "set",
+      "amount": 1,
+      "type": "P",
+      "total": 16000,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "기타부재료",
+      "standard": "볼트,피스,실리콘 등",
+      "unit": "M²",
+      "amount": 5,
+      "type": "P",
+      "total": 7500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "장비대",
+      "standard": "지게차,스카이,렌탈",
+      "unit": "M²",
+      "amount": 5,
+      "type": "P",
+      "total": 12500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "운반비",
+      "standard": "판넬,부자재 등",
+      "unit": "M²",
+      "amount": 5,
+      "type": "P",
+      "total": 12500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "폐기물",
+      "standard": " ",
+      "unit": "M²",
+      "amount": 5,
+      "type": "P",
+      "total": 7500,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "도어",
+      "standard": "0×0, 스윙도어",
+      "unit": "EA",
+      "amount": 0,
+      "type": "D",
+      "total": 0,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    },
+    {
+      "name": "창호",
+      "standard": "11×11",
+      "unit": "EA",
+      "amount": 1,
+      "type": "D",
+      "total": 0,
+      "sort": 0,
+      "eprice": 0,
+      "uprice": 0
+    }
+  ]
+}

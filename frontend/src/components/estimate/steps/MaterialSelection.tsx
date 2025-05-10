@@ -11,14 +11,12 @@ import {
 } from '@mui/material';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { MaterialSelection, MaterialDetail, StructureDetail, ListItem } from '../../../types/estimate';
+import { StructureDetail, ListItem } from '../../../types/estimate';
 import DrainSection from './material/DrainSection';
 import ListSection from './material/ListSection';
 
 interface MaterialSelectionProps {
-  materials: MaterialSelection;
   structureDetail: StructureDetail;
-  onMaterialChange: (section: keyof MaterialSelection, field: keyof MaterialDetail, value: string) => void;
   onStructureDetailChange: (field: keyof StructureDetail, value: number | string) => void;
   onAddListItem: (listType: keyof Pick<StructureDetail, 'insideWallList' | 'ceilingList' | 'windowList' | 'doorList' | 'canopyList' | 'downpipeList'>) => void;
   onDeleteListItem: (listType: keyof Pick<StructureDetail, 'insideWallList' | 'ceilingList' | 'windowList' | 'doorList' | 'canopyList' | 'downpipeList'>, id: number) => void;

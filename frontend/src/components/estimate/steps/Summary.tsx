@@ -9,13 +9,17 @@ import GuideNotes from './summary/GuideNotes';
 
 interface SummaryProps {
   structure: FrontendStructure;
-  onSubmit: () => void;
 }
 
-const Summary: React.FC<SummaryProps> = ({ structure, onSubmit }) => {
+const Summary: React.FC<SummaryProps> = ({ structure }) => {
   const calculateList = structure.calculateList || [];
   const panelItems = calculateList.filter(item => item.type !== 'D');
   const doorItems = calculateList.filter(item => item.type === 'D');
+
+  const handleExcelDownload = () => {
+    // Replace with actual Excel download logic or endpoint
+    window.open('/api/estimates/export/excel', '_blank');
+  };
 
   return (
   <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 4, sm: 6 }, px: { xs: 2, sm: 3 }, overflowX: 'hidden' }}>
@@ -34,18 +38,19 @@ const Summary: React.FC<SummaryProps> = ({ structure, onSubmit }) => {
 
       {/* 안내문구 */}
       <GuideNotes />
-
-      {/* 제출 버튼 */}
+      
+      {/* 엑셀 다운로드 */}
       <Box sx={{ pt: { xs: 1, sm: 2 } }}>
         <Button
-          variant="contained"
-          size="large"
-          onClick={onSubmit}
-          fullWidth
+            variant="contained"
+            size="large"
+            onClick={handleExcelDownload}
+            fullWidth
         >
-          견적서 제출
+          엑셀 다운로드
         </Button>
       </Box>
+
     </Stack>
   </Container>
   );

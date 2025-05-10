@@ -14,7 +14,7 @@ import {
   Snackbar,
   useTheme,
 } from '@mui/material';
-import { FrontendStructure } from '../../types/estimate';
+import { FrontendStructure, StructureDetail, ListItem } from '../../types/estimate';
 import { estimateService } from '../../services/estimateService';
 import BasicInfo from './steps/BasicInfo';
 import BuildingInfo from './steps/BuildingInfo';
@@ -65,15 +65,6 @@ const initialStructure: FrontendStructure = {
     canopyList: [],
     downpipeList: []
   },
-  materials: {
-    insideWall: { type: 'E', amount: 0 },
-    outsideWall: { type: 'E', amount: 0 },
-    roof: { type: 'E', amount: 0 },
-    ceiling: { type: 'E', amount: 0 },
-    door: { type: 'E', amount: 0 },
-    window: { type: 'E', amount: 0 },
-    canopy: { type: 'E', amount: 0 },
-  },
 };
 
 const EstimateForm: React.FC = () => {
@@ -85,19 +76,56 @@ const EstimateForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const handleNext = useCallback(() => setActiveStep((prev) => prev + 1), []);
-  const handleBack = useCallback(() => setActiveStep((prev) => prev - 1), []);
+  const handleNext = async () => {
+    // If we're at step 3, calculate and save the estimate before moving to summary
+    if (activeStep === 3) {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // First calculate the estimate
+        const calculatedEstimate = await estimateService.calculateEstimate(structure);
+        setStructure(calculatedEstimate);
+
+        // Then save it to the backend
+        const savedEstimate = await estimateService.createEstimate(calculatedEstimate);
+        setStructure(savedEstimate);
+        
+        setSnackbarOpen(true);
+        // Move to summary step after successful save
+        setActiveStep(4);
+      } catch (error: any) {
+        setError(error?.response?.data?.message || '견적서 생성 중 오류가 발생했습니다.');
+        console.error('Error creating estimate:', error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Normal step progression
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
 
   const handleSubmit = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      await estimateService.createEstimate(structure);
+      
+      // Update the estimate status to SUBMITTED
+      const submittedEstimate = await estimateService.createEstimate({
+        ...structure,
+        status: 'SUBMITTED'
+      });
+      
+      // Navigate to estimates list
       navigate('/estimates');
-      setSnackbarOpen(true);
     } catch (error: any) {
-      setError(error?.response?.data?.message || '견적서 생성 중 오류가 발생했습니다.');
-      console.error('Error creating estimate:', error);
+      setError(error?.response?.data?.message || '견적서 제출 중 오류가 발생했습니다.');
+      console.error('Error submitting estimate:', error);
     } finally {
       setLoading(false);
     }
@@ -124,34 +152,24 @@ const EstimateForm: React.FC = () => {
         );
       case 2:
         return <MaterialSelectionStep
-          materials={structure.materials}
           structureDetail={structure.structureDetail}
           buildingType={structure.structureType as 'AG' | 'SL'}
-          onMaterialChange={(section, field, value) => {
-            setStructure(prev => ({
-              ...prev,
-              materials: {
-                ...prev.materials,
-                [section]: { ...prev.materials[section], [field]: value }
-              }
-            }));
-          }}
-          onStructureDetailChange={(field, value) => {
+          onStructureDetailChange={(field: keyof StructureDetail, value: string | number) => {
             setStructure(prev => ({
               ...prev,
               structureDetail: { ...prev.structureDetail, [field]: value }
             }));
           }}
-          onAddListItem={(listType) => {
+          onAddListItem={(listType: keyof Pick<StructureDetail, 'insideWallList' | 'ceilingList' | 'windowList' | 'doorList' | 'canopyList' | 'downpipeList'>) => {
             setStructure(prev => ({
               ...prev,
               structureDetail: {
                 ...prev.structureDetail,
-                [listType]: [...prev.structureDetail[listType], { id: Date.now(), size: '', quantity: 1 }]
+                [listType]: [...prev.structureDetail[listType], { id: Date.now() }]
               }
             }));
           }}
-          onDeleteListItem={(listType, id) => {
+          onDeleteListItem={(listType: keyof Pick<StructureDetail, 'insideWallList' | 'ceilingList' | 'windowList' | 'doorList' | 'canopyList' | 'downpipeList'>, id: number) => {
             setStructure(prev => ({
               ...prev,
               structureDetail: {
@@ -160,7 +178,7 @@ const EstimateForm: React.FC = () => {
               }
             }));
           }}
-          onListItemChange={(listType, id, field, value) => {
+          onListItemChange={(listType: keyof Pick<StructureDetail, 'insideWallList' | 'ceilingList' | 'windowList' | 'doorList' | 'canopyList' | 'downpipeList'>, id: number, field: keyof ListItem, value: string | number) => {
             setStructure(prev => ({
               ...prev,
               structureDetail: {
@@ -189,7 +207,7 @@ const EstimateForm: React.FC = () => {
           />
         );
       case 4:
-        return <Summary structure={sampleEstimates[0]} onSubmit={handleSubmit} />;
+        return <Summary structure={structure} />;
       default:
         return <div>Unknown Step</div>;
     }
@@ -260,7 +278,7 @@ const EstimateForm: React.FC = () => {
                   onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
                   sx={{ minWidth: 120 }}
                 >
-                  {activeStep === steps.length - 1 ? '완료' : '다음'}
+                  {activeStep === 3 ? '저장' : activeStep === steps.length - 1 ? '완료' : '다음'}
                 </Button>
               </Box>
             </Box>
@@ -290,7 +308,7 @@ const EstimateForm: React.FC = () => {
             onNext={activeStep === steps.length - 1 ? handleSubmit : handleNext}
             isFirstStep={activeStep === 0}
             isLastStep={activeStep === steps.length - 1}
-            nextLabel={activeStep === steps.length - 1 ? '완료' : '다음'}
+            nextLabel={activeStep === 3 ? '저장' : activeStep === steps.length - 1 ? '완료' : '다음'}
           />
         </Box>
       )}
@@ -300,7 +318,7 @@ const EstimateForm: React.FC = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Alert
           onClose={handleSnackbarClose}
@@ -315,7 +333,7 @@ const EstimateForm: React.FC = () => {
         open={!!error} 
         autoHideDuration={6000} 
         onClose={() => setError(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Alert 
           onClose={() => setError(null)} 

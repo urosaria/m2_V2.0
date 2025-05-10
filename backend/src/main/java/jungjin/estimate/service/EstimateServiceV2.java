@@ -52,7 +52,7 @@ public class EstimateServiceV2 {
         // Save structure with details and subcomponents
         Structure savedStructure = estimateRepository.save(structure);
         List<Calculate> calculates = estimateCalculateService.calculateAndSave(savedStructure);
-        structure.setCalculateList(calculates);
+        savedStructure.setCalculateList(calculates);
 
         return estimateMapper.toResponseDTO(savedStructure);
     }

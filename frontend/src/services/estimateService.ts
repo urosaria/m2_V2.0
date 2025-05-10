@@ -2,7 +2,7 @@ import axios from 'axios';
 import { FrontendStructure, PaginatedResponse } from '../types/estimate';
 import { sampleEstimates } from '../data/sampleEstimates';
 
-const API_URL = '/api/estimate';
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/estimates`;
 
 type TestMode = 'service' | 'json';
 
@@ -27,7 +27,7 @@ export const estimateService = {
       };
     }
   
-    const response = await axios.get<PaginatedResponse<FrontendStructure>>(`${API_URL}/list`, {
+    const response = await axios.get<PaginatedResponse<FrontendStructure>>(`${API_URL}`, {
       params: { page, size }
     });
     return response.data;
@@ -41,16 +41,10 @@ export const estimateService = {
   createEstimate: async (estimate: FrontendStructure) => {
     const testMode = estimateService.getTestMode();
     if (testMode === 'json') {
-      return estimate;
+      return { ...estimate, id: Math.floor(Math.random() * 1000) };
     }
-    const requestData = {
-      ...estimate,
-      id: 0,
-      userId: '',
-      createdAt: new Date().toISOString(),
-      totalAmount: 0
-    };
-    const response = await axios.post(`${API_URL}/register`, requestData);
+
+    const response = await axios.post<FrontendStructure>(`${API_URL}`, estimate);
     return response.data;
   },
 
@@ -60,12 +54,23 @@ export const estimateService = {
   },
 
   deleteEstimate: async (id: number) => {
-    const response = await axios.delete(`${API_URL}/delete/${id}`);
-    return response.data;
+    const testMode = estimateService.getTestMode();
+    if (testMode === 'json') {
+      return;
+    }
+
+    await axios.delete(`${API_URL}/${id}`);
   },
 
-  calculateEstimate: async (id: number) => {
-    const response = await axios.post(`${API_URL}/calculate/${id}`);
+  calculateEstimate: async (estimate: FrontendStructure) => {
+    const testMode = estimateService.getTestMode();
+    if (testMode === 'json') {
+      return { ...estimate, totalAmount: Math.floor(Math.random() * 10000000) };
+    }
+
+    console.log(estimate);
+
+    const response = await axios.post<FrontendStructure>(`${API_URL}`, estimate);
     return response.data;
   }
 };

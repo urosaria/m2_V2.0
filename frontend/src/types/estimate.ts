@@ -46,6 +46,11 @@ export const cityOptions = [
 
 export type CityName = typeof cityOptions[number]['value'];
 
+export const getCityLabel = (value: string): string => {
+  const match = cityOptions.find(option => option.value === value);
+  return match ? match.label : value; 
+};
+
 export type YesNo = 'Y' | 'N';
 
 export interface ListItem {
@@ -55,9 +60,9 @@ export interface ListItem {
   length?: number;
   quantity?: number;
   amount?: number;
-  type?: string;
-  subType?: string;
-  selectWh?: string;
+  type?: string | null;
+  subType?: string | null;
+  selectWh?: string | null;
 }
 
 export type InsulationType = 'E' | 'G' | 'W';
@@ -80,23 +85,10 @@ export const insulationPaperTypeOptions: { value: InsulationPaperType; label: st
 export interface MaterialDetail {
   type: InsulationType;
   amount: number;
-  thickness?: string;
-  inspection?: boolean;
-  paper?: InsulationPaperType;
-}
-
-export interface MaterialSelection {
-  insideWall: MaterialDetail;
-  outsideWall: MaterialDetail;
-  roof: MaterialDetail;
-  ceiling: MaterialDetail;
-  door: MaterialDetail;
-  window: MaterialDetail;
-  canopy: MaterialDetail;
 }
 
 export type WallThickness = 50 | 75 | 100 | 125 | 150;
-export type CeilingThickness = 50 | 75 | 100 | 125;
+export type CeilingThickness = 0 | 50 | 75 | 100 | 125;
 export type RoofThickness = 50 | 75 | 100 | 125 | 150 | 175 | 200 | 225 | 260;
 
 export interface StructureDetail {
@@ -105,7 +97,8 @@ export interface StructureDetail {
   windowYn: YesNo;
   doorYn: YesNo;
   canopyYn: YesNo;
-  gucci: 75 | 100 | 125;
+  downpipeYn?: YesNo;
+  gucci: 0 | 75 | 100 | 125;
   gucciAmount: number;
   gucciInside?: number;
   gucciInsideAmount?: number;
@@ -131,6 +124,7 @@ export interface StructureDetail {
 
 export interface Structure {
   id: number;
+  title?: string;
   userId: string;
   status: Status;
   structureType: StructureType;
@@ -149,8 +143,8 @@ export interface Structure {
   cityName?: CityName;
   placeName?: string;
   structureDetail: StructureDetail;
-  materials: MaterialSelection;
   createdAt?: string;
+  updatedAt?: string;
   totalAmount?: number;
   calculateList?: CalculateItem[];
 }
@@ -160,9 +154,9 @@ export interface CalculateItem {
   standard: string;
   unit: string;
   amount: number;
-  uPrice: number;
+  uprice: number;
   type: string;
-  ePrice: number;
+  eprice: number;
   total: number;
   sort: number;
   price?: number;
