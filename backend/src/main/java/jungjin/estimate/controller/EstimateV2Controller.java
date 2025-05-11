@@ -21,9 +21,6 @@ import org.springframework.core.io.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 
 @RestController
@@ -32,7 +29,6 @@ import org.springframework.http.HttpHeaders;
 public class EstimateV2Controller {
 
     private final EstimateServiceV2 estimateService;
-    private final UploadConfig uploadConfig;
     private final EstimateExcelServiceV2 excelService;
 
     @GetMapping
