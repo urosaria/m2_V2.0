@@ -27,8 +27,9 @@ spring:
       path: /h2-console
 
 # Custom application properties
-file:
-  upload-dir: /Users/rosariayu/IdeaProjects/m2/src/main/webapp/upload
+app:
+  upload:
+    dir: /Users/riayu/IdeaProjects/m2/backend/src/main/webapp/upload
 
 logging:
   level:

@@ -308,6 +308,7 @@ public class EstimateCalculate {
             System.out.println("|M²|"+ _CNA + "|" + ":캐노피 SAVE");
         }
         if (_RAS_RT != 0L) {
+            //TODO: need to check -> subType = "무"?
             Price price = estimatePriceService.showPrice("S01", "R", "용마루", "");
             int startPrice = 0, gapPrice = 0, maxPrice = 0, standardPrice = 0, ePrice = 0, uPrice = 0;
             long total = 0L;

@@ -34,8 +34,15 @@ export const estimateService = {
   },
 
   getEstimate: async (id: number) => {
-    const response = await axios.get(`${API_URL}/detail/${id}`);
+    const response = await axios.get(`${API_URL}/${id}`);
     return response.data;
+  },
+
+  downloadEstimate: async (id: number): Promise<{ data: Blob; headers: any }> => {
+    const response = await axios.get<Blob>(`${API_URL}/${id}/excelDownload`, {
+      responseType: 'blob',
+    });
+    return response;
   },
 
   createEstimate: async (estimate: FrontendStructure) => {
@@ -49,7 +56,7 @@ export const estimateService = {
   },
 
   updateEstimate: async (id: number, estimate: FrontendStructure) => {
-    const response = await axios.put(`${API_URL}/update/${id}`, estimate);
+    const response = await axios.put(`${API_URL}/${id}`, estimate);
     return response.data;
   },
 

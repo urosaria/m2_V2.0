@@ -11,12 +11,14 @@ import UserRegister from './components/user/UserRegister';
 import UserModify from './components/user/UserModify';
 import MyPage from './components/user/MyPage';
 import EstimateForm from './components/estimate/EstimateForm';
+import EstimateEditForm from './components/estimate/EstimateEditForm';
 import EstimateList from './components/estimate/EstimateList';
 import Estimate from './components/estimate/Estimate';
 import BoardList from './components/board/BoardList';
 import BoardRegister from './components/board/BoardRegister';
 import BoardModify from './components/board/BoardModify';
 import BoardShow from './components/board/BoardShow';
+import EstimateCalculateView from './components/estimate/EstimateCalculateView';
 
 const theme = createTheme({
   palette: {
@@ -85,7 +87,8 @@ function App() {
               <Route path="estimates" element={<Estimate />}>
                 <Route index element={<EstimateList />} />
                 <Route path="new" element={<EstimateForm />} />
-                <Route path="edit/:id" element={<EstimateForm />} />
+                <Route path="edit/:id" element={<EstimateEditForm />} />
+                <Route path="calculate/:id" element={<EstimateCalculateView />} />
               </Route>
 
               <Route path="board" element={<BoardList />}>

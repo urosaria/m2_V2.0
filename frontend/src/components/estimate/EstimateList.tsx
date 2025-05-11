@@ -26,10 +26,9 @@ import {
   Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
+
 import { estimateService } from '../../services/estimateService';
 import { getCityLabel } from '../../types/estimate';
 import { FrontendStructure } from '../../types/estimate';
@@ -39,6 +38,8 @@ import typeIconBT from '../../assets/images/m2/cal/typeIconBT.png';
 import typeIconAG from '../../assets/images/m2/cal/typeIconAG.png';
 import typeIconBG from '../../assets/images/m2/cal/typeIconBG.png';
 import typeIconSL from '../../assets/images/m2/cal/typeIconSL.png';
+import EstimateListActionButtons from './button/EstimateListActionButtonsProps';
+import { useSnackbar } from '../../context/SnackbarContext';
 
 const EstimateList: React.FC = () => {
   const navigate = useNavigate();
@@ -48,10 +49,10 @@ const EstimateList: React.FC = () => {
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [estimates, setEstimates] = useState<FrontendStructure[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 6;
+  const { showSnackbar } = useSnackbar();
 
   const keyframes: SxProps<Theme> = {
     '@keyframes pulse': {
@@ -68,13 +69,12 @@ const EstimateList: React.FC = () => {
   const fetchEstimates = async () => {
     try {
       setLoading(true);
-      setError(null);
       const response = await estimateService.getEstimates(page - 1, itemsPerPage);
       setEstimates(response.content);
       setTotalPages(response.totalPages);
     } catch (err) {
       console.error('Failed to fetch estimates:', err);
-      setError('견적서 목록을 불러오는데 실패했습니다.');
+      showSnackbar('견적서 목록을 불러오는데 실패했습니다.', 'error');
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,45 @@ const EstimateList: React.FC = () => {
   const handleAddEstimate = () => navigate('/estimates/new');
 
   const handleEstimateClick = (id: number) => {
-    navigate(`/estimates/${id}`);
+    navigate(`/estimates/calculate/${id}`);
+  };
+
+  const handleEditClick = (id: number, event: React.MouseEvent) => {
+    event.stopPropagation();
+    navigate(`/estimates/edit/${id}`);
+  };
+
+  const handleDownloadClick = async (id: number, event: React.MouseEvent) => {
+    event.stopPropagation();
+    try {
+      const response = await estimateService.downloadEstimate(id);
+      const blob = new Blob([response.data], {
+        type: response.headers['content-type'] || 'application/octet-stream'
+      });
+  
+      let filename = `estimate-${id}.xlsx`;
+      const disposition = response.headers['content-disposition'];
+      if (disposition && disposition.includes('filename=')) {
+        const match = disposition.match(/filename="?([^"]+)"?/);
+        if (match && match[1]) {
+          filename = decodeURIComponent(match[1]);
+        }
+      }
+  
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+  
+      showSnackbar('엑셀 파일이 성공적으로 다운로드되었습니다.', 'success');
+    } catch (error) {
+      console.error('Download failed:', error);
+      showSnackbar('엑셀 다운로드에 실패했습니다.', 'error');
+    }
   };
 
   const handleDeleteClick = (id: number, event: React.MouseEvent) => {
@@ -194,26 +232,14 @@ const EstimateList: React.FC = () => {
                 }}
               />
             </CardContent>
-            <CardActions>
-              <Tooltip title="수정">
-                <IconButton
-                  color='primary'
-                  size="small"
-                  sx={{ ml: 'auto' }}
-                >
-                  <EditIcon />  
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="삭제">
-                <IconButton
-                  size="small"
-                  color='error'
-                  onClick={(e) => handleDeleteClick(estimate.id || 0, e)}
-                sx={{ ml: 'auto' }}
-              >
-                <DeleteIcon />
-              </IconButton>
-              </Tooltip>
+            <CardActions sx={{ justifyContent: 'flex-end' }}>
+              <EstimateListActionButtons
+                  estimateId={estimate.id || 0}
+                  onView={(id, e) => { e.stopPropagation(); handleEstimateClick(id); }}
+                  onDownload={(id, e) => { e.stopPropagation(); handleDownloadClick(id, e); }}
+                  onEdit={handleEditClick}
+                  onDelete={handleDeleteClick}
+                />
             </CardActions>
           </Card>
         </Grid>
@@ -226,52 +252,72 @@ const EstimateList: React.FC = () => {
       {estimates.map((estimate) => (
         <Box
           key={estimate.id}
-          onClick={() => handleEstimateClick(estimate.id || 0)}
           sx={{
             display: 'flex',
-            alignItems: 'center',
+            flexDirection: 'column',
             p: 2,
             mb: 2,
             borderRadius: 2,
             border: '1px solid',
             borderColor: 'divider',
             bgcolor: 'background.paper',
-            cursor: 'pointer',
             '&:hover': { bgcolor: 'grey.100' }
           }}
         >
-          <CardMedia
-            component="img"
-            image={getTypeIcon(estimate.structureType)}
-            alt={estimate.structureType}
-            sx={{ width: 64, height: 64, objectFit: 'contain', mr: 2 }}
-          />
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle1" fontWeight={600}>
-              [{getCityLabel(String(estimate.cityName))}] {estimate.placeName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {formatDate(estimate.createdAt)}
-            </Typography>
-          </Box>
-          <Typography variant="body1" sx={{ color: 'primary.main', fontWeight: 600, mr: 2 }}>
-            {formatAmount(estimate.totalAmount || 0)}
-          </Typography>
-          <Chip
-            label={getStatusText(estimate.status)}
-            size="small"
+          <Box
+            onClick={() => handleEstimateClick(estimate.id || 0)}
             sx={{
-              bgcolor: alpha(getStatusColor(estimate.status), 0.1),
-              color: getStatusColor(estimate.status),
-              fontWeight: 500,
-              mr: 1
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              cursor: 'pointer'
             }}
-          />
-          <IconButton onClick={(e) => handleDeleteClick(estimate.id || 0, e)} size="small">
-            <DeleteIcon />
-          </IconButton>
-        </Box>
-      ))}
+          >
+            <CardMedia
+              component="img"
+              image={getTypeIcon(estimate.structureType)}
+              alt={estimate.structureType}
+              sx={{ width: 64, height: 64, objectFit: 'contain', mr: 2 }}
+            />
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="subtitle1" fontWeight={600} noWrap>
+                [{getCityLabel(String(estimate.cityName))}] {estimate.placeName}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {formatDate(estimate.createdAt)}
+              </Typography>
+            </Box>
+            <Typography
+              variant="body1"
+              sx={{ color: 'primary.main', fontWeight: 600, mr: 2, whiteSpace: 'nowrap' }}
+            >
+              {formatAmount(estimate.totalAmount || 0)}
+            </Typography>
+            <Chip
+              label={getStatusText(estimate.status)}
+              size="small"
+              sx={{
+                bgcolor: alpha(getStatusColor(estimate.status), 0.1),
+                color: getStatusColor(estimate.status),
+                fontWeight: 500,
+                mr: 1,
+                whiteSpace: 'nowrap'
+              }}
+            />
+          </Box>
+
+          {/* Action Buttons on next line */}
+          <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 0.5 }}>
+            <EstimateListActionButtons
+              estimateId={estimate.id || 0}
+              onView={(id, e) => { e.stopPropagation(); handleEstimateClick(id); }}
+              onDownload={(id, e) => { e.stopPropagation(); handleDownloadClick(id, e); }}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteClick}
+            />
+          </Box>
+      </Box>
+    ))}
     </Box>
   );
 
@@ -291,12 +337,6 @@ const EstimateList: React.FC = () => {
             </Button>
           </Box>
         </Box>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
 
         {loading ? (
           <Grid container spacing={3}>

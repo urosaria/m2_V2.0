@@ -3,6 +3,7 @@ package jungjin.estimate.service;
 import jakarta.persistence.EntityNotFoundException;
 import jungjin.estimate.domain.Calculate;
 import jungjin.estimate.domain.Structure;
+import jungjin.estimate.dto.CalculateDTO;
 import jungjin.estimate.dto.EstimateRequestDTO;
 import jungjin.estimate.dto.EstimateResponseDTO;
 import jungjin.estimate.mapper.EstimateMapper;

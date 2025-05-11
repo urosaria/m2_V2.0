@@ -1,15 +1,14 @@
 package jungjin.estimate.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class CalculateDTO {
+    private long id;
     private String name;
     private String standard;
     private String unit;

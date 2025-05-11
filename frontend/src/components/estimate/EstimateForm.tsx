@@ -11,7 +11,6 @@ import {
   Container,
   Paper,
   Alert,
-  Snackbar,
   useTheme,
 } from '@mui/material';
 import { FrontendStructure, StructureDetail, ListItem } from '../../types/estimate';
@@ -22,6 +21,7 @@ import MaterialSelectionStep from './steps/MaterialSelection';
 import Specifications from './steps/Specifications';
 import Summary from './steps/Summary';
 import { sampleEstimates } from '../../data/sampleEstimates';
+import { useSnackbar } from '../../context/SnackbarContext';
 
 const steps = ['기본정보', '건물정보', '자재선택', '상세정보', '요약'];
 
@@ -73,16 +73,13 @@ const EstimateForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [structure, setStructure] = useState<FrontendStructure>(initialStructure);
-  const [error, setError] = useState<string | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   const handleNext = async () => {
     // If we're at step 3, calculate and save the estimate before moving to summary
     if (activeStep === 3) {
       try {
         setLoading(true);
-        setError(null);
-        
         // First calculate the estimate
         const calculatedEstimate = await estimateService.calculateEstimate(structure);
         setStructure(calculatedEstimate);
@@ -91,11 +88,11 @@ const EstimateForm: React.FC = () => {
         const savedEstimate = await estimateService.createEstimate(calculatedEstimate);
         setStructure(savedEstimate);
         
-        setSnackbarOpen(true);
+        showSnackbar('견적서가 성공적으로 저장되었습니다.', 'success');
         // Move to summary step after successful save
         setActiveStep(4);
       } catch (error: any) {
-        setError(error?.response?.data?.message || '견적서 생성 중 오류가 발생했습니다.');
+        showSnackbar(error?.response?.data?.message || '견적서 생성 중 오류가 발생했습니다.', 'error');
         console.error('Error creating estimate:', error);
       } finally {
         setLoading(false);
@@ -113,7 +110,6 @@ const EstimateForm: React.FC = () => {
   const handleSubmit = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
       
       // Update the estimate status to SUBMITTED
       const submittedEstimate = await estimateService.createEstimate({
@@ -124,7 +120,7 @@ const EstimateForm: React.FC = () => {
       // Navigate to estimates list
       navigate('/estimates');
     } catch (error: any) {
-      setError(error?.response?.data?.message || '견적서 제출 중 오류가 발생했습니다.');
+      showSnackbar(error?.response?.data?.message || '견적서 제출 중 오류가 발생했습니다.', 'error');
       console.error('Error submitting estimate:', error);
     } finally {
       setLoading(false);
@@ -212,10 +208,6 @@ const EstimateForm: React.FC = () => {
         return <div>Unknown Step</div>;
     }
   };
-
-  const handleSnackbarClose = useCallback(() => {
-    setSnackbarOpen(false);
-  }, []);
 
   return (
     <Container maxWidth="lg">
@@ -312,37 +304,6 @@ const EstimateForm: React.FC = () => {
           />
         </Box>
       )}
-
-      {/* Snackbars */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity="success"
-          sx={{ width: '100%', fontSize: { xs: '0.875rem', sm: '1rem' } }}
-        >
-          견적서가 저장되었습니다.
-        </Alert>
-      </Snackbar>
-
-      <Snackbar 
-        open={!!error} 
-        autoHideDuration={6000} 
-        onClose={() => setError(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert 
-          onClose={() => setError(null)} 
-          severity="error" 
-          sx={{ width: '100%', fontSize: { xs: '0.875rem', sm: '1rem' } }}
-        >
-          {error}
-        </Alert>
-      </Snackbar>
     </Container>
   );
 };
