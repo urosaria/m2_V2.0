@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState,  useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import MobileStepNavigation from './navigation/MobileStepNavigation';
 import {
   Box,
   Button,
@@ -11,7 +10,6 @@ import {
   Container,
   Paper,
   Alert,
-  useTheme,
   CircularProgress,
 } from '@mui/material';
 import { FrontendStructure, Status, Structure } from '../../types/estimate';
@@ -22,12 +20,12 @@ import MaterialSelectionStep from './steps/MaterialSelection';
 import Specifications from './steps/Specifications';
 import Summary from './steps/Summary';
 import { useSnackbar } from '../../context/SnackbarContext';
+import ListIcon from '@mui/icons-material/List';
 
 const steps = ['기본정보', '건물정보', '자재선택', '상세정보', '요약'];
 
 const EstimateEditForm: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -57,7 +55,7 @@ const EstimateEditForm: React.FC = () => {
     };
 
     fetchEstimate();
-  }, [id]);
+  }, [id, showSnackbar]);
 
   const handleNext = async () => {
     if (activeStep === 3) {
@@ -96,6 +94,8 @@ const EstimateEditForm: React.FC = () => {
   const handleCancel = () => {
     navigate('/estimates');
   };
+
+  const handleListEstimate = () => navigate('/estimates');
 
   const handleSubmit = async () => {
     try {
@@ -213,63 +213,46 @@ const EstimateEditForm: React.FC = () => {
 
   if (!structure) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="lg">
         <Alert severity="error">견적서를 찾을 수 없습니다.</Alert>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper sx={{ p: { xs: 2, sm: 3 }, position: 'relative' }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          견적서 수정
-        </Typography>
-
-        <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5, display: { xs: 'none', sm: 'flex' } }}>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-
-        {getStepContent(activeStep)}
-
-        <Box sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'flex-end', mt: 3 }}>
-          <Button onClick={handleCancel} sx={{ mr: 1 }}>
-            취소
-          </Button>
-          {activeStep > 0 && (
-            <Button onClick={handleBack} sx={{ mr: 1 }}>
-              이전
+    <Box sx={{ py: { xs: 2, sm: 3 }, bgcolor: 'background.default', minHeight: '100vh' }}>
+      <Container maxWidth="lg">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+          <Typography variant="h4" component="h1">
+            견적서 수정
+          </Typography>
+          <Box>
+            <Button variant="contained" startIcon={<ListIcon />} onClick={handleListEstimate}>
+              목록
             </Button>
-          )}
-          {activeStep === steps.length - 1 ? (
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              disabled={saving}
-            >
-              {saving ? '제출 중...' : '제출'}
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={handleNext}
-              disabled={saving}
-            >
-              {activeStep === 3 ? (saving ? '저장 중...' : '저장 후 다음') : '다음'}
-            </Button>
-          )}
-        </Box>
+          </Box>
+        </Box>      
+        <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 }, position: 'relative', mb: { xs: 8, sm: 0 } }}>
+          <Box sx={{ width: '100%', mb: 4 }}>
+            <Stepper activeStep={activeStep} alternativeLabel>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
 
-        <Box sx={{ display: { sm: 'none' }, position: 'fixed', bottom: 0, left: 0, right: 0, bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', p: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            {activeStep === 0 ? (
-              <Button onClick={handleCancel}>취소</Button>
-            ) : (
-              <Button onClick={handleBack}>이전</Button>
+          {getStepContent(activeStep)}
+
+          <Box sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'flex-end', mt: 3 }}>
+            <Button onClick={handleCancel} sx={{ mr: 1 }}>
+              취소
+            </Button>
+            {activeStep > 0 && (
+              <Button onClick={handleBack} sx={{ mr: 1 }}>
+                이전
+              </Button>
             )}
             {activeStep === steps.length - 1 ? (
               <Button
@@ -289,9 +272,36 @@ const EstimateEditForm: React.FC = () => {
               </Button>
             )}
           </Box>
-        </Box>
-      </Paper>
-    </Container>
+
+          <Box sx={{ display: { sm: 'none' }, position: 'fixed', bottom: 0, left: 0, right: 0, bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', p: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              {activeStep === 0 ? (
+                <Button onClick={handleCancel}>취소</Button>
+              ) : (
+                <Button onClick={handleBack}>이전</Button>
+              )}
+              {activeStep === steps.length - 1 ? (
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={saving}
+                >
+                  {saving ? '제출 중...' : '제출'}
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  disabled={saving}
+                >
+                  {activeStep === 3 ? (saving ? '저장 중...' : '저장 후 다음') : '다음'}
+                </Button>
+              )}
+            </Box>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

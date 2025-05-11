@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -20,10 +20,6 @@ import {
   Pagination,
   useTheme,
   alpha,
-  Alert,
-  SxProps,
-  Theme,
-  Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
@@ -53,20 +49,8 @@ const EstimateList: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 6;
   const { showSnackbar } = useSnackbar();
-
-  const keyframes: SxProps<Theme> = {
-    '@keyframes pulse': {
-      '0%': { opacity: 0.6 },
-      '50%': { opacity: 0.3 },
-      '100%': { opacity: 0.6 }
-    }
-  };
-
-  useEffect(() => {
-    fetchEstimates();
-  }, [page]);
-
-  const fetchEstimates = async () => {
+ 
+  const fetchEstimates = useCallback(async () => {
     try {
       setLoading(true);
       const response = await estimateService.getEstimates(page - 1, itemsPerPage);
@@ -78,7 +62,11 @@ const EstimateList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, showSnackbar]);
+
+  useEffect(() => {
+    fetchEstimates();
+  }, [fetchEstimates]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);

@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { TestModeProvider } from './context/TestModeContext';
 import './App.css';
 
 // Components
@@ -73,7 +72,6 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <TestModeProvider>
         <Router>
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
@@ -104,7 +102,6 @@ function App() {
             </Route>
           </Routes>
         </Router>
-      </TestModeProvider>
     </ThemeProvider>
   );
 }
