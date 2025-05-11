@@ -107,42 +107,14 @@ public class EstimateV2Controller {
     }
 
     @GetMapping("/{id}/excelDownload")
-    public ResponseEntity<Resource> downloadExcel(
-            @PathVariable Long id,
-            HttpServletRequest request
-    ) throws IOException {
+    public ResponseEntity<Resource> downloadExcel(@PathVariable Long id) throws IOException {
+        File file = excelService.generateExcelAndReturnFile(id);
 
-        excelService.excel(id);
-
-        String fileName = "estimate" + id + ".xlsx";
-        String filePath = uploadConfig.getUploadDir() + "/estimate/" + fileName;
-        File file = new File(filePath);
-
-        if (!file.exists()) {
-            throw new NotFoundException("Failed to download excel file:" + id);
-        }
-
-        EstimateResponseDTO structure = estimateService.getEstimateById(id);
-        String displayName = structure.getPlaceName() + ".xlsx";
-        String contentType = Optional.ofNullable(
-                request.getServletContext().getMimeType(file.getAbsolutePath())
-        ).orElse("application/octet-stream");
-
-        String encodedFileName = encodeFileName(request.getHeader("User-Agent"), displayName);
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"estimate" + id + ".xlsx\"")
                 .contentLength(file.length())
                 .body(resource);
-    }
-
-    private String encodeFileName(String userAgent, String fileName) {
-        if (userAgent != null && (userAgent.contains("MSIE") || userAgent.contains("Trident") || userAgent.contains("Edge"))) {
-            return URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", " ");
-        } else {
-            return new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
-        }
     }
 }

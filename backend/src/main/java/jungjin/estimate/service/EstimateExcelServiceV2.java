@@ -1,7 +1,7 @@
 package jungjin.estimate.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jungjin.HandlebarsHelper;
+import jungjin.common.exception.NotFoundException;
 import jungjin.config.UploadConfig;
 import jungjin.estimate.domain.Calculate;
 import jungjin.estimate.domain.Structure;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,340 +26,214 @@ public class EstimateExcelServiceV2 {
     private final UploadConfig uploadConfig;
     private final EstimateRepository estimateRepository;
 
-    public void excel(Long structure_id) throws IOException {
-        Structure structure = estimateRepository.findById(structure_id)
-                .orElseThrow(() -> new EntityNotFoundException("structure not found"));
-        StructureDetail structureDetail = structure.getStructureDetail();
-        List<Calculate> listCal = structure.getCalculateList();
-        FileInputStream fis = new FileInputStream(uploadConfig.getUploadDir() + "/estimate/sample/sample.xlsx");
-        XSSFWorkbook workbook = new XSSFWorkbook(fis);
-        //XSSFFormulaEvaluator xSSFFormulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
-        //int columnindex = 0;
-        XSSFSheet sheet = workbook.getSheetAt(0);
-        XSSFFont xSSFFont1 = workbook.createFont();
-        xSSFFont1.setFontHeightInPoints((short)9);
-        XSSFFont xSSFFont2 = workbook.createFont();
-        xSSFFont2.setFontHeightInPoints((short)10);
-        XSSFCellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setBorderBottom(BorderStyle.THIN);
-        cellStyle.setBorderLeft(BorderStyle.THIN);
-        cellStyle.setBorderTop(BorderStyle.THIN);
-        cellStyle.setBorderRight(BorderStyle.THIN);
-        XSSFDataFormat df = workbook.createDataFormat();
-        cellStyle.setDataFormat(df.getFormat("#,##0"));
-        cellStyle.setFont(xSSFFont1);
-        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        XSSFCellStyle totalCellStyle = workbook.createCellStyle();
-        totalCellStyle.setBorderBottom(BorderStyle.THIN);
-        totalCellStyle.setBorderLeft(BorderStyle.THIN);
-        totalCellStyle.setBorderTop(BorderStyle.THIN);
-        totalCellStyle.setBorderRight(BorderStyle.THIN);
-        totalCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-        totalCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        totalCellStyle.setDataFormat(df.getFormat("#,##0"));
-        totalCellStyle.setFont(xSSFFont1);
-        totalCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        XSSFCellStyle lastStyle = workbook.createCellStyle();
-        lastStyle.setWrapText(true);
-        lastStyle.setFont(xSSFFont2);
-        lastStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        XSSFRow xSSFRow = sheet.getRow(0);
-        Cell cell = xSSFRow.getCell(0);
-        cell.setCellValue("[" + structureDetail.getStructure().getCityName().getName() + "]" + structureDetail.getStructure().getPlaceName());
-        cell = xSSFRow.getCell(11);
-        CharSequence createDate = HandlebarsHelper.formatDate(structureDetail.getCreateDate(), "yyyy-MM-dd hh:mm");
-        cell.setCellValue(createDate.toString());
-        xSSFRow = sheet.getRow(4);
-        int rowindex = 4;
-        int size = listCal.size();
-        long piTotal = 0L;
-        long pncTotal = 0L;
-        long ppTotal = 0L;
-        long pTotal = 0L;
-        long diTotal = 0L;
-        long dncTotal = 0L;
-        long dpTotal = 0L;
-        long dTotal = 0L;
-        int excelRow = 0;
-        int etcExcelLast = 0;
-        int excelDoorRow = 0;
-        List<Calculate> dList = new ArrayList<>();
-        for (Calculate calculate : listCal) {
-            String type = calculate.getType();
-            excelRow = rowindex + 1;
-            if (type.equals("D")) {
-                dList.add(calculate);
-            } else {
-                xSSFRow = sheet.createRow(rowindex);
-                String name = calculate.getName();
-                String unit = calculate.getUnit();
-                long total = calculate.getTotal();
-                long ttotal = 0L;
-                String standard = calculate.getStandard();
-                int amount = calculate.getAmount();
-                int ePrice = calculate.getEPrice();
-                int price = calculate.getUPrice();
-                cell = xSSFRow.createCell(0);
-                cell.setCellStyle(cellStyle);
-                cell.setCellValue(name);
-                cell = xSSFRow.createCell(1);
-                cell.setCellStyle(cellStyle);
-                cell.setCellValue(standard);
-                cell = xSSFRow.createCell(2);
-                cell.setCellStyle(cellStyle);
-                cell.setCellValue(unit);
-                cell = xSSFRow.createCell(3);
-                cell.setCellStyle(cellStyle);
-                cell.setCellValue(amount);
-                if (name.equals("기타부재료") || name.equals("장비대") || name.equals("운반비") || name.equals("폐기물")) {
-                    cell = xSSFRow.createCell(4);
-                    cell.setCellStyle( cellStyle);
-                    cell = xSSFRow.createCell(5);
-                    cell.setCellStyle(cellStyle);
-                    cell = xSSFRow.createCell(8);
-                    cell.setCellStyle(cellStyle);
-                    cell.setCellValue(price);
-                    cell = xSSFRow.createCell(9);
-                    cell.setCellStyle(cellStyle);
-                    cell.setCellFormula("D" + excelRow + "*I" + excelRow);
-                    ppTotal += total;
-                } else {
-                    cell = xSSFRow.createCell(4);
-                    cell.setCellStyle(cellStyle);
-                    cell.setCellValue(price);
-                    cell = xSSFRow.createCell(5);
-                    cell.setCellStyle(cellStyle);
-                    cell.setCellFormula("D" + excelRow + "*E" + excelRow);
-                    piTotal += total;
-                    cell = xSSFRow.createCell(8);
-                    cell.setCellStyle(cellStyle);
-                    cell = xSSFRow.createCell(9);
-                    cell.setCellStyle(cellStyle);
-                }
-                cell = xSSFRow.createCell(6);
-                cell.setCellStyle(cellStyle);
-                if (ePrice != 0)
-                    cell.setCellValue(ePrice);
-                cell = xSSFRow.createCell(7);
-                cell.setCellStyle(cellStyle);
-                if (ePrice != 0) {
-                    cell.setCellValue((ePrice * amount));
-                    cell.setCellFormula("D" + excelRow + "*G" + excelRow);
-                }
-                cell = xSSFRow.createCell(10);
-                cell.setCellStyle(cellStyle);
-                cell.setCellValue((price + ePrice));
-                cell = xSSFRow.createCell(11);
-                cell.setCellStyle(cellStyle);
-                ttotal = (long) (price + ePrice) * amount;
-                cell.setCellFormula("D" + excelRow + "*K" + excelRow);
-                pTotal += ttotal;
-                cell = xSSFRow.createCell(12);
-                cell.setCellStyle(cellStyle);
-                rowindex++;
-            }
-        }
-        xSSFRow = sheet.createRow(rowindex);
-        cell = xSSFRow.createCell(0);
-        cell.setCellStyle((CellStyle)totalCellStyle);
-        cell.setCellValue("   소   계");
-        cell = xSSFRow.createCell(1);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(2);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(3);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(4);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(5);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellFormula("SUM(F5:F" + rowindex + ")");
-        cell = xSSFRow.createCell(6);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(7);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellFormula("SUM(H5:H" + rowindex + ")");
-        cell = xSSFRow.createCell(8);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(9);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellFormula("SUM(J5:J" + rowindex + ")");
-        cell = xSSFRow.createCell(10);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(11);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellFormula("SUM(L5:L" + rowindex + ")");
-        cell = xSSFRow.createCell(12);
-        cell.setCellStyle(totalCellStyle);
-        etcExcelLast = rowindex + 1;
-        rowindex++;
-        rowindex++;
-        xSSFRow = sheet.createRow(rowindex);
-        cell = xSSFRow.createCell(0);
-        cell.setCellStyle(cellStyle);
-        cell.setCellValue("Ο 창호공사");
-        cell = xSSFRow.createCell(1);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(2);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(3);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(4);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(5);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(6);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(7);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(8);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(9);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(10);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(11);
-        cell.setCellStyle(cellStyle);
-        cell = xSSFRow.createCell(12);
-        cell.setCellStyle(cellStyle);
-        rowindex++;
-        int doorExcelStart = 0;
-        int doorExcelLast = 0;
-        for (int j = 0; j < dList.size(); j++) {
-            xSSFRow = sheet.createRow(rowindex);
-            excelDoorRow = rowindex + 1;
-            if (j == 0)
-                doorExcelStart = rowindex + 1;
-            String name = (dList.get(j)).getName();
-            String unit = (dList.get(j)).getUnit();
-            long total = (dList.get(j)).getTotal();
-            long ttotal = 0L;
-            String standard = (dList.get(j)).getStandard();
-            int amount = (dList.get(j)).getAmount();
-            int ePrice = (dList.get(j)).getEPrice();
-            int price = (dList.get(j)).getUPrice();
-            cell = xSSFRow.createCell(0);
-            cell.setCellStyle(cellStyle);
-            cell.setCellValue(name);
-            cell = xSSFRow.createCell(1);
-            cell.setCellStyle(cellStyle);
-            cell.setCellValue(standard);
-            cell = xSSFRow.createCell(2);
-            cell.setCellStyle(cellStyle);
-            cell.setCellValue(unit);
-            cell = xSSFRow.createCell(3);
-            cell.setCellStyle(cellStyle);
-            cell.setCellValue(amount);
-            cell = xSSFRow.createCell(4);
-            cell.setCellStyle(cellStyle);
-            cell.setCellValue(price);
-            cell = xSSFRow.createCell(5);
-            cell.setCellStyle(cellStyle);
-            cell.setCellFormula("D" + excelDoorRow + "*E" + excelDoorRow);
-            diTotal += total;
-            cell = xSSFRow.createCell(6);
-            cell.setCellStyle(cellStyle);
-            if (ePrice != 0)
-                cell.setCellValue(ePrice);
-            cell = xSSFRow.createCell(7);
-            cell.setCellStyle(cellStyle);
-            if (ePrice != 0) {
-                cell.setCellFormula("D" + excelDoorRow + "*G" + excelDoorRow);
-                dncTotal += (long) ePrice * amount;
-            }
-            cell = xSSFRow.createCell(8);
-            cell.setCellStyle(cellStyle);
-            cell = xSSFRow.createCell(9);
-            cell.setCellStyle(cellStyle);
-            cell = xSSFRow.createCell(10);
-            cell.setCellStyle(cellStyle);
-            cell.setCellValue((price + ePrice));
-            cell = xSSFRow.createCell(11);
-            cell.setCellStyle(cellStyle);
-            ttotal = (long) (price + ePrice) * amount;
-            cell.setCellFormula("D" + excelDoorRow + "*K" + excelDoorRow);
-            dTotal += ttotal;
-            cell = xSSFRow.createCell(12);
-            cell.setCellStyle(cellStyle);
-            rowindex++;
-        }
-        xSSFRow = sheet.createRow(rowindex);
-        doorExcelLast = rowindex + 1;
-        cell = xSSFRow.createCell(0);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellValue("   소   계");
-        cell = xSSFRow.createCell(1);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(2);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(3);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(4);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(5);
-        cell.setCellStyle(totalCellStyle);
-        if (doorExcelStart != 0)
-            cell.setCellFormula("SUM(F" + doorExcelStart + ":F" + rowindex + ")");
-        cell = xSSFRow.createCell(6);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(7);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(8);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(9);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(10);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(11);
-        cell.setCellStyle(totalCellStyle);
-        if (doorExcelStart != 0)
-            cell.setCellFormula("SUM(L" + doorExcelStart + ":L" + rowindex + ")");
-        cell = xSSFRow.createCell(12);
-        cell.setCellStyle(totalCellStyle);
-        rowindex++;
-        xSSFRow = sheet.createRow(rowindex);
-        cell = xSSFRow.createCell(0);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellValue("   합   계");
-        cell = xSSFRow.createCell(1);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(2);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(3);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(4);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(5);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellValue((piTotal + diTotal));
-        cell.setCellFormula("F" + etcExcelLast + "+F" + doorExcelLast);
-        cell = xSSFRow.createCell(6);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(7);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellValue((pncTotal + dncTotal));
-        cell.setCellFormula("H" + etcExcelLast + "+H" + doorExcelLast);
-        cell = xSSFRow.createCell(8);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(9);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellFormula("J" + etcExcelLast + "+J" + doorExcelLast);
-        cell = xSSFRow.createCell(10);
-        cell.setCellStyle(totalCellStyle);
-        cell = xSSFRow.createCell(11);
-        cell.setCellStyle(totalCellStyle);
-        cell.setCellFormula("L" + etcExcelLast + "+L" + doorExcelLast);
-        cell = xSSFRow.createCell(12);
-        cell.setCellStyle(totalCellStyle);
+    public File generateExcelAndReturnFile(Long id) throws IOException {
+        createExcel(id);
+        File file = new File(uploadConfig.getUploadDir() + "/estimate/estimate" + id + ".xlsx");
+        if (!file.exists()) throw new NotFoundException("Excel not found");
+        return file;
+    }
 
-        createNoteRow(sheet, rowindex + 2, lastStyle);
-        try {
-            String fileName = "estimate" + String.valueOf(structure_id) + ".xlsx";
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(uploadConfig.getUploadDir() + "/estimate/" + fileName));
-            workbook.write(fileOutputStream);
-            fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    public void createExcel(Long structureId) throws IOException {
+        Structure structure = estimateRepository.findById(structureId)
+                .orElseThrow(() -> new EntityNotFoundException("structure not found"));
+        StructureDetail detail = structure.getStructureDetail();
+        List<Calculate> calculations = structure.getCalculateList();
+
+        try (FileInputStream fis = new FileInputStream(uploadConfig.getUploadDir() + "/estimate/sample/sample.xlsx");
+             XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            int rowindex = 4;
+
+            // Font and Style Setup
+            XSSFFont smallFont = workbook.createFont();
+            smallFont.setFontHeightInPoints((short) 9);
+
+            XSSFFont normalFont = workbook.createFont();
+            normalFont.setFontHeightInPoints((short) 10);
+
+            XSSFDataFormat df = workbook.createDataFormat();
+
+            XSSFCellStyle cellStyle = createStyle(workbook, smallFont, df, false);
+            XSSFCellStyle totalCellStyle = createStyle(workbook, smallFont, df, true);
+            XSSFCellStyle lastNoteStyle = createLastNoteStyle(workbook, normalFont);
+
+            // Header Row
+            XSSFRow headerRow = sheet.getRow(0);
+            headerRow.getCell(0).setCellValue("[" + detail.getStructure().getCityName().getName() + "]" + detail.getStructure().getPlaceName());
+            headerRow.getCell(11).setCellValue(detail.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+
+            // Body Rows
+            List<Calculate> doors = new ArrayList<>();
+            long piTotal = 0, ppTotal = 0, pTotal = 0, diTotal = 0, dncTotal = 0, dTotal = 0;
+
+            for (Calculate calc : calculations) {
+                int excelRow = rowindex + 1;
+                if ("D".equals(calc.getType())) {
+                    doors.add(calc);
+                    continue;
+                }
+                rowindex = writeCalcRow(sheet, rowindex, calc, cellStyle, excelRow, true);
+                piTotal += calc.getTotal();
+                pTotal += (long) (calc.getUPrice() + calc.getEPrice()) * calc.getAmount();
+            }
+
+            int etcSubtotalRow = writeSubtotal(sheet, rowindex++, totalCellStyle, 5);
+            rowindex++;
+
+            // Door Section Title
+            writeSectionTitle(sheet, rowindex++, "Ο 창호공사", cellStyle);
+            int doorStart = rowindex;
+            for (Calculate door : doors) {
+                int excelRow = rowindex + 1;
+                rowindex = writeCalcRow(sheet, rowindex, door, cellStyle, excelRow, false);
+                diTotal += door.getTotal();
+                dncTotal += (long) door.getEPrice() * door.getAmount();
+                dTotal += (long) (door.getUPrice() + door.getEPrice()) * door.getAmount();
+            }
+
+            int doorSubtotalRow = writeSubtotal(sheet, rowindex++, totalCellStyle, doorStart);
+
+            // Grand Total Row
+            writeGrandTotal(sheet, rowindex++, totalCellStyle, etcSubtotalRow, doorSubtotalRow);
+
+            // Note Section
+            createNoteRow(sheet, rowindex + 2, lastNoteStyle);
+
+            // Save File
+            String fileName = "estimate" + structureId + ".xlsx";
+            try (FileOutputStream out = new FileOutputStream(new File(uploadConfig.getUploadDir() + "/estimate/" + fileName))) {
+                workbook.write(out);
+            }
+        }
+    }
+
+    private XSSFCellStyle createStyle(XSSFWorkbook workbook, XSSFFont font, XSSFDataFormat df, boolean shaded) {
+        XSSFCellStyle style = workbook.createCellStyle();
+        style.setFont(font);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setDataFormat(df.getFormat("#,##0"));
+        if (shaded) {
+            style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        }
+        return style;
+    }
+
+    private XSSFCellStyle createLastNoteStyle(XSSFWorkbook workbook, XSSFFont font) {
+        XSSFCellStyle style = workbook.createCellStyle();
+        style.setWrapText(true);
+        style.setFont(font);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        return style;
+    }
+
+    private int writeCalcRow(XSSFSheet sheet, int rowIdx, Calculate calc, XSSFCellStyle style, int excelRow, boolean applyEPrice) {
+        XSSFRow row = sheet.createRow(rowIdx);
+        row.setHeight((short) 360);
+
+        String name = calc.getName();
+        int amount = calc.getAmount();
+        int uPrice = calc.getUPrice();
+        int ePrice = calc.getEPrice();
+
+        boolean isSpecial = name.equals("기타부재료") || name.equals("장비대") || name.equals("운반비") || name.equals("폐기물");
+
+        int col = 0;
+        row.createCell(col++).setCellValue(name);
+        row.createCell(col++).setCellValue(calc.getStandard());
+        row.createCell(col++).setCellValue(calc.getUnit());
+        row.createCell(col++).setCellValue(amount);
+
+        // UPrice + Total (기타/장비/운반/폐기물)
+        if (isSpecial) {
+            row.createCell(4);
+            row.createCell(5);
+            row.createCell(6);
+            row.createCell(7);
+            row.createCell(8).setCellValue(uPrice);
+            row.createCell(9).setCellFormula("D" + excelRow + "*I" + excelRow);
+        } else {
+            row.createCell(4).setCellValue(uPrice);
+            row.createCell(5).setCellFormula("D" + excelRow + "*E" + excelRow);
+            if (ePrice != 0) {
+                row.createCell(6).setCellValue(ePrice);
+                row.createCell(7).setCellFormula("D" + excelRow + "*G" + excelRow);
+            } else {
+                row.createCell(6);
+                row.createCell(7);
+            }
+            row.createCell(8);
+            row.createCell(9);
+        }
+
+        row.createCell(10).setCellValue(uPrice + ePrice);
+        row.createCell(11).setCellFormula("D" + excelRow + "*K" + excelRow);
+        row.createCell(12);
+
+        // Apply styles
+        for (int i = 0; i <= 12; i++) {
+            if (row.getCell(i) == null) row.createCell(i);
+            row.getCell(i).setCellStyle(style);
+        }
+
+        return rowIdx + 1;
+    }
+    private int writeSubtotal(XSSFSheet sheet, int rowIdx, XSSFCellStyle style, int startRow) {
+        XSSFRow row = sheet.createRow(rowIdx);
+        row.setHeight((short) 360);
+
+        // Title cell: no style applied
+        XSSFCell titleCell = row.createCell(0);
+        titleCell.setCellValue("   소   계");
+        titleCell.setCellStyle(style);
+
+        for (int i = 1; i <= 12; i++) {
+            XSSFCell cell = row.createCell(i);
+            cell.setCellStyle(style);
+
+            if (i == 5 || i == 7 || i == 9 || i == 11) { // columns F, H, J, L
+                char colChar = (char) ('A' + i);
+                cell.setCellFormula("SUM(" + colChar + startRow + ":" + colChar + rowIdx + ")");
+            }
+        }
+
+        return rowIdx;
+    }
+
+    private void writeSectionTitle(XSSFSheet sheet, int rowIdx, String title, XSSFCellStyle style) {
+        XSSFRow row = sheet.createRow(rowIdx);
+        row.createCell(0).setCellValue(title);
+        for (int i = 0; i <= 12; i++) {
+            XSSFCell cell = row.getCell(i);
+            if (cell == null) {
+                cell = row.createCell(i);
+            }
+            cell.setCellStyle(style);
+        }
+    }
+
+    private void writeGrandTotal(XSSFSheet sheet, int rowIdx, XSSFCellStyle style, int etcRow, int doorRow) {
+        XSSFRow row = sheet.createRow(rowIdx);
+
+        XSSFCell titleCell = row.createCell(0);
+        titleCell.setCellValue("   합   계");
+        titleCell.setCellStyle(style);
+
+        for (int i = 1; i <= 12; i++) {
+            XSSFCell cell = row.createCell(i);
+            cell.setCellStyle(style);
+
+            // Sum only specific columns: F, H, J, L (index 5, 7, 9, 11)
+            if (i == 5 || i == 7 || i == 9 || i == 11) {
+                char colChar = (char) ('A' + i);
+                // No +1 here; etcRow and doorRow already point to the subtotal rows
+                cell.setCellFormula(colChar + String.valueOf(etcRow + 1) + "+" + colChar + String.valueOf(doorRow + 1));
+            }
         }
     }
 
