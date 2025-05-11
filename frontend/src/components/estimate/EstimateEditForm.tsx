@@ -21,6 +21,7 @@ import Specifications from './steps/Specifications';
 import Summary from './steps/Summary';
 import { useSnackbar } from '../../context/SnackbarContext';
 import ListIcon from '@mui/icons-material/List';
+import { validateEstimate } from '../../utils/estimateValidation';
 
 const steps = ['기본정보', '건물정보', '자재선택', '상세정보', '요약'];
 
@@ -66,6 +67,13 @@ const EstimateEditForm: React.FC = () => {
           throw new Error('견적서 데이터가 없습니다.');
         }
 
+        // Validate the estimate
+        const validation = validateEstimate(structure);
+        if (!validation.isValid) {
+          showSnackbar(validation.errors[0], 'error');
+          return;
+        }
+
         // First calculate the estimate
         const calculatedEstimate = await estimateService.calculateEstimate(structure);
         setStructure(calculatedEstimate);
@@ -101,6 +109,13 @@ const EstimateEditForm: React.FC = () => {
     try {
       if (!structure || !id) {
         throw new Error('견적서 데이터가 없습니다.');
+      }
+
+      // Validate the estimate
+      const validation = validateEstimate(structure);
+      if (!validation.isValid) {
+        showSnackbar(validation.errors[0], 'error');
+        return;
       }
 
       setSaving(true);
@@ -294,7 +309,7 @@ const EstimateEditForm: React.FC = () => {
                   onClick={handleNext}
                   disabled={saving}
                 >
-                  {activeStep === 3 ? (saving ? '저장 중...' : '저장 후 다음') : '다음'}
+                  {activeStep === 3 ? (saving ? '저장 중...' : '저장') : '다음'}
                 </Button>
               )}
             </Box>

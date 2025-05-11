@@ -3,8 +3,6 @@ import {
   Typography,
   Switch,
   Paper,
-  useTheme,
-  useMediaQuery
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { FrontendStructure, StructureDetail, YesNo } from '../../../types/estimate';
@@ -20,6 +18,7 @@ const areaOptions = [
   { field: 'windowYn', label: '창문' },
   { field: 'doorYn', label: '도어' },
   { field: 'canopyYn', label: '캐노피' },
+  //TODO: why not here { field: 'downpipeYn', label: '선홈통' },
 ] as const;
 
 const BuildingInfo: React.FC<BuildingInfoProps> = ({ structure, onFieldChange }) => {

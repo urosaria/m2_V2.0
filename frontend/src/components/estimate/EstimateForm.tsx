@@ -22,6 +22,7 @@ import Summary from './steps/Summary';
 //import { sampleEstimates } from '../../data/sampleEstimates';
 import { useSnackbar } from '../../context/SnackbarContext';
 import ListIcon from '@mui/icons-material/List';
+import { validateEstimate } from '../../utils/estimateValidation';
 
 const steps = ['기본정보', '건물정보', '자재선택', '상세정보', '요약'];
 
@@ -75,14 +76,22 @@ const EstimateForm: React.FC = () => {
   const { showSnackbar } = useSnackbar();
 
   const handleNext = async () => {
-    // If we're at step 3, calculate and save the estimate before moving to summary
+    // If we're at step 3, validate and save the estimate before moving to summary
     if (activeStep === 3) {
       try {
         setLoading(true);
+
+        // Validate the estimate
+        const validation = validateEstimate(structure);
+        if (!validation.isValid) {
+          showSnackbar(validation.errors[0], 'error');
+          return;
+        }
+
         // First calculate the estimate
         const calculatedEstimate = await estimateService.calculateEstimate(structure);
         setStructure(calculatedEstimate);
-
+        
         // Then save it to the backend
         const savedEstimate = await estimateService.createEstimate(calculatedEstimate);
         setStructure(savedEstimate);
@@ -96,10 +105,10 @@ const EstimateForm: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    } else {
-      // Normal step progression
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }
+      return;
+    } 
+    // Normal step progression
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
   const handleBack = () => {
@@ -111,16 +120,20 @@ const EstimateForm: React.FC = () => {
   const handleSubmit = useCallback(async () => {
     try {
       setLoading(true);
+
+      // Validate the estimate
+      const validation = validateEstimate(structure);
+      if (!validation.isValid) {
+        showSnackbar(validation.errors[0], 'error');
+        return;
+      }
       
       // Update the estimate status to SUBMITTED
-      // const submittedEstimate = await estimateService.createEstimate({
-      //   ...structure,
-      //   status: 'SUBMITTED'
-      // });
       await estimateService.createEstimate({ ...structure, status: 'SUBMITTED' });      
       
       // Navigate to estimates list
       navigate('/estimates');
+      showSnackbar('견적서가 성공적으로 제출되었습니다.', 'success');
     } catch (error: any) {
       showSnackbar(error?.response?.data?.message || '견적서 제출 중 오류가 발생했습니다.', 'error');
       console.error('Error submitting estimate:', error);

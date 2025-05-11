@@ -167,6 +167,9 @@ export interface Calculate extends CalculateItem {}
 export interface FrontendStructure extends Omit<Structure, 'id' | 'userId'> {
   id?: number;
   userId?: string;
+  doorList?: ListItem[];
+  canopyList?: ListItem[];
+  gutterList?: ListItem[];
 }
 
 export type NumericFields = keyof Pick<

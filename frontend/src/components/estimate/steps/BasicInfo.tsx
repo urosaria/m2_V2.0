@@ -1,14 +1,12 @@
 import React from 'react';
 import {
   TextField,
-  Stack,
   MenuItem,
   FormControl,
   InputLabel,
   Select,
   SelectChangeEvent,
   Box,
-  Typography,
   InputAdornment,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -159,7 +157,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
             fullWidth
             id="placeName"
             name="placeName"
-            label="현장명"
+            label="현장명 *"
             value={structure.placeName || ''}
             onChange={handleTextChange('placeName')}
             size="medium"

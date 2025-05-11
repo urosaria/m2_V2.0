@@ -4,10 +4,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
-  Box,
   Container,
-  useTheme,
-  useMediaQuery
 } from '@mui/material';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -33,12 +30,12 @@ const MaterialSelectionStep: React.FC<MaterialSelectionProps> = ({
   buildingType
 }) => {
   const sections = [
-    { title: '내벽', listType: 'insideWallList' },
-    { title: '천장', listType: 'ceilingList' },
-    { title: '창호', listType: 'windowList' },
-    { title: '도어', listType: 'doorList' },
-    { title: '캐노피', listType: 'canopyList' },
-    { title: '선홈통', listType: 'downpipeList' },
+    { title: '내벽', listType: 'insideWallList', showIf: structureDetail.insideWallYn === 'Y' },
+    { title: '천장', listType: 'ceilingList', showIf: structureDetail.ceilingYn === 'Y' },
+    { title: '창호', listType: 'windowList', showIf: structureDetail.windowYn === 'Y' },
+    { title: '도어', listType: 'doorList', showIf: structureDetail.doorYn === 'Y' },
+    { title: '캐노피', listType: 'canopyList', showIf: structureDetail.canopyYn === 'Y' },
+    { title: '선홈통', listType: 'downpipeList', showIf: structureDetail.downpipeYn === 'Y' },
   ] as const;
 
   return (
@@ -48,7 +45,7 @@ const MaterialSelectionStep: React.FC<MaterialSelectionProps> = ({
         onStructureDetailChange={onStructureDetailChange}
         buildingType={buildingType}
       />
-      {sections.map(({ title, listType }) => (
+      {sections.filter(section => section.showIf).map(({ title, listType }) => (
         <Accordion key={listType} disableGutters>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="subtitle1" fontWeight={600}>{title}</Typography>

@@ -7,8 +7,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  TextField,
-  Paper,
   SelectChangeEvent
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -97,11 +95,13 @@ const Specifications: React.FC<SpecificationsProps> = ({
 
   return (
     <Stack spacing={4} sx={{ p: { xs: 2, sm: 3 } }}>
-      {renderBoardSection('내벽', 'insideWallType', 'insideWallPaper', 'insideWallThick', [50, 75, 100, 125, 150])}
+      {structure.structureDetail?.insideWallYn === 'Y' &&
+        renderBoardSection('내벽', 'insideWallType', 'insideWallPaper', 'insideWallThick', [50, 75, 100, 125, 150])}
       {renderBoardSection('외벽', 'outsideWallType', 'outsideWallPaper', 'outsideWallThick', [50, 75, 100, 125, 150, 175])}
       {structure.structureType !== 'SL' &&
         renderBoardSection('지붕', 'roofType', 'roofPaper', 'roofThick', [50, 75, 100, 125, 150, 175, 200, 225, 260])}
-      {renderBoardSection('천장', 'ceilingType', 'ceilingPaper', 'ceilingThick', [50, 75, 100, 125])}
+      {structure.structureDetail?.ceilingYn === 'Y' &&
+        renderBoardSection('천장', 'ceilingType', 'ceilingPaper', 'ceilingThick', [50, 75, 100, 125])}
     </Stack>
   );
 };

@@ -3,7 +3,6 @@ import {
   Box,
   TextField,
   IconButton,
-  Typography,
   MenuItem,
   Select,
   FormControl,
@@ -47,13 +46,13 @@ const ListSection: React.FC<ListSectionProps> = ({
         return (
           <>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('length', '내벽길이 (mm)', item.length)} />
+              <TextField {...commonProps('length', '내벽길이 (mm) *', item.length)} />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('height', '내벽높이 (mm)', item.height)} />
+              <TextField {...commonProps('height', '내벽높이 (mm) *', item.height)} />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('amount', '내벽수량 (EA)', item.amount)} />
+              <TextField {...commonProps('amount', '내벽수량 (EA) *', item.amount)} />
             </Grid>
           </>
         );
@@ -62,13 +61,13 @@ const ListSection: React.FC<ListSectionProps> = ({
         return (
           <>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('length', '천장폭 (mm)', item.length)} />
+              <TextField {...commonProps('length', '천장폭 (mm) *', item.length)} />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('height', '천장길이 (mm)', item.height)} />
+              <TextField {...commonProps('height', '천장길이 (mm) *', item.height)} />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('amount', '천장수량 (EA)', item.amount)} />
+              <TextField {...commonProps('amount', '천장수량 (EA) *', item.amount)} />
             </Grid>
           </>
         );
@@ -106,7 +105,7 @@ const ListSection: React.FC<ListSectionProps> = ({
           <>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <FormControl fullWidth>
-                <InputLabel>도어종류</InputLabel>
+                <InputLabel>도어종류 *</InputLabel>
                 <Select
                   value={item.subType || ''}
                   onChange={(e) => onItemChange(item.id, 'subType', e.target.value)}
@@ -118,9 +117,10 @@ const ListSection: React.FC<ListSectionProps> = ({
                 </Select>
               </FormControl>
             </Grid>
+
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <FormControl fullWidth>
-                <InputLabel>설치위치</InputLabel>
+                <InputLabel>설치위치 *</InputLabel>
                 <Select
                   value={item.type || ''}
                   onChange={(e) => onItemChange(item.id, 'type', e.target.value)}
@@ -131,9 +131,10 @@ const ListSection: React.FC<ListSectionProps> = ({
                 </Select>
               </FormControl>
             </Grid>
+
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <FormControl fullWidth>
-                <InputLabel>도어 사이즈</InputLabel>
+                <InputLabel>도어 사이즈 *</InputLabel>
                 <Select
                   value={item.selectWh || ''}
                   onChange={(e) => onItemChange(item.id, 'selectWh', e.target.value)}
@@ -146,17 +147,29 @@ const ListSection: React.FC<ListSectionProps> = ({
                 </Select>
               </FormControl>
             </Grid>
-          </>
-        );
+
+            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+              <TextField {...commonProps('width', '도어너비 (*) mm', item.width)} />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+              <TextField {...commonProps('height', '도어높이 (*) mm', item.height)} />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+              <TextField {...commonProps('amount', '도어수량 (*) EA', item.amount)} />
+            </Grid>
+        </>
+      );
 
       case 'canopyList':
         return (
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-              <TextField {...commonProps('length', '캐노피길이 (mm)', item.length)} />
+              <TextField {...commonProps('length', '캐노피길이 (mm) *', item.length)} />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-              <TextField {...commonProps('amount', '캐노피수량 (EA)', item.amount)} />
+              <TextField {...commonProps('amount', '캐노피수량 (EA) *', item.amount)} />
             </Grid>
           </Grid>
         );
@@ -165,13 +178,13 @@ const ListSection: React.FC<ListSectionProps> = ({
         return (
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('width', '선홈통폭 (mm)', item.width)} />
+              <TextField {...commonProps('width', '선홈통폭 (mm) *', item.width)} />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('height', '선홈통높이 (mm)', item.height)} />
-            </Grid>
+              <TextField {...commonProps('height', '선홈통높이 (mm) *', item.height)} />
+            </Grid> 
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <TextField {...commonProps('amount', '선홈통수량 (EA)', item.amount)} />
+              <TextField {...commonProps('amount', '선홈통수량 (EA) *', item.amount)} />
             </Grid>
           </Grid>
         );
