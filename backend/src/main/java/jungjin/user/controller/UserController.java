@@ -1,16 +1,14 @@
 package jungjin.user.controller;
 
-import jakarta.persistence.EntityNotFoundException;
-
-import jungjin.user.domain.Role;
-import jungjin.user.domain.User;
-import jungjin.user.service.RoleService;
-import jungjin.user.service.UserCustom;
-import jungjin.user.service.UserService;
+import jakarta.validation.Valid;
+import jungjin.user.dto.UserRequestDTO;
+import jungjin.user.dto.UserResponseDTO;
+import jungjin.user.service.UserV2Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,47 +16,34 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
-    private final RoleService roleService;
+    private final UserV2Service userService;
 
-    @GetMapping("/mypage")
-    public ResponseEntity<User> myPage() {
-        Long userNum = ((UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser().getNum();
-        User userInfo = userService.showUser(userNum);
-        return ResponseEntity.ok(userInfo);
+    @PostMapping
+    public ResponseEntity<Void> register(@Valid @RequestBody UserRequestDTO request) {
+        userService.insertUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User userForm) {
-        Role userRole = roleService.showRole(2L);
-        if (userRole == null) {
-            throw new EntityNotFoundException("Default role not found");
-        }
-        User result = userService.saveUser(userForm, userRole);
-        return result != null ? ResponseEntity.status(HttpStatus.CREATED).body("success") : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("fail");
+    @GetMapping("/{userNum}")
+    public ResponseEntity<UserResponseDTO> getUserByUserNum(@PathVariable Long userNum) {
+        return ResponseEntity.ok(userService.getUserByUserNum(userNum));
     }
 
-    @GetMapping("/{num}")
-    public ResponseEntity<User> getUser(@PathVariable Long num) {
-        User user = userService.showUser(num);
-        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+    @PutMapping("/{userNum}")
+    public ResponseEntity<UserResponseDTO> updateUser(
+            @PathVariable Long userNum,
+            @Valid @RequestBody UserRequestDTO userDTO) {
+        return ResponseEntity.ok(userService.updateUser(userNum, userDTO));
     }
 
-    @PutMapping("/{num}")
-    public ResponseEntity<User> updateUser(@PathVariable Long num, @RequestBody User user) {
-        userService.updateUser(num, user);
-        return ResponseEntity.ok(user);
+    @DeleteMapping("/{userNum}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userNum) {
+        userService.deleteUser(userNum);
+        return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{num}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long num) {
-        User user = userService.deleteUser(num);
-        return user != null ? ResponseEntity.ok("success") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("fail");
-    }
-
-    @GetMapping("/check-id")
-    public ResponseEntity<String> checkUserId(@RequestParam String id) {
-        User user = userService.findById(id);
-        return user == null ? ResponseEntity.ok("success") : ResponseEntity.status(HttpStatus.CONFLICT).body("fail");
+    @GetMapping("/list")
+    public ResponseEntity<Page<UserResponseDTO>> getAllUsers(Pageable pageable) {
+        return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
 }

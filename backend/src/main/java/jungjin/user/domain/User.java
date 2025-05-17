@@ -1,12 +1,17 @@
 package jungjin.user.domain;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import jakarta.validation.constraints.Email;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "m2_user")
@@ -15,7 +20,8 @@ import jakarta.validation.constraints.Email;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+@ToString(exclude = {"password"})
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,7 +29,7 @@ public class User {
     private Long num;
 
     @Column(name = "id")
-    private String id;
+    private String loginId;
 
     @Column(name = "name")
     private String name;
@@ -44,47 +50,61 @@ public class User {
     @Column(name = "agree_yn")
     private String agreeYn;
 
-    @NotNull
-    @Column(name = "create_date")
+    @CreationTimestamp
+    @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "m2_user_role",
-            joinColumns = @JoinColumn(name = "user_num"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
+    @Column(name = "company_name")
+    private String companyName;
+
+    @Column(name = "company_address")
+    private String companyAddress;
+
+    @Column(name = "company_phone")
+    private String companyPhone;
+
+    @Column(name = "company_website")
+    private String companyWebsite;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     @Override
-    public String toString() {
-        return String.format(
-                "User(num=%s, id=%s, name=%s, password=%s, status=%s, email=%s, phone=%s, agreeYn=%s, createDate=%s, roles=%s)",
-                num, id, name, password, status, email, phone, agreeYn, createDate, roles
-        );
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
-    public void insert(User insertUser) {
-        this.id = insertUser.id;
-        this.name = insertUser.name;
-        this.password = insertUser.password;
-        this.email = insertUser.email;
-        this.phone = insertUser.phone;
-        this.agreeYn = insertUser.agreeYn;
-        this.createDate = LocalDateTime.now();
-        this.roles = insertUser.roles;
-        this.status = "S";
+    @Override
+    public String getUsername() {
+        return loginId;
     }
 
-    public void update(User updateUser) {
-        this.name = updateUser.name;
-        this.email = updateUser.email;
-        this.phone = updateUser.phone;
-        this.agreeYn = updateUser.agreeYn;
-        this.password = updateUser.password;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void delete(User deleteUser) {
-        this.status = "D";
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !"D".equals(status);
+    }
+
+    public void setRole(String role) {
+        this.role = Role.valueOf(role.toUpperCase());
+    }
+
+    public String getRole() {
+        return role.name();
     }
 }

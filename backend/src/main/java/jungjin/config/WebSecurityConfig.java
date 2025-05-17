@@ -1,6 +1,8 @@
 package jungjin.config;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jungjin.user.service.UserService;
+import jungjin.user.service.UserV2Service;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,15 +32,10 @@ public class WebSecurityConfig {
     public static final String REMEMBER_ME_KEY = "REMEBMER_ME_KEY";
     public static final String REMEMBER_ME_COOKIE_NAME = "REMEMBER_ME_COOKIE";
 
-    private final UserDetailsService userDetailsService;
+    private final UserV2Service userDetailsService;
 
-    public WebSecurityConfig(UserDetailsService userDetailsService) {
+    public WebSecurityConfig(UserV2Service userDetailsService) {
         this.userDetailsService = userDetailsService;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -112,5 +109,4 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 }

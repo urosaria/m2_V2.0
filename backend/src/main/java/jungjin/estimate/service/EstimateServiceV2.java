@@ -9,7 +9,9 @@ import jungjin.estimate.dto.EstimateResponseDTO;
 import jungjin.estimate.mapper.EstimateMapper;
 import jungjin.estimate.repository.EstimateRepository;
 import jungjin.user.domain.User;
+import jungjin.user.dto.UserResponseDTO;
 import jungjin.user.service.UserService;
+import jungjin.user.service.UserV2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +30,7 @@ public class EstimateServiceV2 {
     private final EstimateMapper estimateMapper;
     private final EstimateRepository estimateRepository;
     private final EstimateCalculateServiceV2 estimateCalculateService;
-    private final UserService userService;
+    private final UserV2Service userService;
 
     public Page<EstimateResponseDTO> getUserEstimates(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
@@ -46,7 +48,7 @@ public class EstimateServiceV2 {
 
     public EstimateResponseDTO createEstimate(EstimateRequestDTO request) {
         // Convert DTO to entity
-        User user = userService.showUser(2L);
+        User user = userService.getUserByUserNumReturnUser(2L);
 
         Structure structure = estimateMapper.toStructure(request, user);
 
