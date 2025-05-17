@@ -1,50 +1,57 @@
 package jungjin.auth.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jungjin.auth.dto.LoginRequestDTO;
 import jungjin.auth.dto.LoginResponseDTO;
+import jungjin.auth.security.JwtTokenProvider;
+import jungjin.common.exception.BusinessException;
+import jungjin.user.domain.User;
+import jungjin.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.time.Instant;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-//    private final AuthService authService;
-//
-//    @PostMapping("/login")
-//    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
-//        LoginResponseDTO response = authService.login(request);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-//
-//    @PostMapping("/refresh")
-//    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
-//        String authHeader = request.getHeader("Authorization");
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            return ResponseEntity.badRequest().body("Missing Authorization header");
-//        }
-//
-//        String expiredToken = authHeader.substring(7);
-//        String username;
-//        try {
-//            username = jwtUtils.extractUsername(expiredToken);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-//        }
-//
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//        String newToken = jwtUtils.generateToken(userDetails); // create new token
-//
-//        return ResponseEntity.ok(Map.of("token", newToken));
-//    }
+
+    private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginDto) {
+        User user = userRepository.findByLoginId(loginDto.getId())
+                .orElseThrow(() -> new BusinessException("Login ID or password incorrect"));
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+            throw new BusinessException("Login ID or password incorrect");
+        }
+
+        String token = jwtTokenProvider.createToken(
+                user.getLoginId(),
+                List.of(user.getRole().name())
+        );
+
+        Instant expiresAt = Instant.now().plusMillis(jwtTokenProvider.getExpirationTime());
+        LoginResponseDTO dto = LoginResponseDTO.builder()
+                .id(user.getLoginId())
+                .role(user.getRole().name())
+                .name(user.getName())
+                .access_token(token)
+                .token_type("Bearer")
+                .expires_in(jwtTokenProvider.getExpirationTime() / 1000)
+                .expires_at(expiresAt.toString())
+                .build();
+
+        return ResponseEntity.ok(dto);
+    }
 }

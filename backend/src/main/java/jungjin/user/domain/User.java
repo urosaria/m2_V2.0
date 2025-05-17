@@ -100,11 +100,4 @@ public class User implements UserDetails {
         return !"D".equals(status);
     }
 
-    public void setRole(String role) {
-        this.role = Role.valueOf(role.toUpperCase());
-    }
-
-    public String getRole() {
-        return role.name();
-    }
 }

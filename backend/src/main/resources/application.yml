@@ -41,3 +41,7 @@ logging:
     org.hibernate.transaction: DEBUG
     org.springframework.orm.jpa: DEBUG
     org.springframework.transaction: TRACE
+
+jwt:
+  secret: c0W+JWllsf4VJCTf61bbzsvrlYJpwbGZ28hWkR6bPs0=
+  expiration: 3600000
