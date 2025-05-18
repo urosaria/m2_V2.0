@@ -2,9 +2,7 @@ package jungjin.board.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -15,11 +13,18 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
+@Builder
 public class BoardFile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "boardFileSeqGenerator")
+    @SequenceGenerator(
+            name = "boardFileSeqGenerator",
+            sequenceName = "m2_board_file_seq",
+            allocationSize = 1
+    )
     @Column(name = "id")
     private long id;
 
@@ -37,9 +42,6 @@ public class BoardFile {
 
     @Column(name = "size")
     private Long size;
-
-    @Column(name = "status")
-    private String status = "S";
 
     @CreationTimestamp
     @Column(name = "create_date", updatable = false)
