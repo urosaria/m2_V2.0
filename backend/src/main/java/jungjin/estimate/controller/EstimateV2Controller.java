@@ -31,6 +31,20 @@ public class EstimateV2Controller {
     private final EstimateServiceV2 estimateService;
     private final EstimateExcelServiceV2 excelService;
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getEstimates(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        try {
+            Page<EstimateResponseDTO> estimates = estimateService.getAllEstimates(page, size);
+            return ResponseEntity.ok(estimates);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to retrieve estimates: " + e.getMessage());
+        }
+    }
+
     @GetMapping
     public ResponseEntity<?> getUserEstimates(
             @RequestParam(defaultValue = "0") int page,

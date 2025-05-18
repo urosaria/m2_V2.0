@@ -7,14 +7,15 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Grid
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
+
 import { FrontendStructure } from '../../../types/estimate';
 
 interface SpecificationsProps {
   structure: FrontendStructure;
-  setStructure: React.Dispatch<React.SetStateAction<FrontendStructure>>;
+  setStructure: React.Dispatch<React.SetStateAction<FrontendStructure>>; // Add this line to accept setStructure
   onFieldChange: (field: keyof FrontendStructure['structureDetail'], value: string | number) => void;
 }
 
@@ -35,7 +36,8 @@ const Specifications: React.FC<SpecificationsProps> = ({
       <Box>
         <Typography variant="h6" gutterBottom>{title}</Typography>
         <Grid container spacing={2}>
-          <Grid size={{ xs: 12, sm: 4 }}>
+          {/* Board Type */}
+          <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth>
               <InputLabel>보드종류</InputLabel>
               <Select
@@ -50,7 +52,8 @@ const Specifications: React.FC<SpecificationsProps> = ({
             </FormControl>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 4 }}>
+          {/* Paper Type */}
+          <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth>
               <InputLabel>검사서</InputLabel>
               <Select
@@ -74,7 +77,8 @@ const Specifications: React.FC<SpecificationsProps> = ({
             </FormControl>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 4 }}>
+          {/* Thickness */}
+          <Grid item xs={12} sm={6} md={4}>
             <FormControl fullWidth>
               <InputLabel>두께</InputLabel>
               <Select
@@ -95,6 +99,7 @@ const Specifications: React.FC<SpecificationsProps> = ({
 
   return (
     <Stack spacing={4} sx={{ p: { xs: 2, sm: 3 } }}>
+      {/* Conditionally render sections */}
       {structure.structureDetail?.insideWallYn === 'Y' &&
         renderBoardSection('내벽', 'insideWallType', 'insideWallPaper', 'insideWallThick', [50, 75, 100, 125, 150])}
       {renderBoardSection('외벽', 'outsideWallType', 'outsideWallPaper', 'outsideWallThick', [50, 75, 100, 125, 150, 175])}

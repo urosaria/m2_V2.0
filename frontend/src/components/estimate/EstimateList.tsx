@@ -183,7 +183,7 @@ const EstimateList: React.FC = () => {
   const renderEstimateCards = () => (
     <Grid container spacing={3}>
       {estimates.map((estimate, index) => (
-        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index} onClick={() => handleEstimateClick(estimate.id || 0)}>
+        <Grid item xs={12} sm={6} md={4} key={index} onClick={() => handleEstimateClick(estimate.id || 0)}>
           <Card
             sx={{
               height: '100%',
@@ -329,7 +329,7 @@ const EstimateList: React.FC = () => {
         {loading ? (
           <Grid container spacing={3}>
             {[...Array(6)].map((_, index) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
+              <Grid item xs={12} sm={6} md={4} key={index}> {/* Add the item prop */}
                 <Card
                   sx={{
                     height: '100%',

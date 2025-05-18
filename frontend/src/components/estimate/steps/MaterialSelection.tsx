@@ -21,22 +21,26 @@ interface MaterialSelectionProps {
   buildingType?: 'AG' | 'SL';
 }
 
+const areaOptions = [
+  { field: 'insideWallYn', label: '내벽', listType: 'insideWallList' },
+  { field: 'ceilingYn', label: '천장', listType: 'ceilingList' },
+  { field: 'windowYn', label: '창문', listType: 'windowList' },
+  { field: 'doorYn', label: '도어', listType: 'doorList' },
+  { field: 'canopyYn', label: '캐노피', listType: 'canopyList' },
+  { field: 'downpipeYn', label: '선홈통', listType: 'downpipeList' },
+] as const;
+
 const MaterialSelectionStep: React.FC<MaterialSelectionProps> = ({
   structureDetail,
   onStructureDetailChange,
   onAddListItem,
   onDeleteListItem,
   onListItemChange,
-  buildingType
+  buildingType,
 }) => {
-  const sections = [
-    { title: '내벽', listType: 'insideWallList', showIf: structureDetail.insideWallYn === 'Y' },
-    { title: '천장', listType: 'ceilingList', showIf: structureDetail.ceilingYn === 'Y' },
-    { title: '창호', listType: 'windowList', showIf: structureDetail.windowYn === 'Y' },
-    { title: '도어', listType: 'doorList', showIf: structureDetail.doorYn === 'Y' },
-    { title: '캐노피', listType: 'canopyList', showIf: structureDetail.canopyYn === 'Y' },
-    { title: '선홈통', listType: 'downpipeList', showIf: structureDetail.downpipeYn === 'Y' },
-  ] as const;
+  const sections = areaOptions.filter(
+    ({ field }) => structureDetail[field] === 'Y' // Only show sections if the 'Y' condition is true
+  );
 
   return (
     <Container maxWidth="lg" sx={{ pb: { xs: 10, sm: 4 } }}>
@@ -45,16 +49,17 @@ const MaterialSelectionStep: React.FC<MaterialSelectionProps> = ({
         onStructureDetailChange={onStructureDetailChange}
         buildingType={buildingType}
       />
-      {sections.filter(section => section.showIf).map(({ title, listType }) => (
-        <Accordion key={listType} disableGutters>
+
+      {sections.map(({ field, label, listType }) => (
+        <Accordion key={field} disableGutters>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="subtitle1" fontWeight={600}>{title}</Typography>
+            <Typography variant="subtitle1" fontWeight={600}>{label}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <ListSection
-              title={title}
-              listType={listType}
-              items={structureDetail[listType]}
+              title={label}
+              listType={listType} // Pass the list type (e.g., insideWallList)
+              items={structureDetail[listType]} // Use dynamic field name to access the list
               onAddItem={() => onAddListItem(listType)}
               onDeleteItem={(id) => onDeleteListItem(listType, id)}
               onItemChange={(id, field, value) => onListItemChange(listType, id, field, value)}
@@ -62,7 +67,6 @@ const MaterialSelectionStep: React.FC<MaterialSelectionProps> = ({
           </AccordionDetails>
         </Accordion>
       ))}
-
     </Container>
   );
 };

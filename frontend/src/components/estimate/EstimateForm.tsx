@@ -237,75 +237,62 @@ const EstimateForm: React.FC = () => {
             </Button>
           </Box>
         </Box>      
-        {activeStep === steps.length ? (
-          <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 }, position: 'relative', mb: { xs: 8, sm: 0 } }}>
-            <Box sx={{ 
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 2
-            }}>
-              <Typography variant="h6" gutterBottom>
-                견적서가 생성되었습니다.
-              </Typography>
-              <Button 
-                variant="outlined"
-                onClick={() => setActiveStep(0)}
-                sx={{ minWidth: 120 }}
-              >
-                처음으로
-              </Button>
-            </Box>
-          </Paper>
-        ) : (
-          <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 }, position: 'relative', mb: { xs: 8, sm: 0 } }}>
-            <Box sx={{ 
-              width: '100%',
-              // overflowX: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}>
-              <Box sx={{ width: '100%', mb: 4 }}>
-                <Stepper activeStep={activeStep} alternativeLabel>
-                  {steps.map((label) => (
-                    <Step key={label}>
-                      <StepLabel>{label}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Box>
+        <Paper 
+          elevation={0} 
+          sx={{ 
+            p: { xs: 2, sm: 3 }, 
+            position: 'relative', 
+            mb: { xs: 8, sm: 0 },
+            borderRadius: 2,
+            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)'
+          }}
+        >
+          <Box sx={{ width: '100%', mb: 4 }}>
+            <Stepper activeStep={activeStep} alternativeLabel>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
 
-              <Box sx={{ width: '100%', mt: 2 }}>
-                {getStepContent(activeStep)}
+          <Box sx={{ width: '100%', mb: { xs: 6, sm: 4 } }}>
+            {getStepContent(activeStep)}
+          </Box>
 
-                {/* Desktop Navigation */}
-                <Box sx={{ display: { xs: 'none', sm: 'flex' }, pt: 2, width: '100%', justifyContent: 'space-between' }}>
-                  <Button
-                    variant="outlined"
-                    color="inherit"
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    sx={{ minWidth: 120 }}
-                  >
-                    이전
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-                    sx={{ minWidth: 120 }}
-                  >
-                    {activeStep === 3 ? '저장' : activeStep === steps.length - 1 ? '완료' : '다음'}
-                  </Button>
-                </Box>
-              </Box>
-            </Box>
-          </Paper>
-        )}
+          {/* Desktop Navigation */}
+          <Box sx={{ 
+            display: { xs: 'none', sm: 'flex' }, 
+            pt: 2, 
+            width: '100%', 
+            justifyContent: 'space-between',
+            borderTop: 1,
+            borderColor: 'divider',
+            mt: 2
+          }}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              disabled={activeStep === 0}
+              onClick={handleBack}
+              sx={{ minWidth: 120 }}
+            >
+              이전
+            </Button>
+            <Button
+              variant="contained"
+              onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+              disabled={loading}
+              sx={{ minWidth: 120 }}
+            >
+              {activeStep === 3 ? (loading ? '저장 중...' : '저장') : 
+               activeStep === steps.length - 1 ? (loading ? '제출 중...' : '제출') : 
+               '다음'}
+            </Button>
+          </Box>
 
-        {/* Mobile Navigation */}
-        {activeStep < steps.length && (
+          {/* Mobile Navigation */}
           <Box 
             component="div"
             sx={{ 
@@ -318,7 +305,8 @@ const EstimateForm: React.FC = () => {
               zIndex: 1000,
               bgcolor: 'background.paper',
               borderTop: '1px solid',
-              borderColor: 'divider'
+              borderColor: 'divider',
+              boxShadow: '0px -2px 4px rgba(0, 0, 0, 0.05)'
             }}
           >
             <MobileStepNavigation
@@ -326,10 +314,16 @@ const EstimateForm: React.FC = () => {
               onNext={activeStep === steps.length - 1 ? handleSubmit : handleNext}
               isFirstStep={activeStep === 0}
               isLastStep={activeStep === steps.length - 1}
-              nextLabel={activeStep === 3 ? '저장' : activeStep === steps.length - 1 ? '완료' : '다음'}
+              nextLabel={activeStep === 3 ? (loading ? '저장 중...' : '저장') : 
+                        activeStep === steps.length - 1 ? (loading ? '제출 중...' : '완료') : 
+                        '다음'}
+              disableNext={loading}
             />
           </Box>
-        )}
+        </Paper>
+      </Container>
+      
+      {/* Loading Overlay */}
       {loading && (
         <Box
           sx={{
@@ -347,8 +341,7 @@ const EstimateForm: React.FC = () => {
         >
           <CircularProgress />
         </Box>
-      )}      
-      </Container>
+      )}
     </Box>
   );
 };

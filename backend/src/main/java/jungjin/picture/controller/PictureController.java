@@ -34,6 +34,20 @@ public class PictureController {
     private final PictureService pictureService;
     private final UploadConfig uploadConfig;
 
+    @GetMapping("/all")
+    public ResponseEntity<Page<Picture>> list(@RequestParam(defaultValue = "1") int page) {
+        //TODO: need to update
+        Page<Picture> pictureList = pictureService.listPicture(page, 4);
+        return ResponseEntity.ok(pictureList);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<Picture>> listById(@RequestParam(defaultValue = "1") int page) {
+        //TODO: need to update
+        Page<Picture> pictureList = pictureService.listPictureById(page, 4, 2L);
+        return ResponseEntity.ok(pictureList);
+    }
+
 //    @GetMapping
 //    public ResponseEntity<Page<Picture>> list(@RequestParam(defaultValue = "1") int page) {
 //        Long userNum = ((UserCustom) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser().getNum();

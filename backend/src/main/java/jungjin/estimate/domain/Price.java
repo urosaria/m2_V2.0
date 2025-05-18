@@ -43,6 +43,6 @@ public class Price {
     @Column(name = "standard_price")
     private int standardPrice = 0;
 
-    @Column(nullable = false)
-    private int ePrice = 0;
+    @Column
+    private Integer ePrice = 0;
 }

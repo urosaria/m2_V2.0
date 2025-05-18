@@ -40,7 +40,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
   };
 
   const renderNumberField = (field: NumericFields, label: string) => (
-    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+    <Grid item xs={12} sm={6} md={4}> {/* Added item prop here */}
       <TextField
         required
         fullWidth
@@ -78,7 +78,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
   return (
     <Box sx={{ maxWidth: 'md', mx: 'auto', width: '100%' }}>
       <Grid container spacing={{ xs: 2, sm: 3 }}>
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <Grid item xs={12} sm={6}> {/* Added item prop here */}
           <FormControl fullWidth>
             <InputLabel 
               id="structureType-label"
@@ -115,7 +115,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
           </FormControl>
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <Grid item xs={12} sm={6}> {/* Added item prop here */}
           <FormControl fullWidth>
             <InputLabel 
               id="city-label"
@@ -152,7 +152,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
           </FormControl>
         </Grid>
 
-        <Grid size={{ xs: 12 }}>
+        <Grid item xs={12}> {/* Added item prop here */}
           <TextField
             fullWidth
             id="placeName"
@@ -177,7 +177,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ structure, onFieldChange }) => {
           />
         </Grid>
 
-        <Grid size={{ xs: 12 }}>
+        <Grid item xs={12}> {/* Added item prop here */}
           <Grid container spacing={{ xs: 2, sm: 3 }}>
             {renderNumberField('width', '건물폭 (mm)')}
             {renderNumberField('length', '건물길이 (mm)')}

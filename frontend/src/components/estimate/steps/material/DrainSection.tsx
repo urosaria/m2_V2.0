@@ -38,7 +38,7 @@ const DrainSection: React.FC<DrainSectionProps> = ({
 
       <Grid container spacing={2}>
         {/* 공통 드레인 DIA */}
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <InputLabel>드레인 (*) DIA</InputLabel>
             <Select
@@ -56,7 +56,7 @@ const DrainSection: React.FC<DrainSectionProps> = ({
         </Grid>
 
         {/* 공통 드레인 수량 */}
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <Grid item xs={12} sm={6}>
           <TextField
             fullWidth
             label="드레인수량 (*) EA"
@@ -77,7 +77,7 @@ const DrainSection: React.FC<DrainSectionProps> = ({
       {(buildingType === 'AG' || buildingType === 'SL') && (
         <Grid container spacing={2} sx={{ mt: 1 }}>
           {/* 내부 or 옥탑 드레인 DIA */}
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>{getLabel('(*) DIA')}</InputLabel>
               <Select
@@ -95,7 +95,7 @@ const DrainSection: React.FC<DrainSectionProps> = ({
           </Grid>
 
           {/* 내부 or 옥탑 드레인 수량 */}
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label={getLabel('수량 (*) EA')}

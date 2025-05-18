@@ -104,10 +104,10 @@ public class StructureDetail {
     private Integer gucci;
 
     @Column(name = "gucci_inside")
-    private Integer gucciInside = 0;
+    private Integer gucciInside;
 
     @Column(name = "gucci_inside_amount")
-    private Integer gucciInsideAmount = 0;
+    private Integer gucciInsideAmount;
 
     @Column(name = "gucci_amount")
     private Integer gucciAmount;

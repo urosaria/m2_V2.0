@@ -11,12 +11,12 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import { ListItem } from '../../../../types/estimate';
+import { ListItem, StructureDetail } from '../../../../types/estimate';
 import Grid from '@mui/material/Grid';
 
 interface ListSectionProps {
   title: string;
-  listType: string;
+  listType: keyof Pick<StructureDetail, 'insideWallList' | 'ceilingList' | 'windowList' | 'doorList' | 'canopyList' | 'downpipeList'>;
   items: ListItem[];
   onAddItem: () => void;
   onDeleteItem: (id: number) => void;
@@ -45,13 +45,13 @@ const ListSection: React.FC<ListSectionProps> = ({
       case 'insideWallList':
         return (
           <>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('length', '내벽길이 (mm) *', item.length)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('height', '내벽높이 (mm) *', item.height)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('amount', '내벽수량 (EA) *', item.amount)} />
             </Grid>
           </>
@@ -60,13 +60,13 @@ const ListSection: React.FC<ListSectionProps> = ({
       case 'ceilingList':
         return (
           <>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('length', '천장폭 (mm) *', item.length)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('height', '천장길이 (mm) *', item.height)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('amount', '천장수량 (EA) *', item.amount)} />
             </Grid>
           </>
@@ -75,16 +75,16 @@ const ListSection: React.FC<ListSectionProps> = ({
       case 'windowList':
         return (
           <>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <Grid item xs={12} sm={6} md={3}>
               <TextField {...commonProps('width', '창호폭 (mm)', item.width)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <Grid item xs={12} sm={6} md={3}>
               <TextField {...commonProps('height', '창호높이 (mm)', item.height)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <Grid item xs={12} sm={6} md={3}>
               <TextField {...commonProps('amount', '창호수량 (EA)', item.amount)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <Grid item xs={12} sm={6} md={3}>
               <FormControl fullWidth>
                 <InputLabel>창호종류</InputLabel>
                 <Select
@@ -103,7 +103,7 @@ const ListSection: React.FC<ListSectionProps> = ({
       case 'doorList':
         return (
           <>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <FormControl fullWidth>
                 <InputLabel>도어종류 *</InputLabel>
                 <Select
@@ -118,7 +118,7 @@ const ListSection: React.FC<ListSectionProps> = ({
               </FormControl>
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <FormControl fullWidth>
                 <InputLabel>설치위치 *</InputLabel>
                 <Select
@@ -132,7 +132,7 @@ const ListSection: React.FC<ListSectionProps> = ({
               </FormControl>
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <FormControl fullWidth>
                 <InputLabel>도어 사이즈 *</InputLabel>
                 <Select
@@ -148,27 +148,27 @@ const ListSection: React.FC<ListSectionProps> = ({
               </FormControl>
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+            <Grid item xs={12} sm={4} md={4}>
               <TextField {...commonProps('width', '도어너비 (*) mm', item.width)} />
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+            <Grid item xs={12} sm={4} md={4}>
               <TextField {...commonProps('height', '도어높이 (*) mm', item.height)} />
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 4, md: 4 }}>
+            <Grid item xs={12} sm={4} md={4}>
               <TextField {...commonProps('amount', '도어수량 (*) EA', item.amount)} />
             </Grid>
-        </>
-      );
+          </>
+        );
 
       case 'canopyList':
         return (
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+            <Grid item xs={12} sm={6} md={6}>
               <TextField {...commonProps('length', '캐노피길이 (mm) *', item.length)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+            <Grid item xs={12} sm={6} md={6}>
               <TextField {...commonProps('amount', '캐노피수량 (EA) *', item.amount)} />
             </Grid>
           </Grid>
@@ -177,13 +177,13 @@ const ListSection: React.FC<ListSectionProps> = ({
       case 'downpipeList':
         return (
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('width', '선홈통폭 (mm) *', item.width)} />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('height', '선홈통높이 (mm) *', item.height)} />
-            </Grid> 
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField {...commonProps('amount', '선홈통수량 (EA) *', item.amount)} />
             </Grid>
           </Grid>
@@ -201,57 +201,33 @@ const ListSection: React.FC<ListSectionProps> = ({
           container
           spacing={2}
           alignItems="flex-start"
-          key={item.id}
           sx={{
-            mb: 2,
             p: 2,
+            backgroundColor: 'background.paper',
+            width: '100%',
+            mb: 2,
             border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 2,
-            backgroundColor: 'background.paper',
+            borderRadius: 1
           }}
+          key={item.id}
         >
-          {/* Field group */}
-          <Grid size={{ xs: 12, sm: 11 }}>
+          <Grid item xs={12}>
             <Grid container spacing={2}>
               {renderFields(item)}
             </Grid>
           </Grid>
 
-          {/* Delete button - desktop */}
-          <Grid
-            size={{ xs: 0, sm: 1 }}
-            sx={{
-              display: { xs: 'none', sm: 'flex' },
-              justifyContent: 'center',
-              alignItems: 'start',
-            }}
-          >
-            <IconButton onClick={() => onDeleteItem(item.id)} color="error">
-              <DeleteIcon />
-            </IconButton>
-          </Grid>
-
-          {/* Delete button - mobile */}
-          <Grid
-            size={{ xs: 12, sm: 0 }}
-            sx={{
-              display: { xs: 'flex', sm: 'none' },
-              justifyContent: 'flex-end',
-              mt: 1,
-            }}
-          >
+          <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
             <IconButton onClick={() => onDeleteItem(item.id)} color="error">
               <DeleteIcon />
             </IconButton>
           </Grid>
         </Grid>
       ))}
-      {/* Add button */}
       <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
-        <Grid size={{ xs: 12, sm: 'auto' }}>
+        <Grid item>
           <Button
-            fullWidth
             onClick={onAddItem}
             variant="contained"
             startIcon={<AddIcon />}

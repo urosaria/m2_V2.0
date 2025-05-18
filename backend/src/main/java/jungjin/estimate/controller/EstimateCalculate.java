@@ -2,6 +2,8 @@ package jungjin.estimate.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import jungjin.estimate.domain.Canopy;
 import jungjin.estimate.domain.Ceiling;
 import jungjin.estimate.domain.Door;
@@ -163,8 +165,8 @@ public class EstimateCalculate {
         stw = structureDetail.getStructure().getRooftopWidth();
         sti = structureDetail.getStructure().getRooftopLength();
         sth = structureDetail.getStructure().getRooftopHeight();
-        gdi = structureDetail.getGucciInside();
-        gei = structureDetail.getGucciInsideAmount();
+        gdi = Optional.ofNullable(structureDetail.getGucciInside()).orElse(0);
+        gei = Optional.ofNullable(structureDetail.getGucciInsideAmount()).orElse(0);
         String type = structureDetail.getStructure().getStructureType().name();
         List<Door> doorList = structureDetail.getDoorList();
         _daCal(doorList);

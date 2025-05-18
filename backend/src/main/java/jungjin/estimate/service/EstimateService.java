@@ -56,9 +56,6 @@ public class EstimateService {
     @PersistenceContext
     private EntityManager entityManager;
 
-
-
-
     public Page<Structure> listEstimateAll(int page, int size) {
         PageRequest request = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createDate"));
         return estimateRepository.findAll((Pageable)request);

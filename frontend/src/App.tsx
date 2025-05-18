@@ -20,6 +20,15 @@ import BoardShow from './components/board/BoardShow';
 import EstimateCalculateView from './components/estimate/EstimateCalculateView';
 
 const theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
+  },
   palette: {
     primary: {
       main: '#1976d2',
@@ -63,6 +72,34 @@ const theme = createTheme({
             borderRadius: '4px',
           },
         },
+      },
+    },
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          '&.MuiGrid-container': {
+            width: '100%',
+            margin: 0,
+          },
+          '&.MuiGrid-item': {
+            padding: '8px',
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffffff',
+          borderRadius: '8px',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+          '&.MuiPaper-elevation0': {
+            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+          },
+        },
+      },
+      defaultProps: {
+        elevation: 0
       },
     },
   },

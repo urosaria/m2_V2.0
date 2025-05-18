@@ -4,9 +4,11 @@ import jakarta.persistence.EntityNotFoundException;
 import jungjin.picture.domain.Picture;
 import jungjin.picture.domain.PictureAdminFile;
 import jungjin.picture.domain.PictureFile;
+import jungjin.picture.dto.PictureResponseDTO;
 import jungjin.picture.repository.PictureAdminFileRepository;
 import jungjin.picture.repository.PictureFileRepository;
 import jungjin.picture.repository.PictureRepository;
+import jungjin.user.dto.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +19,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PictureService {
 
     PictureRepository pictureRepository;
     PictureFileRepository pictureFileRepository;
     PictureAdminFileRepository pictureAdminFileRepository;
+
+    public Page<PictureResponseDTO> getPictures(Pageable pageable) {
+        return pictureRepository.findAll(pageable)
+                .map(PictureResponseDTO::fromPicture);
+    }
 
     public Page<Picture> listPicture(int page, int size) {
         PageRequest request = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createDate"));

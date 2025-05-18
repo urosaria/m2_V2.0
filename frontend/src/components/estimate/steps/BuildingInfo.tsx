@@ -32,7 +32,7 @@ const BuildingInfo: React.FC<BuildingInfoProps> = ({ structure, onFieldChange })
   return (
     <Grid container spacing={2}>
       {areaOptions.map(({ field, label }) => (
-        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={field}>
+        <Grid item xs={12} sm={6} md={4} key={field}> {/* Added 'item' prop here */}
           <Paper
             elevation={1}
             sx={{

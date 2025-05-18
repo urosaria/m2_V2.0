@@ -11,6 +11,8 @@ import {
   ListItemText,
   useTheme,
   useMediaQuery,
+  Divider,
+  Typography,  // Add Typography for titles
 } from '@mui/material';
 import {
   ExpandLess,
@@ -22,6 +24,8 @@ import {
   HelpOutline,
   Campaign,
   QuestionAnswer,
+  Dashboard as DashboardIcon,
+  Group as GroupIcon,
 } from '@mui/icons-material';
 
 interface MenuItem {
@@ -66,6 +70,21 @@ const menuItems: MenuItem[] = [
     text: '발주 & 기타문의전화',
     icon: <PhoneOutlined />,
     path: '/contact',
+  },
+];
+
+const adminMenuItems: MenuItem[] = [
+  {
+    id: 61,
+    text: '게시판관리',
+    icon: <DashboardIcon fontSize="small" />,
+    path: '/admin/boards',
+  },
+  {
+    id: 62,
+    text: '사용자관리',
+    icon: <GroupIcon fontSize="small" />,
+    path: '/admin/users',
   },
 ];
 
@@ -180,6 +199,70 @@ const Sidebar: React.FC<SidebarProps> = ({
                   </List>
                 </Collapse>
               )}
+            </Box>
+          );
+        })}
+        
+        {/* Divider before the admin section */}
+        <Divider sx={{ my: 2 }} />
+        
+        {/* Display "관리자" as a non-clickable section title */}
+        <ListItem sx={{ pl: collapsed ? 0 : 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+              color: theme.palette.text.primary,
+              textTransform: 'uppercase',
+              padding: '12px 16px',
+            }}
+          >
+            관리자
+          </Typography>
+        </ListItem>
+
+        {/* Display the admin menu items (게시판관리, 사용자관리) */}
+        {adminMenuItems.map((item) => {
+          const isSelected = location.pathname === item.path;
+          const shouldShowText = !collapsed || isMobile;
+
+          return (
+            <Box key={item.id}>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    navigate(item.path!);
+                    if (!isPermanent) onClose();
+                  }}
+                  selected={isSelected}
+                  sx={{
+                    justifyContent: collapsed && !isMobile ? 'center' : 'flex-start',
+                    px: collapsed && !isMobile ? 1.5 : 2.5,
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      width: 40,
+                      justifyContent: 'center',
+                      display: 'flex',
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    sx={{
+                      opacity: shouldShowText ? 1 : 0,
+                      maxWidth: shouldShowText ? 200 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'opacity 0.2s, max-width 0.2s',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
             </Box>
           );
         })}
