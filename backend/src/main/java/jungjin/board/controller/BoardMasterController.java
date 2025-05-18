@@ -1,14 +1,11 @@
 package jungjin.board.controller;
 
-import jungjin.board.domain.BoardMaster;
+import jungjin.board.dto.BoardMasterRequestDTO;
+import jungjin.board.dto.BoardMasterResponseDTO;
 import jungjin.board.service.BoardMasterService;
-import jungjin.common.exception.NotFoundException;
-import jungjin.common.exception.BusinessException;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -16,64 +13,37 @@ import java.util.List;
 @RequestMapping("/api/board/master")
 @RequiredArgsConstructor
 public class BoardMasterController {
+
     private final BoardMasterService boardMasterService;
 
     @GetMapping("/list")
-    public ResponseEntity<?> getBoardMasterList() {
-        try {
-            List<BoardMaster> masterList = boardMasterService.listBoardMaster();
-            return ResponseEntity.ok(masterList);
-        } catch (Exception e) {
-            throw new BusinessException("Error fetching board master list: " + e.getMessage());
-        }
+    public ResponseEntity<List<BoardMasterResponseDTO>> getBoardMasterList() {
+        return ResponseEntity.ok(boardMasterService.listBoardMasters());
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> createBoardMaster(@RequestBody BoardMaster boardMaster) {
-        try {
-            boardMasterService.saveBoardMaster(boardMaster);
-            return ResponseEntity.ok(boardMaster);
-        } catch (Exception e) {
-            throw new BusinessException("Error creating board master: " + e.getMessage());
-        }
+    @PostMapping
+    public ResponseEntity<BoardMasterResponseDTO> createBoardMaster(@RequestBody BoardMasterRequestDTO dto) {
+        BoardMasterResponseDTO created = boardMasterService.createBoardMaster(dto);
+        return ResponseEntity.ok(created);
     }
 
-    @GetMapping("/view/{id}")
-    public ResponseEntity<?> getBoardMaster(@PathVariable("id") int id) {
-        try {
-            BoardMaster boardMaster = boardMasterService.showBoardMaster(id);
-            if (boardMaster == null) {
-                throw new NotFoundException("Board master not found with id: " + id);
-            }
-            return ResponseEntity.ok(boardMaster);
-        } catch (Exception e) {
-            throw new BusinessException("Error fetching board master: " + e.getMessage());
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<BoardMasterResponseDTO> getBoardMaster(@PathVariable Long id) {
+        BoardMasterResponseDTO boardMaster = boardMasterService.getBoardMasterById(id);
+        return ResponseEntity.ok(boardMaster);
     }
 
-    @PutMapping("/modify/{id}")
-    public ResponseEntity<?> updateBoardMaster(
-            @PathVariable("id") int id,
-            @RequestBody BoardMaster boardMaster) {
-        try {
-            boardMasterService.updateBoardMaster(id, boardMaster);
-            BoardMaster updatedMaster = boardMasterService.showBoardMaster(id);
-            return ResponseEntity.ok(updatedMaster);
-        } catch (Exception e) {
-            throw new BusinessException("Error updating board master: " + e.getMessage());
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<BoardMasterResponseDTO> updateBoardMaster(
+            @PathVariable Long id,
+            @RequestBody BoardMasterRequestDTO dto) {
+        BoardMasterResponseDTO updated = boardMasterService.updateBoardMaster(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteBoardMaster(@PathVariable("id") int id) {
-        try {
-            BoardMaster boardMaster = boardMasterService.deleteBoardMaster(id);
-            if (boardMaster == null) {
-                throw new NotFoundException("Board master not found with id: " + id);
-            }
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new BusinessException("Error deleting board master: " + e.getMessage());
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBoardMaster(@PathVariable Long id) {
+        boardMasterService.deleteBoardMaster(id);
+        return ResponseEntity.noContent().build();
     }
 }

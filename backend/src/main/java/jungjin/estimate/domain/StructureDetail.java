@@ -44,7 +44,6 @@ public class StructureDetail {
     @Column(name = "downpipe_yn")
     private String downpipeYn = "N";
 
-
     @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "inside_wall_type")
     private InsulationTypeCode insideWallType;
@@ -54,7 +53,7 @@ public class StructureDetail {
     private InsulationSubTypeCode insideWallPaper;
 
     @Column(name = "inside_wall_thick")
-    private int insideWallThick;
+    private Integer insideWallThick;
 
     @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "outside_wall_type")
@@ -65,7 +64,7 @@ public class StructureDetail {
     private InsulationSubTypeCode outsideWallPaper;
 
     @Column(name = "outside_wall_thick")
-    private int outsideWallThick;
+    private Integer outsideWallThick;
 
     @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "roof_type")
@@ -76,7 +75,7 @@ public class StructureDetail {
     private InsulationSubTypeCode roofPaper;
 
     @Column(name = "roof_thick")
-    private int roofThick;
+    private Integer roofThick;
 
     @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "ceiling_type")
@@ -87,7 +86,7 @@ public class StructureDetail {
     private InsulationSubTypeCode ceilingPaper;
 
     @Column(name = "ceiling_thick")
-    private int ceilingThick;
+    private Integer ceilingThick;
 
     @OneToOne
     @JoinColumn(name = "structure_id")
@@ -102,16 +101,16 @@ public class StructureDetail {
     private LocalDateTime updateDate;
 
     @Column(name = "gucci")
-    private int gucci;
+    private Integer gucci;
 
-    @Column(name = "gucci_inside", nullable = false)
-    private int gucciInside = 0;
+    @Column(name = "gucci_inside")
+    private Integer gucciInside = 0;
 
-    @Column(name = "gucci_inside_amount", nullable = false)
-    private int gucciInsideAmount = 0;
+    @Column(name = "gucci_inside_amount")
+    private Integer gucciInsideAmount = 0;
 
     @Column(name = "gucci_amount")
-    private int gucciAmount;
+    private Integer gucciAmount;
 
     @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Canopy> canopyList = new ArrayList<>();

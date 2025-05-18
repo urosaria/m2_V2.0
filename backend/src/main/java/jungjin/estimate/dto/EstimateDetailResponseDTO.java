@@ -19,20 +19,20 @@ public class EstimateDetailResponseDTO {
     private String downpipeYn = "N";
     private String insideWallType;
     private String insideWallPaper;
-    private int insideWallThick;
+    private Integer insideWallThick;
     private String outsideWallType;
     private String outsideWallPaper;
-    private int outsideWallThick;
+    private Integer outsideWallThick;
     private String roofType;
     private String roofPaper;
-    private int roofThick;
+    private Integer roofThick;
     private String ceilingType;
     private String ceilingPaper;
-    private int ceilingThick;
-    private int gucci;
-    private int gucciInside = 0;
-    private int gucciInsideAmount = 0;
-    private int gucciAmount;
+    private Integer ceilingThick;
+    private Integer gucci;
+    private Integer gucciInside;
+    private Integer gucciInsideAmount;
+    private Integer gucciAmount;
 
     private List<ComponentRequestDTO> canopyList = new ArrayList<>();
     private List<ComponentRequestDTO> ceilingList = new ArrayList<>();

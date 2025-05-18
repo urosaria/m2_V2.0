@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -31,11 +32,17 @@ public class BoardFile {
     @Column(name = "ext")
     private String ext;
 
+    @Column(name = "path")
+    private String path;
+
+    @Column(name = "size")
+    private Long size;
+
     @Column(name = "status")
     private String status = "S";
 
-    @NotNull
-    @Column(name = "create_date")
+    @CreationTimestamp
+    @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate;
 
     @NotNull

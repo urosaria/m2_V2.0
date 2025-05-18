@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -39,8 +40,8 @@ public class BoardReply implements Serializable {
     @Column(name = "status")
     private String status;
 
-    @NotNull
-    @Column(name = "create_date")
+    @CreationTimestamp
+    @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate;
 
     @Column(name = "read_count")
@@ -51,15 +52,4 @@ public class BoardReply implements Serializable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_board_id"))
     private Board board;
 
-    public void update(BoardReply updateBoardReply) {
-        this.title = updateBoardReply.title;
-        this.contents = updateBoardReply.contents;
-    }
-
-    public void insert(BoardReply insertBoardReply) {
-        this.title = insertBoardReply.title;
-        this.contents = insertBoardReply.contents;
-        this.status = "S";
-        this.createDate = LocalDateTime.now();
-    }
 }

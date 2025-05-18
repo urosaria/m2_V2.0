@@ -8,8 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,12 @@ import java.util.List;
 public class Board {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "boardSeqGenerator")
+    @SequenceGenerator(
+            name = "boardSeqGenerator",
+            sequenceName = "m2_board_seq",
+            allocationSize = 1
+    )
     private long id;
 
     @NotNull
@@ -34,13 +40,13 @@ public class Board {
     @Column(columnDefinition = "TEXT")
     private String contents;
 
-    @NotNull
-    @Column(name = "status")
-    private String status;
-
-    @NotNull
-    @Column(name = "create_date")
+    @CreationTimestamp
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
 
     @Column(name = "read_count")
     private int readcount;
@@ -55,22 +61,11 @@ public class Board {
     @JoinColumn(name = "board_master_id")
     private BoardMaster boardMaster;
 
+    @Builder.Default
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
-    private List<BoardFile> fileList = new ArrayList<>();
+    private List<BoardFile> files = new ArrayList<>();
 
-    @OneToMany
-    @JoinColumn(name = "board_id")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardReply> boardReplyList;
 
-    public void update(Board updateBoard) {
-        this.title = updateBoard.title;
-        this.contents = updateBoard.contents;
-    }
-
-    public void insert(Board insertBoard) {
-        this.title = insertBoard.title;
-        this.contents = insertBoard.contents;
-        this.status = "S";
-        this.createDate = LocalDateTime.now();
-    }
 }

@@ -13,12 +13,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    Page<Board> findByBoardMasterIdAndStatus(Pageable pageable, Long boardMasterId, String status);
+    Page<Board> findByBoardMasterId(Pageable pageable, Long boardMasterId);
 
     List<Board> findByBoardMasterIdAndUserNum(int paramInt, Long paramLong);
 
     @Transactional
     @Modifying
     @Query("update Board set readcount=readcount+1 where id = :id")
-    void updateBoardReadcount(@Param("id") Long paramLong);
+    void updateBoardReadCount(@Param("id") Long paramLong);
 }

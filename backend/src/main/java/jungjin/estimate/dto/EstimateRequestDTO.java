@@ -1,6 +1,5 @@
 package jungjin.estimate.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,15 +16,15 @@ public class EstimateRequestDTO {
     private int width;
     private int length;
     private int height;
-    private int trussHeight;
-    private int eavesLength;
-    private int rearTrussHeight;
-    private int insideWidth = 0;
-    private int insideLength = 0;
-    private int rooftopSideHeight = 0;
-    private int rooftopWidth = 0;
-    private int rooftopHeight = 0;
-    private int rooftopLength = 0;
+    private Integer trussHeight;
+    private Integer eavesLength;
+    private Integer rearTrussHeight;
+    private Integer insideWidth;
+    private Integer insideLength;
+    private Integer rooftopSideHeight;
+    private Integer rooftopWidth;
+    private Integer rooftopHeight;
+    private Integer rooftopLength;
 
     // For structure detail
     private EstimateDetailRequestDTO structureDetail;

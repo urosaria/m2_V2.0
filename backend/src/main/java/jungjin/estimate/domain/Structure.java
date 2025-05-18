@@ -51,31 +51,31 @@ public class Structure {
     private int height;
 
     @Column(name = "truss_height")
-    private int trussHeight;
+    private Integer trussHeight;
 
     @Column(name = "eaves_length")
-    private int eavesLength;
+    private Integer eavesLength;
 
     @Column(name = "rear_truss_height")
-    private int rearTrussHeight;
+    private Integer rearTrussHeight;
 
-    @Column(name = "inside_width", nullable = false)
-    private int insideWidth = 0;
+    @Column(name = "inside_width")
+    private Integer insideWidth;
 
-    @Column(name = "inside_length", nullable = false)
-    private int insideLength = 0;
+    @Column(name = "inside_length")
+    private Integer insideLength;
 
-    @Column(name = "rooftop_side_height", nullable = false)
-    private int rooftopSideHeight = 0;
+    @Column(name = "rooftop_side_height")
+    private Integer rooftopSideHeight;
 
-    @Column(name = "rooftop_width", nullable = false)
-    private int rooftopWidth = 0;
+    @Column(name = "rooftop_width")
+    private Integer rooftopWidth;
 
-    @Column(name = "rooftop_height", nullable = false)
-    private int rooftopHeight = 0;
+    @Column(name = "rooftop_height")
+    private Integer rooftopHeight;
 
-    @Column(name = "rooftop_length", nullable = false)
-    private int rooftopLength = 0;
+    @Column(name = "rooftop_length")
+    private Integer rooftopLength;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_num", nullable = false)

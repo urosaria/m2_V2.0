@@ -17,7 +17,12 @@ import lombok.Setter;
 @Builder
 public class BoardMaster {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "boardMasterSeqGenerator")
+    @SequenceGenerator(
+            name = "boardMasterSeqGenerator",
+            sequenceName = "m2_board_master_seq",
+            allocationSize = 1
+    )
     @Column(name = "id")
     private long id;
 
@@ -34,8 +39,4 @@ public class BoardMaster {
     @Column(name = "skin_name")
     private String skinName;
 
-    public void update(BoardMaster updateBoardMaster) {
-        this.name = updateBoardMaster.name;
-        this.replyYn = updateBoardMaster.replyYn;
-    }
 }
