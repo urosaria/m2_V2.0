@@ -48,9 +48,9 @@ const menuItems: MenuItem[] = [
     text: '게시판',
     icon: <ForumIcon />,
     children: [
-      { id: 21, text: '공지사항', icon: <Campaign fontSize="small" />, path: '/board' },
-      { id: 22, text: 'FAQ', icon: <HelpOutline fontSize="small" />, path: '/board/faq' },
-      { id: 23, text: 'Q&A', icon: <QuestionAnswer fontSize="small" />, path: '/board/qna' },
+      { id: 21, text: '공지사항', icon: <Campaign fontSize="small" />, path: '/board/1' },
+      { id: 22, text: 'FAQ', icon: <HelpOutline fontSize="small" />, path: '/board/3' },
+      { id: 23, text: 'Q&A', icon: <QuestionAnswer fontSize="small" />, path: '/board/2' },
     ],
   },
   {
@@ -86,6 +86,12 @@ const adminMenuItems: MenuItem[] = [
     icon: <GroupIcon fontSize="small" />,
     path: '/admin/users',
   },
+  {
+    id: 63,
+    text: '자재관리',
+    icon: <GroupIcon fontSize="small" />,
+    path: '/admin/materials',
+  },  
 ];
 
 interface SidebarProps {

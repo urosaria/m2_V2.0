@@ -57,13 +57,13 @@ public class BoardService {
 		return boardMapper.toDto(saved);
 	}
 
-	public BoardResponseDTO updateBoard(Long boardMasterId, Long boardId, BoardRequestDTO request, List<MultipartFile> files, String deleteFiles) {
+	public BoardResponseDTO updateBoard(Long boardId, BoardRequestDTO request, List<MultipartFile> files, String deleteFiles) {
 		Board board = boardRepository.findById(boardId)
 				.orElseThrow(() -> new NotFoundException("Board not found with id: " + boardId));
 
-		if (!boardMasterId.equals(board.getBoardMaster().getId())) {
-			throw new BusinessException("Board does not belong to board master: " + boardMasterId);
-		}
+//		if (!boardMasterId.equals(board.getBoardMaster().getId())) {
+//			throw new BusinessException("Board does not belong to board master: " + boardMasterId);
+//		}
 
 		board.setTitle(request.getTitle());
 		board.setContents(request.getContents());

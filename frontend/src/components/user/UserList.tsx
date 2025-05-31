@@ -19,31 +19,15 @@ import {
   useTheme,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import axios from 'axios';
+import userService, { User, PaginatedResponse } from '../../services/userService';
 
-interface User {
-  userNum: number;
-  userId: string;
-  userName: string;
-  email: string;
-  phoneNumber: string;
-  createDate: string;
-  updateDate: string;
-}
-
-interface PaginatedResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
 
 interface UserListProps {
   onEdit: (user: User) => void;
+  refreshTrigger?: number;
 }
 
-const UserList: React.FC<UserListProps> = ({ onEdit }) => {
+const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
   const theme = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [page, setPage] = useState(0);
@@ -51,22 +35,21 @@ const UserList: React.FC<UserListProps> = ({ onEdit }) => {
   const [totalElements, setTotalElements] = useState(0);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get<PaginatedResponse<User>>(
-        `/api/user/list?page=${page}&size=${rowsPerPage}`
-      );
-      setUsers(response.data.content);
-      setTotalElements(response.data.totalElements);
+      const response = await userService.getUsers(page, rowsPerPage);
+      setUsers(response.content);
+      setTotalElements(response.totalElements);
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error('Error fetching users:', error);
     }
   };
 
   useEffect(() => {
     fetchUsers();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, refreshTrigger]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -83,16 +66,17 @@ const UserList: React.FC<UserListProps> = ({ onEdit }) => {
   };
 
   const handleDeleteConfirm = async () => {
-    if (selectedUser) {
+    if (selectedUser && selectedUser.num) {
       try {
-        await axios.delete(`/api/user/${selectedUser.userNum}`);
+        await userService.deleteUser(selectedUser.num);
+        setDeleteDialogOpen(false);
+        setSelectedUser(null);
+        // Force refresh after successful deletion
         fetchUsers();
       } catch (error) {
-        console.error('Failed to delete user:', error);
+        console.error('Error deleting user:', error);
       }
     }
-    setDeleteDialogOpen(false);
-    setSelectedUser(null);
   };
 
   return (
@@ -104,7 +88,7 @@ const UserList: React.FC<UserListProps> = ({ onEdit }) => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => onEdit({ userNum: 0 } as User)}
+          onClick={() => onEdit({ num: null } as User)}
         >
           사용자 추가
         </Button>
@@ -125,20 +109,50 @@ const UserList: React.FC<UserListProps> = ({ onEdit }) => {
           </TableHead>
           <TableBody>
             {users.map((user) => (
-              <TableRow key={user.userNum}>
-                <TableCell>{user.userId}</TableCell>
-                <TableCell>{user.userName}</TableCell>
+              <TableRow 
+                key={user.num}
+                sx={{
+                  backgroundColor: user.status === 'D' ? 'rgba(0, 0, 0, 0.04)' : 'inherit'
+                }}
+              >
+                <TableCell>{user.id}</TableCell>
+                <TableCell>
+                  {user.name}
+                  {user.status === 'D' && (
+                    <Typography
+                      component="span"
+                      sx={{
+                        ml: 1,
+                        color: 'text.secondary',
+                        fontSize: '0.875rem',
+                        fontStyle: 'italic'
+                      }}
+                    >
+                    </Typography>
+                  )}
+                </TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.phoneNumber}</TableCell>
+                <TableCell>{user.phone}</TableCell>
                 <TableCell>{new Date(user.createDate).toLocaleDateString()}</TableCell>
                 <TableCell>{new Date(user.updateDate).toLocaleDateString()}</TableCell>
                 <TableCell align="center">
-                  <IconButton onClick={() => onEdit(user)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteClick(user)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
+                  {user.status !== 'D' ? (
+                    <>
+                      <IconButton onClick={() => onEdit(user)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteClick(user)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
+                  ) : (
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary', fontStyle: 'italic' }}
+                    >
+                      삭제된 사용자
+                    </Typography>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -160,7 +174,7 @@ const UserList: React.FC<UserListProps> = ({ onEdit }) => {
         <DialogTitle>사용자 삭제</DialogTitle>
         <DialogContent>
           <Typography>
-            {selectedUser?.userName} 사용자를 삭제하시겠습니까?
+            {selectedUser?.name} 사용자를 삭제하시겠습니까?
           </Typography>
         </DialogContent>
         <DialogActions>

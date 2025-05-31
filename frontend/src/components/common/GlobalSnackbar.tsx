@@ -17,7 +17,7 @@ const GlobalSnackbar: React.FC<GlobalSnackbarProps> = ({
   autoHideDuration = 4000
 }) => {
   return (
-    <Snackbar open={open} autoHideDuration={autoHideDuration} onClose={onClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+    <Snackbar open={open} autoHideDuration={autoHideDuration} onClose={onClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}>
       <Alert onClose={onClose} severity={severity} sx={{ width: '100%' }}>
         {message}
       </Alert>

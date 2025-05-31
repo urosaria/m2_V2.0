@@ -6,6 +6,8 @@ import './App.css';
 // Components
 import Login from './components/Login';
 import Main from './components/Main';
+import UserManagement from './pages/admin/UserManagement';
+import BoardManagement from './pages/admin/BoardManagement';
 import UserRegister from './components/user/UserRegister';
 import UserModify from './components/user/UserModify';
 import MyPage from './components/user/MyPage';
@@ -126,16 +128,18 @@ function App() {
                 <Route path="calculate/:id" element={<EstimateCalculateView />} />
               </Route>
 
-              <Route path="board" element={<BoardList />}>
-                <Route index element={<BoardList />} />
-                <Route path="new" element={<BoardRegister />} />
-                <Route path="edit/:id" element={<BoardModify />} />
-                <Route path="show/:boardId/:postId" element={<BoardShow />} />
-              </Route>
+              <Route path="board/new" element={<BoardRegister />} />
+              <Route path="board/edit/:id" element={<BoardModify />} />
+              <Route path="board/show/:postId" element={<BoardShow />} />
+              <Route path="board/:boardId" element={<BoardList />} />
 
               <Route path="user/register" element={<UserRegister />} />
               <Route path="user/modify" element={<UserModify />} />
               <Route path="user/mypage" element={<MyPage />} />
+
+              {/* Admin routes */}
+              <Route path="admin/users" element={<UserManagement />} />
+              <Route path="admin/boards" element={<BoardManagement />} />
             </Route>
           </Routes>
         </Router>

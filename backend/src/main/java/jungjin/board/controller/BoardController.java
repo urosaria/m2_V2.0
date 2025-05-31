@@ -2,11 +2,6 @@ package jungjin.board.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Valid;
-import jakarta.validation.Validation;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.Validator;
 import jungjin.board.domain.BoardFile;
 import jungjin.board.domain.BoardMaster;
 import jungjin.board.dto.BoardRequestDTO;
@@ -15,6 +10,7 @@ import jungjin.board.service.BoardMasterService;
 import jungjin.board.service.BoardService;
 import jungjin.common.exception.NotFoundException;
 import jungjin.common.exception.BusinessException;
+import jungjin.config.UploadConfig;
 import jungjin.user.domain.User;
 import jungjin.user.service.UserV2Service;
 
@@ -33,8 +29,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/board")
@@ -43,6 +37,7 @@ public class BoardController {
     private final BoardService boardService;
     private final BoardMasterService boardMasterService;
     private final UserV2Service userV2Service;
+    private final UploadConfig uploadConfig;
 
     @GetMapping("/list/{boardMasterId}")
     public ResponseEntity<?> getBoardList(
@@ -90,22 +85,22 @@ public class BoardController {
 
         return ResponseEntity.ok(result);
     }
-    @PutMapping(value ="/{boardMasterId}/{boardId}", consumes = {"multipart/form-data"})
-    public ResponseEntity<BoardResponseDTO> updateBoard(
-            @PathVariable("boardMasterId") Long boardMasterId,
-            @PathVariable("boardId") Long boardId,
-            @RequestParam("boardRequest") String boardRequestJson,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            @RequestPart(value = "deleteFiles", required = false) String deleteFiles) throws JsonProcessingException {
+    @PutMapping(value ="/{boardId}", consumes = {"multipart/form-data"})
+        public ResponseEntity<BoardResponseDTO> updateBoard(
+                //@PathVariable("boardMasterId") Long boardMasterId,
+                @PathVariable("boardId") Long boardId,
+                @RequestParam("boardRequest") String boardRequestJson,
+                @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                @RequestPart(value = "deleteFiles", required = false) String deleteFiles) throws JsonProcessingException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        BoardRequestDTO boardRequest = objectMapper.readValue(boardRequestJson, BoardRequestDTO.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            BoardRequestDTO boardRequest = objectMapper.readValue(boardRequestJson, BoardRequestDTO.class);
 
-        if (boardRequest == null) {
-            throw new BusinessException("BoardRequest is missing");
-        }
-        BoardResponseDTO updatedBoard = boardService.updateBoard(boardMasterId, boardId, boardRequest, files, deleteFiles);
-        return ResponseEntity.ok(updatedBoard);
+            if (boardRequest == null) {
+                throw new BusinessException("BoardRequest is missing");
+            }
+            BoardResponseDTO updatedBoard = boardService.updateBoard(boardId, boardRequest, files, deleteFiles);
+            return ResponseEntity.ok(updatedBoard);
     }
 
     @DeleteMapping("/{boardId}")
@@ -121,7 +116,7 @@ public class BoardController {
             throw new NotFoundException("File not found with id: " + fileId);
         }
 
-        String filePath = System.getProperty("user.home") + "/Downloads/upload/" + boardFile.getName();
+        String filePath = uploadConfig.getUploadDir() + boardFile.getPath();
         File file = new File(filePath);
         if (!file.exists()) {
             throw new BusinessException("FILE_NOT_FOUND", "Physical file not found: " + filePath);

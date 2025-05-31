@@ -1,37 +1,74 @@
 import axios from 'axios';
 
-const API_URL = '/api/board';
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/board`;
+
+export interface FileItem {
+  id: number;
+  oriName: string;
+  path: string;
+  size: number | null;
+  ext: string | null;
+}
 
 export interface BoardPost {
   id: number;
   title: string;
   contents: string;
-  user: {
-    name: string;
-    num: number;
-  };
+  readcount: number;
   createDate: string;
+  updateDate: string | null;
   boardMaster: {
     id: number;
+    name: string;
+    replyYn: string;
+    status: string;
+    skinName: string;
   };
-  fileList?: FileItem[];
+  user?: {
+    num: number;
+    name: string;
+  };
+  files: FileItem[];
+  userName: string;
+  userNum: number;
 }
 
-export interface FileItem {
-  id: number;
-  oriName: string;
+export interface PageInfo {
+  pageNumber: number;
+  pageSize: number;
+  sort: {
+    empty: boolean;
+    unsorted: boolean;
+    sorted: boolean;
+  };
+  offset: number;
+  paged: boolean;
+  unpaged: boolean;
 }
 
 export interface BoardListResponse {
   content: BoardPost[];
-  totalPages: number;
+  pageable: PageInfo;
   last: boolean;
+  totalPages: number;
+  totalElements: number;
+  first: boolean;
+  size: number;
+  number: number;
+  sort: {
+    empty: boolean;
+    unsorted: boolean;
+    sorted: boolean;
+  };
+  numberOfElements: number;
+  empty: boolean;
 }
 
 class BoardService {
-  async getList(page: number): Promise<BoardListResponse> {
+  async getList(page: number = 1, boardId?: string): Promise<BoardListResponse> {
     try {
-      const response = await axios.get<BoardListResponse>(`${API_URL}/list`, {
+      const url = boardId ? `${API_URL}/list/${boardId}` : `${API_URL}/list`;
+      const response = await axios.get<BoardListResponse>(url, {
         params: { page }
       });
       return response.data;
@@ -40,9 +77,9 @@ class BoardService {
     }
   }
 
-  async getPost(boardId: string, postId: string): Promise<BoardPost> {
+  async getPost(postId: string): Promise<BoardPost> {
     try {
-      const response = await axios.get<BoardPost>(`${API_URL}/show/${boardId}/${postId}`);
+      const response = await axios.get<BoardPost>(`${API_URL}/${postId}`);
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -71,10 +108,10 @@ class BoardService {
     }
   }
 
-  async updatePost(boardId: string, postId: string, post: Partial<BoardPost>, files?: File[]): Promise<BoardPost> {
+  async updatePost(boardId: string, postId: string, post: Partial<BoardPost>, files?: File[], deleteFiles?: string[]): Promise<BoardPost> {
     try {
       const formData = new FormData();
-      formData.append('post', JSON.stringify(post));
+      formData.append('boardRequest', JSON.stringify(post));
       
       if (files) {
         files.forEach(file => {
@@ -82,7 +119,11 @@ class BoardService {
         });
       }
 
-      const response = await axios.put<BoardPost>(`${API_URL}/modify/${boardId}/${postId}`, formData, {
+      if (deleteFiles?.length) {
+        formData.append('deleteFiles', deleteFiles.join(','));
+      }
+
+      const response = await axios.put<BoardPost>(`${API_URL}/${postId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

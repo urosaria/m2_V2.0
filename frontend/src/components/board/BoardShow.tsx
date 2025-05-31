@@ -11,31 +11,18 @@ import {
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { formatDate } from '../../utils/dateUtils';
-
-interface BoardPost {
-  id: number;
-  title: string;
-  contents: string;
-  user: {
-    name: string;
-  };
-  createDate: string;
-  fileList?: {
-    id: number;
-    oriName: string;
-  }[];
-}
+import { boardService, BoardPost, FileItem } from '../../services/boardService';
 
 const BoardShow: React.FC = () => {
-  const { boardId, postId } = useParams<{ boardId: string; postId: string }>();
+  const { postId } = useParams<{ postId: string }>();
   const [post, setPost] = useState<BoardPost | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {
+      if (!postId) return;
       try {
-        const response = await fetch(`/api/board/show/${boardId}/${postId}`);
-        const data = await response.json();
+        const data = await boardService.getPost(postId);
         setPost(data);
       } catch (error) {
         console.error('Error fetching post:', error);
@@ -43,7 +30,7 @@ const BoardShow: React.FC = () => {
     };
 
     fetchPost();
-  }, [boardId, postId]);
+  }, [postId]);
 
   if (!post) {
     return null;
@@ -68,21 +55,21 @@ const BoardShow: React.FC = () => {
               color: 'text.secondary'
             }}
           >
-            <Typography variant="body2">{post.user.name}</Typography>
+            <Typography variant="body2">{post.userName}</Typography>
             <Typography variant="body2">{formatDate(post.createDate)}</Typography>
           </Box>
         </Box>
 
         <CardContent>
-          {post.fileList && post.fileList.length > 0 && (
+          {post.files && post.files.length > 0 && (
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle2" gutterBottom>
                 첨부파일
               </Typography>
-              {post.fileList.map(file => (
+              {post.files.map((file: FileItem) => (
                 <Link
                   key={file.id}
-                  href={`/api/board/fileDown/${file.id}`}
+                  href={`${process.env.REACT_APP_API_BASE_URL}/api/board/download/${file.id}`}
                   sx={{ display: 'block', mb: 0.5 }}
                 >
                   {file.oriName}
@@ -112,13 +99,13 @@ const BoardShow: React.FC = () => {
         >
           <Button
             variant="contained"
-            onClick={() => navigate('/board/list')}
+            onClick={() => navigate(`/board/${post.boardMaster.id}`)}
           >
             목록
           </Button>
           <Button
             variant="outlined"
-            onClick={() => navigate(`/board/modify/${boardId}/${postId}`)}
+            onClick={() => navigate(`/board/edit/${postId}`)}
           >
             수정
           </Button>

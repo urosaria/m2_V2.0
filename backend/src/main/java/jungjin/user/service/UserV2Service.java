@@ -1,6 +1,5 @@
 package jungjin.user.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import jungjin.common.exception.BusinessException;
 import jungjin.common.exception.NotFoundException;
 import jungjin.user.domain.Role;

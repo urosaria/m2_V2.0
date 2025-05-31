@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -18,14 +18,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Delete as DeleteIcon, CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 import { boardService, BoardPost } from '../../services/boardService';
+import { boardMasterService, BoardMaster } from '../../services/boardMasterService';
 import useAuth from '../../hooks/useAuth';
 
 interface PostState {
   title: string;
   contents: string;
-  boardMaster: {
-    id: number;
-  };
+  boardMaster: BoardMaster | null;
   user: {
     num: number;
     name: string;
@@ -41,14 +40,28 @@ const BoardRegister: React.FC = () => {
   const [post, setPost] = useState<PostState>({
     title: '',
     contents: '',
-    boardMaster: {
-      id: 2 // Default board ID
-    },
+    boardMaster: null,
     user: user ? {
       num: user.num,
       name: user.name
     } : null
   });
+
+  useEffect(() => {
+    const fetchBoardMaster = async () => {
+      try {
+        const boardMaster = await boardMasterService.get(2); // Default board ID
+        setPost(prev => ({
+          ...prev,
+          boardMaster
+        }));
+      } catch (error) {
+        console.error('Error fetching board master:', error);
+        setError('게시판 정보를 불러오는데 실패했습니다.');
+      }
+    };
+    fetchBoardMaster();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,8 +84,15 @@ const BoardRegister: React.FC = () => {
     setError(null);
 
     try {
+      if (!post.boardMaster) {
+        setError('게시판 정보가 없습니다.');
+        return;
+      }
+
       const postData: Partial<BoardPost> = {
-        ...post,
+        title: post.title,
+        contents: post.contents,
+        boardMaster: post.boardMaster,
         user: post.user || undefined
       };
       await boardService.createPost(postData, files);
