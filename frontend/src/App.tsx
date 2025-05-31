@@ -8,6 +8,7 @@ import Login from './components/Login';
 import Main from './components/Main';
 import UserManagement from './pages/admin/UserManagement';
 import BoardManagement from './pages/admin/BoardManagement';
+import MaterialManagement from './pages/admin/MaterialManagement';
 import UserRegister from './components/user/UserRegister';
 import UserModify from './components/user/UserModify';
 import MyPage from './components/user/MyPage';
@@ -140,6 +141,7 @@ function App() {
               {/* Admin routes */}
               <Route path="admin/users" element={<UserManagement />} />
               <Route path="admin/boards" element={<BoardManagement />} />
+              <Route path="admin/materials" element={<MaterialManagement />} />
             </Route>
           </Routes>
         </Router>

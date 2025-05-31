@@ -1,0 +1,43 @@
+### Get all prices
+GET http://localhost:8080/api/estimate/prices
+
+### Get price by ID
+GET http://localhost:8080/api/estimate/prices/1
+
+### Search price by criteria
+GET http://localhost:8080/api/estimate/prices/search?gubun=A&subGubun=B&type=C&subType=D
+
+### Create new price
+POST http://localhost:8080/api/estimate/prices
+Content-Type: application/json
+
+{
+    "gubun": "A",
+    "subGubun": "B",
+    "type": "C",
+    "subType": "D",
+    "startPrice": 1000,
+    "gapPrice": 100,
+    "maxThickPrice": 500,
+    "standardPrice": 2000,
+    "ePrice": 300
+}
+
+### Update price
+PUT http://localhost:8080/api/estimate/prices/1
+Content-Type: application/json
+
+{
+    "gubun": "X",
+    "subGubun": "Y",
+    "type": "Z",
+    "subType": "W",
+    "startPrice": 2000,
+    "gapPrice": 200,
+    "maxThickPrice": 1000,
+    "standardPrice": 3000,
+    "ePrice": 400
+}
+
+### Delete price
+DELETE http://localhost:8080/api/estimate/prices/1

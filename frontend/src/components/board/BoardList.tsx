@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Container,
@@ -30,7 +30,7 @@ const BoardList: React.FC = () => {
   const [totalElements, setTotalElements] = useState(0);
   const navigate = useNavigate();
 
-  const loadBoardInfo = async () => {
+  const loadBoardInfo = useCallback(async () => {
     if (!boardId) return;
     try {
       const board = await boardMasterService.get(parseInt(boardId));
@@ -38,9 +38,9 @@ const BoardList: React.FC = () => {
     } catch (error) {
       console.error('Error loading board info:', error);
     }
-  };
+  }, [boardId]);
 
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     if (!boardId) return;
     try {
       const response = await boardService.getList(page, boardId); // Page is now 1-based
@@ -50,20 +50,20 @@ const BoardList: React.FC = () => {
     } catch (error) {
       console.error('Error loading posts:', error);
     }
-  };
+  }, [boardId, page]);
 
   useEffect(() => {
     if (boardId) {
       setPage(1);
       loadBoardInfo();
     }
-  }, [boardId]);
+  }, [boardId, loadBoardInfo]);
 
   useEffect(() => {
     if (boardId) {
       loadPosts();
     }
-  }, [boardId, page]);
+  }, [boardId, page, loadPosts]);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 2 }}>
