@@ -133,7 +133,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const isPermanent = variant === 'permanent';
-  const drawerWidth = collapsed && isPermanent && !isMobile ? 72 : 240;
+  const [isHovered, setIsHovered] = useState(false);
+  const drawerWidth = collapsed && isPermanent && !isMobile ? (isHovered ? 240 : 72) : 240;
 
   const [openSubmenus, setOpenSubmenus] = useState<{ [key: number]: boolean }>({});
 
@@ -142,8 +143,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const drawerContent = (
-    <Box sx={{ overflow: 'auto' }}>
-      <List>
+    <Box 
+      sx={{ overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <List sx={{ flex: 1 }}>
         {menuItems.map((item) => {
           const isSelected = location.pathname === item.path;
           const shouldShowText = !collapsed || isMobile;
@@ -183,11 +188,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <ListItemText
                     primary={item.text}
                     sx={{
-                      opacity: shouldShowText ? 1 : 0,
-                      maxWidth: shouldShowText ? 200 : 0,
+                      opacity: (!collapsed || isMobile || isHovered) ? 1 : 0,
+                      maxWidth: (!collapsed || isMobile || isHovered) ? 200 : 0,
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
-                      transition: 'opacity 0.2s, max-width 0.2s',
+                      transition: 'all 0.3s ease',
                     }}
                   />
                   {hasChildren && shouldShowText &&
@@ -195,7 +200,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </ListItemButton>
               </ListItem>
 
-              {hasChildren && (
+              {hasChildren && (!collapsed || isMobile || isHovered) && (
                 <Collapse in={isSubmenuOpen} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item.children!.map((subItem) => (
@@ -230,10 +235,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           );
         })}
         
-        {/* Divider before the admin section */}
-        <Divider sx={{ my: 2 }} />
-        
-        {/* Display "관리자" as a non-clickable section title */}
+      </List>
+
+      <List sx={{ mt: 'auto' }}>
         <ListItem sx={{ pl: collapsed ? 0 : 2 }}>
           <Typography
             variant="h6"
@@ -242,6 +246,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               color: theme.palette.text.primary,
               textTransform: 'uppercase',
               padding: '12px 16px',
+              opacity: (!collapsed || isMobile || isHovered) ? 1 : 0,
+              transition: 'opacity 0.3s ease',
             }}
           >
             관리자
@@ -281,11 +287,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <ListItemText
                     primary={item.text}
                     sx={{
-                      opacity: shouldShowText ? 1 : 0,
-                      maxWidth: shouldShowText ? 200 : 0,
+                      opacity: (!collapsed || isMobile || isHovered) ? 1 : 0,
+                      maxWidth: (!collapsed || isMobile || isHovered) ? 200 : 0,
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
-                      transition: 'opacity 0.2s, max-width 0.2s',
+                      transition: 'all 0.3s ease',
                     }}
                   />
                 </ListItemButton>
@@ -313,7 +319,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           top: isMobile ? 56 : 64,
           height: `calc(100% - ${isMobile ? 56 : 64}px)`,
           borderRight: 'none',
-          transition: 'width 0.3s',
+          transition: 'width 0.3s ease',
+          overflowX: 'hidden',
         },
       }}
     >
