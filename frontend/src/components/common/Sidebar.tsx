@@ -11,8 +11,7 @@ import {
   ListItemText,
   useTheme,
   useMediaQuery,
-  Divider,
-  Typography,  // Add Typography for titles
+  Typography,
 } from '@mui/material';
 import {
   ExpandLess,
@@ -40,18 +39,8 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  {
-    id: 1,
-    text: '자동물량산출',
-    icon: <CalculateIcon />,
-    path: '/estimates',
-  },
-  {
-    id: 6,
-    text: '간이투시도',
-    icon: <ImageIcon />,
-    path: '/picture',
-  },
+  { id: 1, text: '자동물량산출', icon: <CalculateIcon />, path: '/estimates' },
+  { id: 6, text: '간이투시도', icon: <ImageIcon />, path: '/picture' },
   {
     id: 2,
     text: '게시판',
@@ -62,57 +51,17 @@ const menuItems: MenuItem[] = [
       { id: 23, text: 'Q&A', icon: <QuestionAnswer fontSize="small" />, path: '/board/2' },
     ],
   },
-  {
-    id: 3,
-    text: '금주판넬단가표',
-    icon: <PriceChangeIcon />,
-    path: '/price-list',
-  },
-  {
-    id: 4,
-    text: '판넬발주(문의)하기',
-    icon: <ShoppingCartOutlined />,
-    path: '/order',
-  },
-  {
-    id: 5,
-    text: '발주 & 기타문의전화',
-    icon: <ContactSupportIcon />,
-    path: '/contact',
-  },
+  { id: 3, text: '금주판넬단가표', icon: <PriceChangeIcon />, path: '/price-list' },
+  { id: 4, text: '판넬발주(문의)하기', icon: <ShoppingCartOutlined />, path: '/order' },
+  { id: 5, text: '발주 & 기타문의전화', icon: <ContactSupportIcon />, path: '/contact' },
 ];
 
 const adminMenuItems: MenuItem[] = [
-  {
-    id: 65,
-    text: '관리자 대시보드',
-    icon: <DashboardIcon fontSize="small" />,
-    path: '/admin/dashboard',
-  },   
-  {
-    id: 61,
-    text: '게시판관리',
-    icon: <ForumIcon fontSize="small" />,
-    path: '/admin/boards',
-  },
-  {
-    id: 62,
-    text: '사용자관리',
-    icon: <ManageAccountsIcon fontSize="small" />,
-    path: '/admin/users',
-  },
-  {
-    id: 63,
-    text: '자재관리',
-    icon: <InventoryIcon fontSize="small" />,
-    path: '/admin/materials',
-  },  
-  {
-    id: 64,
-    text: '간이투시도관리',
-    icon: <ImageIcon fontSize="small" />,
-    path: '/admin/pictures',
-  },    
+  { id: 65, text: '관리자 대시보드', icon: <DashboardIcon fontSize="small" />, path: '/admin/dashboard' },
+  { id: 61, text: '게시판관리', icon: <ForumIcon fontSize="small" />, path: '/admin/boards' },
+  { id: 62, text: '사용자관리', icon: <ManageAccountsIcon fontSize="small" />, path: '/admin/users' },
+  { id: 63, text: '자재관리', icon: <InventoryIcon fontSize="small" />, path: '/admin/materials' },
+  { id: 64, text: '간이투시도관리', icon: <ImageIcon fontSize="small" />, path: '/admin/pictures' },
 ];
 
 interface SidebarProps {
@@ -133,8 +82,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const isPermanent = variant === 'permanent';
-  const [isHovered, setIsHovered] = useState(false);
-  const drawerWidth = collapsed && isPermanent && !isMobile ? (isHovered ? 240 : 72) : 240;
+  const collapsedWidth = 72;
+  const expandedWidth = 240;
+  const drawerWidth = collapsed && isPermanent && !isMobile ? collapsedWidth : expandedWidth;
 
   const [openSubmenus, setOpenSubmenus] = useState<{ [key: number]: boolean }>({});
 
@@ -143,17 +93,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const drawerContent = (
-    <Box 
-      sx={{ overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <Box sx={{ overflow: 'auto', display: 'flex', flexDirection: 'column', height: '100%' }}>
       <List sx={{ flex: 1 }}>
         {menuItems.map((item) => {
           const isSelected = location.pathname === item.path;
-          const shouldShowText = !collapsed || isMobile;
-
-          const hasChildren = item.children && item.children.length > 0;
+          const hasChildren = !!item.children?.length;
           const isSubmenuOpen = openSubmenus[item.id] || false;
 
           return (
@@ -177,39 +121,62 @@ const Sidebar: React.FC<SidebarProps> = ({
                 >
                   <ListItemIcon
                     sx={{
-                      minWidth: 0,
+                      minWidth: collapsed && !isMobile ? 0 : 40,
                       width: 40,
                       justifyContent: 'center',
                       display: 'flex',
+                      mr: collapsed && !isMobile ? 0 : 'auto',
                     }}
                   >
                     {item.icon}
                   </ListItemIcon>
+
                   <ListItemText
                     primary={item.text}
                     sx={{
-                      opacity: (!collapsed || isMobile || isHovered) ? 1 : 0,
-                      maxWidth: (!collapsed || isMobile || isHovered) ? 200 : 0,
+                      opacity: collapsed && !isMobile ? 0 : 1,
+                      maxWidth: collapsed && !isMobile ? 0 : 200,
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.3s ease',
+                      visibility: collapsed && !isMobile ? 'hidden' : 'visible',
                     }}
                   />
-                  {hasChildren && shouldShowText &&
-                    (isSubmenuOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />)}
+
+                  {/* Hide submenu toggle icon in collapsed mode */}
+                  {hasChildren && (
+                    <Box
+                      sx={{
+                        ml: 'auto',
+                        width: 24,
+                        display: (collapsed && !isMobile) ? 'none' : 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        '.MuiDrawer-paper:hover &': {
+                          display: 'flex',
+                        },
+                      }}
+                    >
+                      {isSubmenuOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+                    </Box>
+                  )}
                 </ListItemButton>
               </ListItem>
 
-              {hasChildren && (!collapsed || isMobile || isHovered) && (
+              {hasChildren && (
                 <Collapse in={isSubmenuOpen} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item.children!.map((subItem) => (
                       <ListItemButton
                         key={subItem.id}
                         sx={{
-                          pl: collapsed ? 3 : 5,
+                          pl: collapsed && !isMobile ? 3 : 5,
                           backgroundColor:
                             location.pathname === subItem.path ? theme.palette.action.selected : 'inherit',
+                          display: collapsed && !isMobile ? 'none' : 'flex',
+                          '.MuiDrawer-paper:hover &': {
+                            display: 'flex',
+                          },
                         }}
                         onClick={() => {
                           navigate(subItem.path!);
@@ -218,8 +185,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                       >
                         <ListItemIcon
                           sx={{
-                            minWidth: 32,
-                            ml: 1,
+                            minWidth: collapsed && !isMobile ? 0 : 32,
+                            width: 32,
+                            justifyContent: collapsed && !isMobile ? 'center' : 'flex-start',
+                            ml: collapsed && !isMobile ? 0 : 1,
+                            display: 'flex',
                             color: theme.palette.text.secondary,
                           }}
                         >
@@ -234,30 +204,28 @@ const Sidebar: React.FC<SidebarProps> = ({
             </Box>
           );
         })}
-        
       </List>
 
       <List sx={{ mt: 'auto' }}>
         <ListItem sx={{ pl: collapsed ? 0 : 2 }}>
           <Typography
             variant="h6"
+            className="admin-title"
             sx={{
               fontWeight: 'bold',
               color: theme.palette.text.primary,
               textTransform: 'uppercase',
               padding: '12px 16px',
-              opacity: (!collapsed || isMobile || isHovered) ? 1 : 0,
-              transition: 'opacity 0.3s ease',
+              opacity: collapsed && !isMobile ? 0 : 1,
+              transition: 'all 0.3s ease',
             }}
           >
             관리자
           </Typography>
         </ListItem>
 
-        {/* Display the admin menu items (게시판관리, 사용자관리) */}
         {adminMenuItems.map((item) => {
           const isSelected = location.pathname === item.path;
-          const shouldShowText = !collapsed || isMobile;
 
           return (
             <Box key={item.id}>
@@ -276,10 +244,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                 >
                   <ListItemIcon
                     sx={{
-                      minWidth: 0,
+                      minWidth: collapsed && !isMobile ? 0 : 40,
                       width: 40,
                       justifyContent: 'center',
                       display: 'flex',
+                      mr: collapsed && !isMobile ? 0 : 'auto',
                     }}
                   >
                     {item.icon}
@@ -287,11 +256,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <ListItemText
                     primary={item.text}
                     sx={{
-                      opacity: (!collapsed || isMobile || isHovered) ? 1 : 0,
-                      maxWidth: (!collapsed || isMobile || isHovered) ? 200 : 0,
+                      opacity: collapsed && !isMobile ? 0 : 1,
+                      maxWidth: collapsed && !isMobile ? 0 : 200,
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.3s ease',
+                      visibility: collapsed && !isMobile ? 'hidden' : 'visible',
                     }}
                   />
                 </ListItemButton>
@@ -312,15 +282,40 @@ const Sidebar: React.FC<SidebarProps> = ({
       sx={{
         width: drawerWidth,
         flexShrink: 0,
+        position: 'relative',
         '& .MuiDrawer-paper': {
+          position: 'fixed',
           width: drawerWidth,
           boxSizing: 'border-box',
           backgroundColor: theme.palette.background.paper,
           top: isMobile ? 56 : 64,
           height: `calc(100% - ${isMobile ? 56 : 64}px)`,
           borderRight: 'none',
-          transition: 'width 0.3s ease',
+          transition: 'all 0.3s ease',
           overflowX: 'hidden',
+          ...(collapsed && isPermanent && !isMobile && {
+            '&:hover': {
+              width: expandedWidth,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              borderRadius: '0 8px 8px 0',
+              zIndex: theme.zIndex.drawer + 2,
+              '& .MuiListItemText-root': {
+                opacity: 1,
+                maxWidth: 200,
+                visibility: 'visible',
+              },
+              '& .admin-title': {
+                opacity: 1,
+                visibility: 'visible',
+              },
+            },
+            '& .MuiListItemText-root': {
+              visibility: 'hidden',
+            },
+            '& .admin-title': {
+              visibility: 'hidden',
+            },
+          }),
         },
       }}
     >
