@@ -10,6 +10,7 @@ import UserManagement from './pages/admin/UserManagement';
 import BoardManagement from './pages/admin/BoardManagement';
 import MaterialManagement from './pages/admin/MaterialManagement';
 import PictureManagement from './pages/admin/PictureManagement';
+import Dashboard from './pages/admin/Dashboard';
 import UserRegister from './components/user/UserRegister';
 import UserModify from './components/user/UserModify';
 import MyPage from './components/user/MyPage';
@@ -151,6 +152,7 @@ function App() {
               <Route path="admin/users" element={<UserManagement />} />
               <Route path="admin/boards" element={<BoardManagement />} />
               <Route path="admin/materials" element={<MaterialManagement />} />
+              <Route path="admin/dashboard" element={<Dashboard />} />
               <Route path="admin/pictures" element={<PictureManagement />} />
               <Route path="admin/pictures/:id" element={<PictureView />} />
             </Route>

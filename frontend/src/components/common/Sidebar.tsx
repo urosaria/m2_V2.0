@@ -64,13 +64,13 @@ const menuItems: MenuItem[] = [
   },
   {
     id: 3,
-    text: '금주판네단가표',
+    text: '금주판넬단가표',
     icon: <PriceChangeIcon />,
     path: '/price-list',
   },
   {
     id: 4,
-    text: '판네발주(문의)하기',
+    text: '판넬발주(문의)하기',
     icon: <ShoppingCartOutlined />,
     path: '/order',
   },
@@ -84,9 +84,15 @@ const menuItems: MenuItem[] = [
 
 const adminMenuItems: MenuItem[] = [
   {
+    id: 65,
+    text: '관리자 대시보드',
+    icon: <DashboardIcon fontSize="small" />,
+    path: '/admin/dashboard',
+  },   
+  {
     id: 61,
     text: '게시판관리',
-    icon: <DashboardIcon fontSize="small" />,
+    icon: <ForumIcon fontSize="small" />,
     path: '/admin/boards',
   },
   {
