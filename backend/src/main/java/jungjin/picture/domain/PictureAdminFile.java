@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "m2_picture_admin_file")
@@ -14,6 +16,7 @@ import lombok.experimental.Accessors;
 @Setter
 @NoArgsConstructor
 @Accessors(chain = true)
+@EntityListeners(AuditingEntityListener.class)
 public class PictureAdminFile {
 
     @Id
@@ -31,8 +34,8 @@ public class PictureAdminFile {
 
     private String path = "";
 
-    @NotNull
-    @Column(name = "create_date")
+    @CreatedDate
+    @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
 
     @NotNull

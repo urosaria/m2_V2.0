@@ -1,5 +1,6 @@
 package jungjin.board.service;
 
+import jungjin.admin.dto.StatDTO;
 import jungjin.board.domain.BoardMaster;
 import jungjin.board.dto.BoardRequestDTO;
 import jungjin.board.dto.BoardResponseDTO;
@@ -20,6 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -86,5 +90,22 @@ public class BoardService {
 
 	public void updateBoardReadCount(Long id) {
 		boardRepository.updateBoardReadCount(id);
+	}
+
+
+	public StatDTO getStats(Long boardMasterId) {
+		long total = boardRepository.countByBoardMaster_Id(boardMasterId);
+
+		LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+		LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+
+		long todayCount = boardRepository.countByBoardMaster_IdAndCreateDateBetween(
+				boardMasterId, startOfDay, endOfDay
+		);
+
+		return StatDTO.builder()
+				.total(total)
+				.today(todayCount)
+				.build();
 	}
 }

@@ -1,6 +1,7 @@
 package jungjin.estimate.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jungjin.admin.dto.StatDTO;
 import jungjin.estimate.domain.Calculate;
 import jungjin.estimate.domain.Structure;
 import jungjin.estimate.dto.CalculateDTO;
@@ -20,6 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -48,6 +52,7 @@ public class EstimateServiceV2 {
 
     public EstimateResponseDTO createEstimate(EstimateRequestDTO request) {
         // Convert DTO to entity
+        //TODO: need to setup get userId via token
         User user = userService.getUserByUserNumReturnUser(2L);
 
         Structure structure = estimateMapper.toStructure(request, user);
@@ -86,4 +91,12 @@ public class EstimateServiceV2 {
         estimateRepository.delete(structure);
     }
 
+    public StatDTO getStats() {
+        long total = estimateRepository.count();
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+        long todayCount = estimateRepository.countByCreateDateBetween(startOfDay, endOfDay);
+        return StatDTO.builder().total(total).today(todayCount).build();
+    }
 }

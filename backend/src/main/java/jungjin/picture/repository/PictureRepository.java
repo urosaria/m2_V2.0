@@ -10,11 +10,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 @Repository
 public interface PictureRepository extends JpaRepository<Picture, Long> {
     Page<Picture> findByStatus(String paramString, Pageable paramPageable);
 
-    Page<Picture> findByUserNumAndStatusNot(Long paramLong, String paramString, Pageable paramPageable);
+    Page<Picture> findByUserNum(Long userNum, Pageable pageable);
+
+    long count();
+
+    long countByCreateDateBetween(LocalDateTime start, LocalDateTime end);
 
     @Transactional
     @Modifying

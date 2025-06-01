@@ -44,6 +44,12 @@ const menuItems: MenuItem[] = [
     path: '/estimates',
   },
   {
+    id: 6,
+    text: '간이투시도',
+    icon: <PhoneOutlined />,
+    path: '/picture',
+  },
+  {
     id: 2,
     text: '게시판',
     icon: <ForumIcon />,
@@ -92,6 +98,12 @@ const adminMenuItems: MenuItem[] = [
     icon: <GroupIcon fontSize="small" />,
     path: '/admin/materials',
   },  
+  {
+    id: 64,
+    text: '간이투시도관리',
+    icon: <GroupIcon fontSize="small" />,
+    path: '/admin/pictures',
+  },    
 ];
 
 interface SidebarProps {

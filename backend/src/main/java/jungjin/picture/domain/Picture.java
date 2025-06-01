@@ -8,15 +8,22 @@ import jakarta.validation.constraints.NotNull;
 import jungjin.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
+import lombok.Builder;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "m2_picture")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Accessors(chain = true)
+@EntityListeners(AuditingEntityListener.class)
 public class Picture {
 
     @Id
@@ -28,6 +35,7 @@ public class Picture {
     private String etc;
 
     @Column(name = "status")
+    @Builder.Default
     private String status = "S1";
 
     @NotNull
@@ -35,14 +43,16 @@ public class Picture {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_est_picture_writer"))
     private User user;
 
-    @NotNull
-    @Column(name = "create_date")
+    @CreatedDate
+    @Column(name = "create_date", nullable = false, updatable = false)
     private LocalDateTime createDate;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "picture")
+    @OneToMany(mappedBy = "picture", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<PictureFile> fileList = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "picture")
+    @OneToMany(mappedBy = "picture", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<PictureAdminFile> adminFileList = new ArrayList<>();
 
     public void update(Picture pictureUpdate) {

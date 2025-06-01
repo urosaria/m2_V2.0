@@ -1,5 +1,6 @@
 package jungjin.user.service;
 
+import jungjin.admin.dto.StatDTO;
 import jungjin.common.exception.BusinessException;
 import jungjin.common.exception.NotFoundException;
 import jungjin.user.domain.Role;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Service;
 import jungjin.user.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -96,5 +100,14 @@ public class UserV2Service implements UserDetailsService {
     public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(UserResponseDTO::fromUser);
+    }
+
+    public StatDTO getStats() {
+        long total = userRepository.count();
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+        long todayCount = userRepository.countByCreateDateBetween(startOfDay, endOfDay);
+        return StatDTO.builder().total(total).today(todayCount).build();
     }
 }

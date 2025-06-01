@@ -21,7 +21,6 @@ public class BoardFileService {
 
     private final BoardFileRepository boardFileRepository;
     private final UploadConfig uploadConfig;
-
     private static final String FILE_STORAGE_PATH = "/board/";
 
     // Helper method to handle file storage and return the stored file path

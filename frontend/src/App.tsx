@@ -9,6 +9,7 @@ import Main from './components/Main';
 import UserManagement from './pages/admin/UserManagement';
 import BoardManagement from './pages/admin/BoardManagement';
 import MaterialManagement from './pages/admin/MaterialManagement';
+import PictureManagement from './pages/admin/PictureManagement';
 import UserRegister from './components/user/UserRegister';
 import UserModify from './components/user/UserModify';
 import MyPage from './components/user/MyPage';
@@ -21,6 +22,10 @@ import BoardRegister from './components/board/BoardRegister';
 import BoardModify from './components/board/BoardModify';
 import BoardShow from './components/board/BoardShow';
 import EstimateCalculateView from './components/estimate/EstimateCalculateView';
+import Picture from './pages/picture';
+import PictureRegister from './components/picture/PictureRegister';
+import PictureView from './components/picture/PictureView';
+import PictureEdit from './components/picture/PictureEdit';
 
 const theme = createTheme({
   breakpoints: {
@@ -129,6 +134,10 @@ function App() {
                 <Route path="calculate/:id" element={<EstimateCalculateView />} />
               </Route>
 
+              <Route path="picture" element={<Picture />} />
+              <Route path="picture/register" element={<PictureRegister />} />
+              <Route path="picture/:id" element={<PictureView />} />
+              <Route path="picture/edit/:id" element={<PictureEdit />} />
               <Route path="board/new" element={<BoardRegister />} />
               <Route path="board/edit/:id" element={<BoardModify />} />
               <Route path="board/show/:postId" element={<BoardShow />} />
@@ -142,6 +151,8 @@ function App() {
               <Route path="admin/users" element={<UserManagement />} />
               <Route path="admin/boards" element={<BoardManagement />} />
               <Route path="admin/materials" element={<MaterialManagement />} />
+              <Route path="admin/pictures" element={<PictureManagement />} />
+              <Route path="admin/pictures/:id" element={<PictureView />} />
             </Route>
           </Routes>
         </Router>
