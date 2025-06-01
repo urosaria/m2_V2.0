@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Select, MenuItem, Alert } from '@mui/material';
+import { Box, Container, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Alert } from '@mui/material';
 import { Delete as DeleteIcon, Visibility as ViewIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Picture } from '../../types/picture';
 import { pictureService } from '../../services/pictureService';
-import { getPictureStatusInfo } from '../../utils/pictureUtils';
 
 const PictureManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -94,7 +93,7 @@ const PictureManagement: React.FC = () => {
               </TableHead>
               <TableBody>
                 {Array.isArray(pictures) && pictures.map((picture) => {
-                  const statusInfo = getPictureStatusInfo(picture.status);
+                
                   return (
                     <TableRow key={picture.id}>
                       <TableCell>

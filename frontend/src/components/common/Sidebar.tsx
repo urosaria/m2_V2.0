@@ -18,14 +18,17 @@ import {
   ExpandLess,
   ExpandMore,
   ShoppingCartOutlined,
-  PhoneOutlined,
   Forum as ForumIcon,
-  ListAlt as ListAltIcon,
   HelpOutline,
   Campaign,
   QuestionAnswer,
   Dashboard as DashboardIcon,
-  Group as GroupIcon,
+  Image as ImageIcon,
+  ManageAccounts as ManageAccountsIcon,
+  Inventory as InventoryIcon,
+  Calculate as CalculateIcon,
+  PriceChange as PriceChangeIcon,
+  ContactSupport as ContactSupportIcon,
 } from '@mui/icons-material';
 
 interface MenuItem {
@@ -40,13 +43,13 @@ const menuItems: MenuItem[] = [
   {
     id: 1,
     text: '자동물량산출',
-    icon: <ListAltIcon />,
+    icon: <CalculateIcon />,
     path: '/estimates',
   },
   {
     id: 6,
     text: '간이투시도',
-    icon: <PhoneOutlined />,
+    icon: <ImageIcon />,
     path: '/picture',
   },
   {
@@ -62,7 +65,7 @@ const menuItems: MenuItem[] = [
   {
     id: 3,
     text: '금주판네단가표',
-    icon: <ListAltIcon />,
+    icon: <PriceChangeIcon />,
     path: '/price-list',
   },
   {
@@ -74,7 +77,7 @@ const menuItems: MenuItem[] = [
   {
     id: 5,
     text: '발주 & 기타문의전화',
-    icon: <PhoneOutlined />,
+    icon: <ContactSupportIcon />,
     path: '/contact',
   },
 ];
@@ -89,19 +92,19 @@ const adminMenuItems: MenuItem[] = [
   {
     id: 62,
     text: '사용자관리',
-    icon: <GroupIcon fontSize="small" />,
+    icon: <ManageAccountsIcon fontSize="small" />,
     path: '/admin/users',
   },
   {
     id: 63,
     text: '자재관리',
-    icon: <GroupIcon fontSize="small" />,
+    icon: <InventoryIcon fontSize="small" />,
     path: '/admin/materials',
   },  
   {
     id: 64,
     text: '간이투시도관리',
-    icon: <GroupIcon fontSize="small" />,
+    icon: <ImageIcon fontSize="small" />,
     path: '/admin/pictures',
   },    
 ];
