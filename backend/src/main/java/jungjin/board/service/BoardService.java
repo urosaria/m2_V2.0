@@ -5,11 +5,8 @@ import jungjin.board.domain.BoardMaster;
 import jungjin.board.dto.BoardRequestDTO;
 import jungjin.board.dto.BoardResponseDTO;
 import jungjin.board.mapper.BoardMapper;
-import jungjin.common.exception.BusinessException;
 import jungjin.common.exception.NotFoundException;
 import jungjin.board.domain.Board;
-import jungjin.board.domain.BoardFile;
-import jungjin.board.repository.BoardFileRepository;
 import jungjin.board.repository.BoardRepository;
 import jungjin.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +29,6 @@ import java.util.List;
 public class BoardService {
 
 	private final BoardRepository boardRepository;
-	private final BoardFileRepository boardFileRepository;
 	private final BoardMapper boardMapper;
 	private final BoardFileService boardFileService;
 
@@ -65,10 +61,6 @@ public class BoardService {
 		Board board = boardRepository.findById(boardId)
 				.orElseThrow(() -> new NotFoundException("Board not found with id: " + boardId));
 
-//		if (!boardMasterId.equals(board.getBoardMaster().getId())) {
-//			throw new BusinessException("Board does not belong to board master: " + boardMasterId);
-//		}
-
 		board.setTitle(request.getTitle());
 		board.setContents(request.getContents());
 		Board saved = boardRepository.save(board);
@@ -83,15 +75,9 @@ public class BoardService {
 		boardRepository.delete(board);
 	}
 
-	public BoardFile fileDetailService(Long id) {
-		return this.boardFileRepository.findById(id)
-			.orElseThrow(() -> new NotFoundException("BoardFile not found with id: " + id));
-	}
-
 	public void updateBoardReadCount(Long id) {
 		boardRepository.updateBoardReadCount(id);
 	}
-
 
 	public StatDTO getStats(Long boardMasterId) {
 		long total = boardRepository.countByBoardMaster_Id(boardMasterId);

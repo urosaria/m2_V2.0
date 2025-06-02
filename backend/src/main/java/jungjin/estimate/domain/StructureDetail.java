@@ -129,46 +129,4 @@ public class StructureDetail {
 
     @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Window> windowList = new ArrayList<>();
-
-    public void insert(StructureDetail structureDetail) {
-        //this.createDate = LocalDateTime.now();
-        this.id = structureDetail.id;
-        this.insideWallYn = structureDetail.insideWallYn;
-        this.ceilingYn = structureDetail.ceilingYn;
-        this.windowYn = structureDetail.windowYn;
-        this.doorYn = structureDetail.doorYn;
-        this.canopyYn = structureDetail.canopyYn;
-        this.downpipeYn = structureDetail.downpipeYn;
-        this.structure = structureDetail.structure;
-    }
-
-    public void updateGucci(StructureDetail structureDetail) {
-        this.id = structureDetail.id;
-        this.gucci = structureDetail.gucci;
-        this.gucciAmount = structureDetail.gucciAmount;
-    }
-
-    public void updateStep2(StructureDetail structureDetail) {
-        this.insideWallYn = structureDetail.insideWallYn;
-        this.ceilingYn = structureDetail.ceilingYn;
-        this.windowYn = structureDetail.windowYn;
-        this.doorYn = structureDetail.doorYn;
-        this.canopyYn = structureDetail.canopyYn;
-        this.downpipeYn = structureDetail.downpipeYn;
-    }
-
-    public void updateStep4(StructureDetail structureDetail) {
-        this.insideWallType = structureDetail.insideWallType;
-        this.insideWallPaper = structureDetail.insideWallPaper;
-        this.insideWallThick = structureDetail.insideWallThick;
-        this.outsideWallType = structureDetail.outsideWallType;
-        this.outsideWallPaper = structureDetail.outsideWallPaper;
-        this.outsideWallThick = structureDetail.outsideWallThick;
-        this.roofType = structureDetail.roofType;
-        this.roofPaper = structureDetail.roofPaper;
-        this.roofThick = structureDetail.roofThick;
-        this.ceilingType = structureDetail.ceilingType;
-        this.ceilingPaper = structureDetail.ceilingPaper;
-        this.ceilingThick = structureDetail.ceilingThick;
-    }
 }

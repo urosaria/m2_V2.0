@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class EstimateCalculateServiceV2 {
+public class EstimateCalculateService {
 
     private final EstimateCalculateRepository estimateCalculateRepository;
     private final EstimatePriceService estimatePriceService;

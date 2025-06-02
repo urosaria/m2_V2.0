@@ -21,31 +21,6 @@ export const pictureService = {
       throw error;
     }
   },
-  async downloadFile(fileId: number): Promise<void> {
-    try {
-      const response = await axios.get(`${API_URL}/download/${fileId}`, {
-        responseType: 'blob'
-      });
-      
-      // Create blob link to download
-      const url = window.URL.createObjectURL(response.data as Blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `picture_${fileId}`);
-      
-      // Append to html link element page
-      document.body.appendChild(link);
-      
-      // Start download
-      link.click();
-      
-      // Clean up and remove the link
-      link.parentNode?.removeChild(link);
-    } catch (error) {
-      console.error('Error downloading file:', error);
-      throw error;
-    }
-  },
 
   async uploadAdminFiles(pictureId: number, files: File[]): Promise<void> {
     try {

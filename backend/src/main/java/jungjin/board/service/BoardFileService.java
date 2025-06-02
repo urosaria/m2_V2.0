@@ -23,17 +23,14 @@ public class BoardFileService {
     private final UploadConfig uploadConfig;
     private static final String FILE_STORAGE_PATH = "/board/";
 
-    // Helper method to handle file storage and return the stored file path
     private String storeFile(MultipartFile file) throws IOException {
         String uploadPath = uploadConfig.getUploadDir() + FILE_STORAGE_PATH;
         String originalFilename = file.getOriginalFilename();
         String storedFilename = UUID.randomUUID() + "_" + originalFilename;
 
-        // Ensure directory exists
         File dir = new File(uploadPath);
         if (!dir.exists()) dir.mkdirs();
 
-        // Save the file to disk
         File dest = new File(uploadPath + storedFilename);
         file.transferTo(dest);
 
@@ -41,7 +38,6 @@ public class BoardFileService {
     }
 
     public void saveOrUpdateFiles(Board board, List<MultipartFile> files, String deleteFiles) {
-        // Get current files associated with the board
         Set<BoardFile> currentFiles = new HashSet<>(board.getFiles());
         Set<String> existingFilePaths = currentFiles.stream()
                 .map(BoardFile::getPath)
@@ -71,7 +67,6 @@ public class BoardFileService {
             });
         }
 
-        // Remove files that need to be deleted (based on the deleteFiles parameter)
         if (deleteFiles != null && !deleteFiles.isEmpty()) {
             List<Long> fileIdsToDelete = Arrays.stream(deleteFiles.split(","))
                     .map(Long::parseLong)  // Convert string IDs to Long
@@ -89,16 +84,12 @@ public class BoardFileService {
     }
 
     private void deleteFile(BoardFile file, Board board) {
-        // Delete the file from the file system
         File fileToDelete = new File(uploadConfig.getUploadDir() + file.getPath());
 
         if (fileToDelete.exists() && fileToDelete.delete()) {
             try {
                 board.getFiles().remove(file);
-                // After file is deleted from the file system, delete it from the database
                 boardFileRepository.delete(file);  // Ensure that the file is deleted from the DB as well
-                // Optionally, flush the repository to ensure the transaction is committed
-                //boardFileRepository.flush();
             } catch (Exception e) {
                 throw new RuntimeException("Failed to delete file from database: " + file.getPath(), e);
             }

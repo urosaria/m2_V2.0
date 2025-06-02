@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Typography,
   Button,
-  Divider,
-  Link,
   CircularProgress,
   Stack,
   Paper,
@@ -16,6 +14,8 @@ import {
   Download as DownloadIcon,
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
+import { fileService } from '../../services/fileService';
+import { useSnackbar } from '../../context/SnackbarContext';
 import { formatDate } from '../../utils/dateUtils';
 import { boardService, BoardPost, FileItem } from '../../services/boardService';
 import PageLayout from '../common/PageLayout';
@@ -27,6 +27,7 @@ const BoardShow: React.FC = () => {
   const { boardId, postId } = useParams<{ boardId: string; postId: string }>();
   const [post, setPost] = useState<BoardPost | null>(null);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -119,9 +120,23 @@ const BoardShow: React.FC = () => {
                 {post.files.map((file) => (
                   <Box
                     key={file.id}
+                    onClick={async () => {
+                      try {
+                        await fileService.downloadFile({
+                          path: file.path,
+                          name: file.oriName
+                        });
+                      } catch (error) {
+                        showSnackbar('파일 다운로드에 실패했습니다.', 'error');
+                      }
+                    }}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        bgcolor: 'action.hover',
+                      },
                       justifyContent: 'space-between',
                       p: 1,
                       bgcolor: 'background.paper',

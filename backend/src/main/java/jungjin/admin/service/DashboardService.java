@@ -2,9 +2,9 @@ package jungjin.admin.service;
 
 import jungjin.admin.dto.DashboardResponseDTO;
 import jungjin.board.service.BoardService;
-import jungjin.estimate.service.EstimateServiceV2;
+import jungjin.estimate.service.EstimateService;
 import jungjin.picture.service.PictureService;
-import jungjin.user.service.UserV2Service;
+import jungjin.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DashboardService {
 
-    private final EstimateServiceV2 estimateService;
+    private final EstimateService estimateService;
     private final BoardService boardService;
-    private final UserV2Service userService;
+    private final UserService userService;
     private final PictureService pictureService;
 
     public DashboardResponseDTO getDashboardStats() {

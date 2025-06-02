@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class EstimateExcelServiceV2 {
+public class EstimateExcelService {
     private final UploadConfig uploadConfig;
     private final EstimateRepository estimateRepository;
 

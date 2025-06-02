@@ -18,12 +18,15 @@ import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Picture } from '../../types/picture';
 import { pictureService } from '../../services/pictureService';
+import { fileService } from '../../services/fileService';
+import { useSnackbar } from '../../context/SnackbarContext';
 import { getPictureStatusInfo } from '../../utils/pictureUtils';
 import PageLayout from '../common/PageLayout';
 
 const PictureView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
   const [picture, setPicture] = useState<Picture | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -218,7 +221,16 @@ const PictureView: React.FC = () => {
                         variant="text"
                         size="small"
                         startIcon={<DownloadIcon color="primary" fontSize="small" />}
-                        onClick={() => pictureService.downloadFile(file.id)}
+                        onClick={async () => {
+                          try {
+                            await fileService.downloadFile({
+                              path: file.path,
+                              name: file.oriName
+                            });
+                          } catch (error) {
+                            showSnackbar('파일 다운로드에 실패했습니다.', 'error');
+                          }
+                        }}
                         sx={{ color: 'text.primary' }}
                       >
                         {file.oriName}
@@ -264,7 +276,16 @@ const PictureView: React.FC = () => {
                           variant="text"
                           size="small"
                           startIcon={<DownloadIcon color="primary" fontSize="small" />}
-                          onClick={() => pictureService.downloadFile(file.id)}
+                          onClick={async () => {
+                            try {
+                              await fileService.downloadFile({
+                                path: file.path,
+                                name: file.oriName
+                              });
+                            } catch (error) {
+                              showSnackbar('파일 다운로드에 실패했습니다.', 'error');
+                            }
+                          }}
                           sx={{ color: 'text.primary' }}
                         >
                           {file.oriName}

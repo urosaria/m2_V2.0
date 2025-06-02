@@ -3,7 +3,7 @@ package jungjin.user.controller;
 import jakarta.validation.Valid;
 import jungjin.user.dto.UserRequestDTO;
 import jungjin.user.dto.UserResponseDTO;
-import jungjin.user.service.UserV2Service;
+import jungjin.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserV2Service userService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<Void> register(@Valid @RequestBody UserRequestDTO request) {

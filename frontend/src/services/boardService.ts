@@ -142,17 +142,6 @@ class BoardService {
     }
   }
 
-  async downloadFile(fileId: number): Promise<Blob> {
-    try {
-      const response = await axios.get<Blob>(`${API_URL}/fileDown/${fileId}`, {
-        responseType: 'blob'
-      });
-      return response.data;
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
-
   private handleError(error: unknown): Error {
     const err = error as any;
     if (err.response) {

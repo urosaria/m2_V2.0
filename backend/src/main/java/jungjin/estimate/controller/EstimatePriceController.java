@@ -39,15 +39,6 @@ public class EstimatePriceController {
         return ResponseEntity.ok(estimatePriceService.getPriceById(id));
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity<Price> searchPrice(
-//            @RequestParam String gubun,
-//            @RequestParam String subGubun,
-//            @RequestParam String type,
-//            @RequestParam String subType) {
-//        return ResponseEntity.ok(estimatePriceService.showPrice(gubun, subGubun, type, subType));
-//    }
-
     @PostMapping
     public ResponseEntity<Price> createPrice(@Valid @RequestBody EstimatePriceRequestDTO requestDTO) {
         Price createdPrice = estimatePriceService.createPrice(requestDTO);

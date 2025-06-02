@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Pagination, CircularProgress, Alert, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import AddIcon from '@mui/icons-material/Add';
+import { Box, Grid, Pagination, CircularProgress, Alert } from '@mui/material';
 import { Picture } from '../../types/picture';
 import { pictureService } from '../../services/pictureService';
+import { fileService } from '../../services/fileService';
+import { useSnackbar } from '../../context/SnackbarContext';
 import PictureItem from './PictureItem';
-import PageLayout from '../common/PageLayout';
-
-interface PictureListProps {
-  onSelectPicture?: (picture: Picture) => void;
-  onEditPicture?: (picture: Picture) => void;
-  onDeletePicture?: (picture: Picture) => void;
-}
 
 const PictureList: React.FC = () => {
-  const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
   const [pictures, setPictures] = useState<Picture[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -78,10 +71,14 @@ const PictureList: React.FC = () => {
   const handleDownload = async (picture: Picture) => {
     try {
       if (picture.files && picture.files.length > 0) {
-        await pictureService.downloadFile(picture.files[0].id);
+        const file = picture.files[0];
+        await fileService.downloadFile({
+          path: file.path,
+          name: file.oriName
+        });
       }
     } catch (error) {
-      setError('파일 다운로드 중 오류가 발생했습니다.');
+      showSnackbar('파일 다운로드에 실패했습니다.', 'error');
       console.error('Error downloading picture:', error);
     }
   };
