@@ -2,10 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Container,
-  Typography,
-  Button,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -20,10 +16,9 @@ import {
   Pagination,
   useTheme,
   alpha,
+  Button,
+  Typography,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import ViewListIcon from '@mui/icons-material/ViewList';
 
 import { estimateService } from '../../services/estimateService';
 import { getCityLabel } from '../../types/estimate';
@@ -37,12 +32,17 @@ import typeIconSL from '../../assets/images/m2/cal/typeIconSL.png';
 import EstimateListActionButtons from './button/EstimateListActionButtonsProps';
 import { useSnackbar } from '../../context/SnackbarContext';
 
-const EstimateList: React.FC = () => {
+interface EstimateListProps {
+  viewMode: 'card' | 'list';
+  onViewModeChange: (mode: 'card' | 'list') => void;
+}
+
+const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedEstimateId, setSelectedEstimateId] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
+
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [estimates, setEstimates] = useState<FrontendStructure[]>([]);
@@ -135,7 +135,7 @@ const EstimateList: React.FC = () => {
   };
 
   const toggleViewMode = () => {
-    setViewMode((prev) => (prev === 'card' ? 'list' : 'card'));
+    onViewModeChange(viewMode === 'card' ? 'list' : 'card');
   };
 
   const formatAmount = (amount: number) =>
@@ -185,12 +185,11 @@ const EstimateList: React.FC = () => {
       {estimates.map((estimate, index) => (
         <Grid item xs={12} sm={6} md={4} key={index} onClick={() => handleEstimateClick(estimate.id || 0)}>
           <Card
+            key={estimate.id}
             sx={{
               height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
               cursor: 'pointer',
-              '&:hover': { boxShadow: 6 }
+              '&:hover': { bgcolor: 'grey.100' }
             }}
           >
             <CardMedia
@@ -242,14 +241,20 @@ const EstimateList: React.FC = () => {
           key={estimate.id}
           sx={{
             display: 'flex',
-            flexDirection: 'column',
+            alignItems: 'center',
             p: 2,
             mb: 2,
-            borderRadius: 2,
+            borderRadius: 1,
             border: '1px solid',
             borderColor: 'divider',
-            bgcolor: 'background.paper',
-            '&:hover': { bgcolor: 'grey.100' }
+            cursor: 'pointer',
+            transition: (theme) => theme.transitions.create(['border-color', 'background-color'], {
+              duration: theme.transitions.duration.shorter
+            }),
+            '&:hover': {
+              bgcolor: 'action.hover',
+              borderColor: 'primary.main'
+            }
           }}
         >
           <Box
@@ -265,37 +270,64 @@ const EstimateList: React.FC = () => {
               component="img"
               image={getTypeIcon(estimate.structureType)}
               alt={estimate.structureType}
-              sx={{ width: 64, height: 64, objectFit: 'contain', mr: 2 }}
-            />
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="subtitle1" fontWeight={600} noWrap>
-                [{getCityLabel(String(estimate.cityName))}] {estimate.placeName}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {formatDate(estimate.createdAt)}
-              </Typography>
-            </Box>
-            <Typography
-              variant="body1"
-              sx={{ color: 'primary.main', fontWeight: 600, mr: 2, whiteSpace: 'nowrap' }}
-            >
-              {formatAmount(estimate.totalAmount || 0)}
-            </Typography>
-            <Chip
-              label={getStatusText(estimate.status)}
-              size="small"
-              sx={{
-                bgcolor: alpha(getStatusColor(estimate.status), 0.1),
-                color: getStatusColor(estimate.status),
-                fontWeight: 500,
-                mr: 1,
-                whiteSpace: 'nowrap'
+              sx={{ 
+                width: 56,
+                height: 56,
+                objectFit: 'contain',
+                mr: 2,
+                p: 1,
+                borderRadius: 1,
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05)
               }}
             />
+            <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography variant="subtitle1" fontWeight={600} noWrap>
+                  [{getCityLabel(String(estimate.cityName))}] {estimate.placeName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {formatDate(estimate.createdAt)}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2 }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: 'primary.main',
+                    fontWeight: 600,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {formatAmount(estimate.totalAmount || 0)}
+                </Typography>
+                <Chip
+                  label={getStatusText(estimate.status)}
+                  size="small"
+                  sx={{
+                    bgcolor: alpha(getStatusColor(estimate.status), 0.1),
+                    color: getStatusColor(estimate.status),
+                    fontWeight: 500,
+                    whiteSpace: 'nowrap'
+                  }}
+                />
+              </Box>
+            </Box>
           </Box>
 
-          {/* Action Buttons on next line */}
-          <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 0.5 }}>
+          <Box 
+            sx={{ 
+              ml: 'auto', 
+              display: 'flex', 
+              gap: 1,
+              opacity: 0,
+              transition: (theme) => theme.transitions.create('opacity', {
+                duration: theme.transitions.duration.shorter
+              }),
+              '.MuiBox-root:hover > &': {
+                opacity: 1
+              }
+            }}
+          >
             <EstimateListActionButtons
               estimateId={estimate.id || 0}
               onView={(id, e) => { e.stopPropagation(); handleEstimateClick(id); }}
@@ -310,26 +342,13 @@ const EstimateList: React.FC = () => {
   );
 
   return (
-    <Box sx={{ py: { xs: 2, sm: 3 }, bgcolor: 'background.default', minHeight: '100vh' }}>
-      <Container maxWidth="lg">
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-          <Typography variant="h4" component="h1">
-            견적서 목록
-          </Typography>
-          <Box>
-            <IconButton onClick={toggleViewMode} sx={{ mr: 1 }}>
-              {viewMode === 'card' ? <ViewListIcon /> : <ViewModuleIcon />}
-            </IconButton>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddEstimate}>
-              새 견적서
-            </Button>
-          </Box>
-        </Box>
+    <Box>
 
+      <CardContent>
         {loading ? (
           <Grid container spacing={3}>
             {[...Array(6)].map((_, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}> {/* Add the item prop */}
+              <Grid item xs={12} sm={6} md={4} key={index}>
                 <Card
                   sx={{
                     height: '100%',
@@ -362,22 +381,22 @@ const EstimateList: React.FC = () => {
             />
           </Box>
         )}
+      </CardContent>
 
-        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-          <DialogTitle>견적서 삭제</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              이 견적서를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDeleteDialogOpen(false)}>취소</Button>
-            <Button onClick={handleDelete} color="error" autoFocus>
-              삭제
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>견적서 삭제</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            이 견적서를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>취소</Button>
+          <Button onClick={handleDelete} color="error" autoFocus>
+            삭제
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

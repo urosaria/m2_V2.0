@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Container,
   Typography,
-  Card,
-  CardContent,
   Button,
   Divider,
   Link,
+  CircularProgress,
+  Stack,
+  Paper,
+  Box,
+  IconButton,
 } from '@mui/material';
+import {
+  Edit as EditIcon,
+  ArrowBack as ArrowBackIcon,
+  Download as DownloadIcon,
+} from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { formatDate } from '../../utils/dateUtils';
 import { boardService, BoardPost, FileItem } from '../../services/boardService';
+import PageLayout from '../common/PageLayout';
+import {
+  CenteredBox,
+} from './styles/BoardStyles';
 
 const BoardShow: React.FC = () => {
-  const { postId } = useParams<{ postId: string }>();
+  const { boardId, postId } = useParams<{ boardId: string; postId: string }>();
   const [post, setPost] = useState<BoardPost | null>(null);
   const navigate = useNavigate();
 
@@ -26,92 +36,121 @@ const BoardShow: React.FC = () => {
         setPost(data);
       } catch (error) {
         console.error('Error fetching post:', error);
+        navigate(`/boards/${boardId}`);
       }
     };
 
     fetchPost();
-  }, [postId]);
+  }, [postId, boardId, navigate]);
+
+  const handleDownload = async (file: FileItem) => {
+    try {
+      window.open(`${process.env.REACT_APP_API_BASE_URL}/api/board/download/${file.id}`);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    }
+  };
 
   if (!post) {
-    return null;
+    return (
+      <PageLayout title="게시글 조회" description="">
+        <CenteredBox>
+          <CircularProgress />
+        </CenteredBox>
+      </PageLayout>
+    );
   }
 
   return (
-    <Container maxWidth="lg">
-      <Card elevation={0}>
-        <Box
-          sx={{
-            p: 3,
-            borderBottom: theme => `1px solid ${theme.palette.divider}`
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            {post.title}
-          </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 2,
-              color: 'text.secondary'
-            }}
-          >
-            <Typography variant="body2">{post.userName}</Typography>
-            <Typography variant="body2">{formatDate(post.createDate)}</Typography>
-          </Box>
-        </Box>
-
-        <CardContent>
-          {post.files && post.files.length > 0 && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" gutterBottom>
-                첨부파일
-              </Typography>
-              {post.files.map((file: FileItem) => (
-                <Link
-                  key={file.id}
-                  href={`${process.env.REACT_APP_API_BASE_URL}/api/board/download/${file.id}`}
-                  sx={{ display: 'block', mb: 0.5 }}
-                >
-                  {file.oriName}
-                </Link>
-              ))}
-              <Divider sx={{ my: 2 }} />
-            </Box>
-          )}
-
-          <Typography
-            variant="body1"
-            component="div"
-            sx={{ whiteSpace: 'pre-wrap' }}
-          >
-            {post.contents}
-          </Typography>
-        </CardContent>
-
-        <Box
-          sx={{
-            p: 3,
-            borderTop: theme => `1px solid ${theme.palette.divider}`,
-            display: 'flex',
-            justifyContent: 'center',
-            gap: 2
-          }}
-        >
+    <PageLayout
+      title={post.title}
+      description={`작성자: ${post.user?.name || '익명'} | 작성일: ${formatDate(post.createDate)}`}
+      actions={
+        <Stack direction="row" spacing={1} alignItems="center">
           <Button
-            variant="contained"
-            onClick={() => navigate(`/board/${post.boardMaster.id}`)}
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(`/boards/${boardId}`)}
           >
             목록
           </Button>
           <Button
-            variant="outlined"
-            onClick={() => navigate(`/board/edit/${postId}`)}
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={() => navigate(`/boards/${boardId}/posts/${postId}/edit`)}
           >
             수정
           </Button>
+        </Stack>
+      }
+    >
+      <Paper 
+        elevation={1} 
+        sx={{ 
+          p: 3,
+          borderRadius: 1,
+          bgcolor: 'background.paper'
+        }}
+      >
+        <Box>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              whiteSpace: 'pre-wrap',
+              lineHeight: 1.7
+            }}
+          >
+            {post.contents}
+          </Typography>
+
+          {post.files && post.files.length > 0 && (
+            <Paper 
+              variant="outlined" 
+              sx={{ 
+                mt: 3, 
+                p: 2, 
+                bgcolor: 'background.default' 
+              }}
+            >
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                첨부파일
+              </Typography>
+              <Stack spacing={1}>
+                {post.files.map((file) => (
+                  <Box
+                    key={file.id}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      p: 1,
+                      bgcolor: 'background.paper',
+                      borderRadius: 1,
+                      border: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    <Typography variant="body2">
+                      {file.oriName}
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                        {Math.round((file.size || 0) / 1024)} KB
+                      </Typography>
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDownload(file)}
+                      sx={{ color: 'primary.main' }}
+                    >
+                      <DownloadIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                ))}
+              </Stack>
+            </Paper>
+          )}
         </Box>
-      </Card>
-    </Container>
+      </Paper>
+    </PageLayout>
   );
 };
 

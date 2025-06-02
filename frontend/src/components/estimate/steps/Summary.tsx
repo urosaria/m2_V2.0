@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Stack, Button, Box } from '@mui/material';
+import { Container, Stack, Button, Box, Paper } from '@mui/material';
 import { FrontendStructure } from '../../../types/estimate';
 import PanelTable from './summary/PanelTable';
 import DoorWindowTable from './summary/DoorWindowTable';
@@ -22,7 +22,7 @@ const Summary: React.FC<SummaryProps> = ({ structure }) => {
   };
 
   return (
-  <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 4, sm: 6 }, px: { xs: 2, sm: 3 }, overflowX: 'hidden' }}>
+  <Container maxWidth="lg" sx={{ overflowX: 'hidden' }}>
     <Stack spacing={{ xs: 3, sm: 4 }}>
       {/* 판넬공사 테이블 */}
       {panelItems.length > 0 && <PanelTable items={panelItems} />}
@@ -40,17 +40,23 @@ const Summary: React.FC<SummaryProps> = ({ structure }) => {
       <GuideNotes />
       
       {/* 엑셀 다운로드 */}
-      <Box sx={{ pt: { xs: 1, sm: 2 } }}>
+      <Box sx={{ pt: { xs: 2, sm: 3 } }}>
         <Button
-            variant="contained"
-            size="large"
-            onClick={handleExcelDownload}
-            fullWidth
+          variant="contained"
+          size="large"
+          onClick={handleExcelDownload}
+          sx={{
+            py: 1.5,
+            bgcolor: 'primary.main',
+            '&:hover': {
+              bgcolor: 'primary.dark'
+            }
+          }}
+          fullWidth
         >
           엑셀 다운로드
         </Button>
       </Box>
-
     </Stack>
   </Container>
   );

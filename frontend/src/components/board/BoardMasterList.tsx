@@ -1,17 +1,22 @@
 import React from 'react';
 import {
-  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
-  IconButton,
-  TablePagination
+  TablePagination,
+  Skeleton,
+  Link,
+  Tooltip
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { BoardMaster } from '../../services/boardMasterService';
+import {
+  StyledTableContainer,
+  StyledTableHead,
+  ActionButton
+} from './styles/BoardStyles';
 
 interface BoardMasterListProps {
   boards: BoardMaster[];
@@ -26,6 +31,8 @@ interface BoardMasterListProps {
   onDelete: (board: BoardMaster) => void;
   onBoardClick: (board: BoardMaster) => void;
 }
+
+
 
 const BoardMasterList: React.FC<BoardMasterListProps> = ({
   boards,
@@ -42,9 +49,10 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
 }) => {
   return (
     <>
-      <TableContainer component={Paper}>
+      <StyledTableContainer>
+        <TableContainer>
         <Table>
-          <TableHead>
+          <StyledTableHead>
             <TableRow>
               <TableCell>이름</TableCell>
               <TableCell>게시판 유형</TableCell>
@@ -52,12 +60,19 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
               <TableCell>상태</TableCell>
               <TableCell align="center">작업</TableCell>
             </TableRow>
-          </TableHead>
+          </StyledTableHead>
           <TableBody>
             {loading ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
-                  데이터를 불러오는 중...
+                  {[...Array(3)].map((_, index) => (
+                    <Skeleton
+                      key={index}
+                      variant="rectangular"
+                      height={40}
+                      sx={{ my: 1, mx: 'auto', maxWidth: '80%' }}
+                    />
+                  ))}
                 </TableCell>
               </TableRow>
             ) : error ? (
@@ -76,12 +91,17 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
               boards.map((board) => (
                 <TableRow key={board.id}>
                   <TableCell>
-                    <span
+                    <Link
+                      component="button"
+                      variant="body2"
                       onClick={() => onBoardClick(board)}
-                      style={{ cursor: 'pointer', color: '#1976d2', textDecoration: 'underline' }}
+                      sx={{
+                        textDecoration: 'none',
+                        '&:hover': { textDecoration: 'underline' },
+                      }}
                     >
                       {board.name}
-                    </span>
+                    </Link>
                   </TableCell>
                   <TableCell>
                     {board.skinName === 'notice' && '공지사항'}
@@ -91,27 +111,32 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
                   <TableCell>{board.replyYn === 'Y' ? '가능' : '불가능'}</TableCell>
                   <TableCell>{board.status === 'S' ? '사용' : '삭제'}</TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      onClick={() => onEdit(board)}
-                      color="primary"
-                      size="small"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => onDelete(board)}
-                      color="error"
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    <Tooltip title="수정">
+                      <ActionButton
+                        onClick={() => onEdit(board)}
+                        color="primary"
+                        size="small"
+                      >
+                        <EditIcon />
+                      </ActionButton>
+                    </Tooltip>
+                    <Tooltip title="삭제">
+                      <ActionButton
+                        onClick={() => onDelete(board)}
+                        color="error"
+                        size="small"
+                      >
+                        <DeleteIcon />
+                      </ActionButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
-      </TableContainer>
+        </TableContainer>
+      </StyledTableContainer>
 
       <TablePagination
         component="div"
@@ -121,6 +146,11 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
+        sx={{
+          '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+            margin: 0,
+          },
+        }}
       />
     </>
   );

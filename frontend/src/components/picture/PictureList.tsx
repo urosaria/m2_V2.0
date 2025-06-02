@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Pagination, CircularProgress, Alert, Dialog, Button } from '@mui/material';
+import { Box, Grid, Typography, Pagination, CircularProgress, Alert, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import { Picture } from '../../types/picture';
 import { pictureService } from '../../services/pictureService';
 import PictureItem from './PictureItem';
+import PageLayout from '../common/PageLayout';
 
 interface PictureListProps {
   onSelectPicture?: (picture: Picture) => void;
@@ -60,14 +60,6 @@ const PictureList: React.FC = () => {
     );
   }
 
-  const handleView = (picture: Picture) => {
-    navigate(`/picture/${picture.id}`);
-  };
-
-  const handleEdit = (picture: Picture) => {
-    navigate(`/picture/edit/${picture.id}`);
-  };
-
   const handleDelete = async (picture: Picture) => {
     if (window.confirm('정말로 이 간이투시도를 삭제하시겠습니까?')) {
       try {
@@ -95,31 +87,31 @@ const PictureList: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to="/picture/register"
-          startIcon={<AddIcon />}
-        >
-          간이투시도 신청
-        </Button>
-      </Box>
-      <Grid container spacing={2}>
+    <Box>
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
         {pictures.map((picture) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={picture.id}>
             <PictureItem
               picture={picture}
-              onSelect={handleView}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
               onDownload={handleDownload}
+              onDelete={handleDelete}
             />
           </Grid>
         ))}
-      </Grid>
+        </Grid>
+      )}
+
       <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
         <Pagination
           count={totalPages}

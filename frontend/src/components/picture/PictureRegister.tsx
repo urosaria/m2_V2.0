@@ -1,22 +1,29 @@
 import React, { useState, useRef } from 'react';
 import {
-  Container,
   Box,
   Typography,
-  TextField,
   Button,
-  Paper,
+  TextField,
   Alert,
   List,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
+  Grid,
+  CircularProgress,
   Divider,
+  Stack
 } from '@mui/material';
-import { Delete as DeleteIcon, Info as InfoIcon } from '@mui/icons-material';
+import {
+  Delete as DeleteIcon,
+  Info as InfoIcon,
+  Save as SaveIcon,
+  ArrowBack as ArrowBackIcon,
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { pictureService } from '../../services/pictureService';
+import PageLayout from '../common/PageLayout';
 
 interface FileItem {
   file: File;
@@ -29,6 +36,7 @@ const PictureRegister: React.FC = () => {
   const [etc, setEtc] = useState('');
   const [files, setFiles] = useState<FileItem[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +51,7 @@ const PictureRegister: React.FC = () => {
     setFiles(files.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.MouseEvent) => {
     event.preventDefault();
     
     if (!name.trim()) {
@@ -56,6 +64,7 @@ const PictureRegister: React.FC = () => {
       return;
     }
 
+    setLoading(true);
     try {
       await pictureService.createPicture(
         { 
@@ -69,60 +78,98 @@ const PictureRegister: React.FC = () => {
     } catch (error) {
       setError('간이투시도 신청 중 오류가 발생했습니다.');
       console.error('Error creating picture:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ py: 4 }}>
-        <Paper sx={{ p: 3, mb: 3 }} elevation={0}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <InfoIcon color="info" sx={{ mr: 1 }} />
-            <Typography variant="body1" color="text.secondary">
-              간이투시도 제작 비용은 건물의 규모와 관계 없이 200,000원으로 동일합니다.
-              신청 및 결제 후 간이투시도 완료까지 최소 4~7일 이상 소요됩니다.
-            </Typography>
-          </Box>
-        </Paper>
+    <PageLayout
+      title="간이투시도 신청"
+      description="간이투시도를 신청하세요"
+      actions={
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            취소
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<SaveIcon />}
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            신청
+          </Button>
+        </Stack>
+      }
+    >
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      ) : (
+        <Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.default',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'divider'
+                }}
+              >
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  제목 <Box component="span" color="error.main">*</Box>
+                </Typography>
+                <TextField
+                  fullWidth
+                  required
+                  placeholder="제목을 입력해주세요"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  size="small"
+                />
+              </Box>
+            </Grid>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              제목 <Box component="span" color="error.main">*</Box>
-            </Typography>
-            <TextField
-              fullWidth
-              required
-              placeholder="제목을 입력해주세요"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </Box>
-
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              도면 <Box component="span" color="error.main">*</Box>
-            </Typography>
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-              multiple
-            />
-            <Button
-              variant="outlined"
-              onClick={() => fileInputRef.current?.click()}
-              sx={{ mb: 2 }}
-            >
-              파일선택
-            </Button>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.default',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'divider'
+                }}
+              >
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  도면 <Box component="span" color="error.main">*</Box>
+                </Typography>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                  multiple
+                />
+                <Button
+                  variant="outlined"
+                  onClick={() => fileInputRef.current?.click()}
+                  size="small"
+                  sx={{ mb: 2 }}
+                >
+                  파일선택
+                </Button>
             
             {files.length > 0 && (
               <List>
@@ -141,40 +188,37 @@ const PictureRegister: React.FC = () => {
                 ))}
               </List>
             )}
-          </Box>
+              </Box>
+            </Grid>
 
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              요청사항
-            </Typography>
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              placeholder="제작 시 간략한 요청사항 입력"
-              value={etc}
-              onChange={(e) => setEtc(e.target.value)}
-            />
-          </Box>
-
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-            <Button
-              variant="outlined"
-              onClick={() => navigate('/picture')}
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: 'background.default',
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: 'divider'
+              }}
             >
-              취소
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
-              신청
-            </Button>
-          </Box>
-        </form>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                요청내용
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                placeholder="요청내용을 입력해주세요"
+                value={etc}
+                onChange={(e) => setEtc(e.target.value)}
+                size="small"
+              />
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
-    </Container>
+    )}
+  </PageLayout>
   );
 };
 

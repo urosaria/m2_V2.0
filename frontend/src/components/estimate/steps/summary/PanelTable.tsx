@@ -13,41 +13,74 @@ const PanelTable: React.FC<PanelTableProps> = ({ items }) => {
   if (filtered.length === 0) return null;
 
   return (
-    <Paper elevation={2} sx={{ width: '100%' }}>
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom>
+    <Paper 
+      elevation={0} 
+      sx={{ 
+        width: '100%',
+        bgcolor: 'background.paper',
+        borderRadius: 1,
+        border: '1px solid',
+        borderColor: 'divider'
+      }}
+    >
+      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
           패널 공사
         </Typography>
       </Box>
       <Box sx={{ overflowX: 'auto', width: '100%' }}>
         <Table size="small" sx={{ minWidth: '500px' }}>
-    <TableHead>
-          <TableRow>
-            <TableCell>품명</TableCell>
-            <TableCell>규격</TableCell>
-            <TableCell>단위</TableCell>
-            <TableCell>수량</TableCell>
-            <TableCell align="right">금액</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {filtered.map((item, i) => (
-            <TableRow key={i}>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.standard}</TableCell>
-              <TableCell>{item.unit}</TableCell>
-              <TableCell>{item.amount}</TableCell>
-              <TableCell align="right">{item.total?.toLocaleString()}</TableCell>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600, py: 1.5 }}>품명</TableCell>
+              <TableCell sx={{ fontWeight: 600, py: 1.5 }}>규격</TableCell>
+              <TableCell sx={{ fontWeight: 600, py: 1.5 }}>단위</TableCell>
+              <TableCell sx={{ fontWeight: 600, py: 1.5 }}>수량</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, py: 1.5 }}>금액</TableCell>
             </TableRow>
-          ))}
-          <TableRow>
-            <TableCell colSpan={4} align="right">소계</TableCell>
-            <TableCell align="right">{subtotal.toLocaleString()}</TableCell>
-          </TableRow>
-        </TableBody>
-    </Table>
-  </Box>
-</Paper>  );
+          </TableHead>
+          <TableBody>
+            {filtered.map((item, i) => (
+              <TableRow key={i}>
+                <TableCell sx={{ py: 1.5 }}>{item.name}</TableCell>
+                <TableCell sx={{ py: 1.5 }}>{item.standard}</TableCell>
+                <TableCell sx={{ py: 1.5 }}>{item.unit}</TableCell>
+                <TableCell sx={{ py: 1.5 }}>{item.amount}</TableCell>
+                <TableCell align="right" sx={{ py: 1.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    {item.total?.toLocaleString()}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ))}
+            <TableRow>
+              <TableCell 
+                colSpan={4} 
+                align="right" 
+                sx={{ 
+                  py: 2,
+                  bgcolor: 'background.default',
+                  fontWeight: 600
+                }}
+              >
+                소계
+              </TableCell>
+              <TableCell 
+                align="right" 
+                sx={{ 
+                  py: 2,
+                  bgcolor: 'background.default'
+                }}
+              >
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                  {subtotal.toLocaleString()}
+                </Typography>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Box>
+    </Paper>  );
 };
 
 export default PanelTable;

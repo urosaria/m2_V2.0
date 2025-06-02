@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -17,6 +17,7 @@ import {
   Checkbox,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import logo from '../assets/images/m2/logo.png';
 
 interface LoginFormData {
   email: string;
@@ -73,9 +74,9 @@ const Login: React.FC = () => {
         <StyledPaper elevation={24}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <img
-              src="/images/m2/common/logo.png"
+              src={logo}
               alt="M2"
-              style={{ height: '40px', marginBottom: '16px' }}
+              style={{ width: '200px', marginBottom: '16px' }}
             />
             <Typography variant="h4" gutterBottom fontWeight="500">
               환영합니다
@@ -136,7 +137,8 @@ const Login: React.FC = () => {
                   label="로그인 유지"
                 />
                 <Link
-                  href="#"
+                  component={RouterLink}
+                  to="/user/password-reset"
                   variant="body2"
                   sx={{ textDecoration: 'none' }}
                 >
@@ -163,7 +165,8 @@ const Login: React.FC = () => {
                   계정이 없으신가요?
                 </Typography>
                 <Link
-                  href="/register"
+                  component={RouterLink}
+                  to="/user/register"
                   variant="body2"
                   sx={{ textDecoration: 'none' }}
                 >

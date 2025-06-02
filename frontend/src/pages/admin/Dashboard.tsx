@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Container,
   Grid,
   Paper,
   Typography,
   useTheme,
-  useMediaQuery,
   Alert,
+  Skeleton,
+  styled,
 } from '@mui/material';
 import {
   Calculate as CalculateIcon,
@@ -18,6 +18,7 @@ import {
 } from '@mui/icons-material';
 import { DashboardData } from '../../types/dashboard';
 import { dashboardService } from '../../services/dashboardService';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
 
 interface StatCardProps {
   title: string;
@@ -27,18 +28,37 @@ interface StatCardProps {
   color: string;
 }
 
+const StyledStatCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  height: '100%',
+  borderRadius: theme.shape.borderRadius * 2,
+  display: 'flex',
+  flexDirection: 'column',
+  position: 'relative',
+  overflow: 'hidden',
+  transition: theme.transitions.create(['box-shadow', 'transform'], {
+    duration: theme.transitions.duration.short,
+  }),
+  '&:hover': {
+    transform: 'translateY(-4px)',
+    boxShadow: theme.shadows[4],
+  },
+}));
+
+const StatIcon = styled(Box)(({ theme }) => ({
+  borderRadius: '50%',
+  padding: theme.spacing(1),
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginRight: theme.spacing(2),
+}));
+
 const StatCard: React.FC<StatCardProps> = ({ title, total, today, icon, color }) => {
   return (
-    <Paper
+    <StyledStatCard
       elevation={1}
       sx={{
-        p: 3,
-        height: '100%',
-        borderRadius: 2,
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        overflow: 'hidden',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -51,21 +71,11 @@ const StatCard: React.FC<StatCardProps> = ({ title, total, today, icon, color })
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Box
-          sx={{
-            backgroundColor: `${color}15`,
-            borderRadius: '50%',
-            p: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mr: 2,
-          }}
-        >
-          {React.cloneElement(icon as React.ReactElement, {
+        <StatIcon sx={{ backgroundColor: `${color}15` }}>
+          {React.cloneElement(icon as React.ReactElement<any>, {
             sx: { color: color, fontSize: 24 },
           })}
-        </Box>
+        </StatIcon>
         <Typography variant="h6" component="h2">
           {title}
         </Typography>
@@ -85,7 +95,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, total, today, icon, color })
             : `${today.toLocaleString()}건`}
         </Typography>
       </Box>
-    </Paper>
+    </StyledStatCard>
   );
 };
 
@@ -94,7 +104,6 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -115,19 +124,30 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
-        <Box sx={{ py: 4, textAlign: 'center' }}>Loading...</Box>
-      </Container>
+      <AdminPageLayout
+        title="대시보드"
+        description="실시간 서비스 현황 및 통계"
+      >
+        <Grid container spacing={3}>
+          {[1, 2, 3, 4].map((index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Skeleton
+                variant="rectangular"
+                height={160}
+                sx={{ borderRadius: 2 }}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </AdminPageLayout>
     );
   }
 
   if (!data) {
     return (
-      <Container maxWidth="lg">
-        <Box sx={{ py: 4 }}>
-          <Alert severity="error">데이터를 불러올 수 없습니다.</Alert>
-        </Box>
-      </Container>
+      <AdminPageLayout title="대시보드">
+        <Alert severity="error">데이터를 불러올 수 없습니다.</Alert>
+      </AdminPageLayout>
     );
   }
 
@@ -173,27 +193,24 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          대시보드
-        </Typography>
+    <AdminPageLayout
+      title="대시보드"
+      description="실시간 서비스 현황 및 통계"
+    >
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
-
-        <Grid container spacing={3}>
-          {stats.map((stat) => (
-            <Grid item xs={12} sm={6} md={4} key={stat.title}>
-              <StatCard {...stat} />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-    </Container>
+      <Grid container spacing={3}>
+        {stats.map((stat) => (
+          <Grid item xs={12} sm={6} md={4} key={stat.title}>
+            <StatCard {...stat} />
+          </Grid>
+        ))}
+      </Grid>
+    </AdminPageLayout>
   );
 };
 

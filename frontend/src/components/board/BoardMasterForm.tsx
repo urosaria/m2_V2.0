@@ -10,10 +10,10 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Box,
   SelectChangeEvent
 } from '@mui/material';
 import { BoardMaster } from '../../services/boardMasterService';
+import { FlexColumnBox } from './styles/BoardStyles';
 
 const BOARD_TYPES = [
   { value: 'notice', label: '공지사항' },
@@ -57,7 +57,7 @@ const BoardMasterForm: React.FC<BoardMasterFormProps> = ({
         {selectedBoard ? '게시판 수정' : '게시판 추가'}
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <FlexColumnBox sx={{ pt: 2 }}>
           <TextField
             autoFocus
             margin="dense"
@@ -110,7 +110,7 @@ const BoardMasterForm: React.FC<BoardMasterFormProps> = ({
               <MenuItem value="D">삭제</MenuItem>
             </Select>
           </FormControl>
-        </Box>
+        </FlexColumnBox>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>취소</Button>

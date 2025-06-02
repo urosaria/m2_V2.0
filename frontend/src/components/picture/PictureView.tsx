@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Container,
   Box,
   Typography,
-  Paper,
   Chip,
   Grid,
   Alert,
   Button,
-  Divider,
+  CircularProgress,
+  Stack
 } from '@mui/material';
-import { Download as DownloadIcon } from '@mui/icons-material';
-import FileAttachment from '../common/FileAttachment';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Download as DownloadIcon,
+} from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Picture } from '../../types/picture';
 import { pictureService } from '../../services/pictureService';
 import { getPictureStatusInfo } from '../../utils/pictureUtils';
+import PageLayout from '../common/PageLayout';
 
 const PictureView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
   const [picture, setPicture] = useState<Picture | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [files, setFiles] = useState<File[]>([]);
 
   React.useEffect(() => {
     const fetchPicture = async () => {
@@ -43,172 +45,243 @@ const PictureView: React.FC = () => {
     fetchPicture();
   }, [id]);
 
-
-  if (loading) {
-    return (
-      <Container maxWidth="md">
-        <Box sx={{ py: 4, textAlign: 'center' }}>Loading...</Box>
-      </Container>
-    );
-  }
-
-  if (!picture) {
-    return (
-      <Container maxWidth="md">
-        <Box sx={{ py: 4 }}>
-          <Alert severity="error">간이투시도를 찾을 수 없습니다.</Alert>
-        </Box>
-      </Container>
-    );
-  }
-
-  const statusInfo = getPictureStatusInfo(picture.status);
+  const handleDeleteClick = async () => {
+    if (window.confirm('정말로 이 간이투시도를 삭제하시겠습니까?')) {
+      try {
+        if (!id) return;
+        await pictureService.deletePicture(parseInt(id));
+        navigate('/picture');
+      } catch (error) {
+        console.error('Error deleting picture:', error);
+      }
+    }
+  };
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ py: 4 }}>
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
+    <PageLayout
+      title="간이투시도 상세"
+      description={picture?.name || ''}
+      actions={
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            이전
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={() => navigate(`/picture/edit/${id}`)}
+          >
+            수정
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={handleDeleteClick}
+          >
+            삭제
+          </Button>
+        </Stack>
+      }
+    >
+      {loading ? (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: 'calc(100vh - 200px)',
+            py: 4
+          }}
+        >
+          <CircularProgress size={40} thickness={4} />
+        </Box>
+      ) : error ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            p: { xs: 2, sm: 3 }
+          }}
+        >
+          <Alert
+            severity="error"
+            sx={{
+              width: '100%',
+              '& .MuiAlert-message': {
+                width: '100%'
+              }
+            }}
+          >
+            {error || '간이투시도를 찾을 수 없습니다.'}
           </Alert>
-        )}
-
-        <Paper sx={{ p: 3, mb: 3 }} elevation={1}>
-          <Box sx={{ mb: 3 }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item>
+        </Box>
+      ) : picture && (
+        <Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.default',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  flexWrap: 'wrap'
+                }}
+              >
                 <Chip
-                  label={statusInfo.label}
-                  color={statusInfo.color as 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'}
-                  size="medium"
+                  label={getPictureStatusInfo(picture.status).label}
+                  color={getPictureStatusInfo(picture.status).color as any}
+                  size="small"
+                  sx={{ fontWeight: 600 }}
                 />
-              </Grid>
-              <Grid item xs>
-                <Typography variant="h5" component="h1">
-                  {picture.name}
-                </Typography>
-              </Grid>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      요청일: {new Date(picture.createDate).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                  {picture.status === 'S4' && (
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        완료일: {picture.modifiedDate ? new Date(picture.modifiedDate).toLocaleDateString() : '-'}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
             </Grid>
-          </Box>
 
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="body1" color="text.secondary" gutterBottom>
-              작성일: {new Date(picture.createDate).toLocaleDateString()}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              신청자: {picture.userName} / {picture.userPhone} / {picture.userEmail}
-            </Typography>
-          </Box>
-
-          {picture.etc && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle1" gutterBottom>
-                요청사항
-              </Typography>
-              <Typography variant="body1">
-                {picture.etc}
-              </Typography>
-            </Box>
-          )}
-
-          <Divider sx={{ my: 3 }} />
-
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              요청 도면
-            </Typography>
-            {picture.files && picture.files.length > 0 ? (
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {picture.files.map((file) => (
-                  <Button
-                    key={file.id}
-                    variant="outlined"
-                    size="small"
-                    startIcon={<DownloadIcon />}
-                    onClick={() => pictureService.downloadFile(file.id)}
-                  >
-                    {file.oriName}
-                  </Button>
-                ))}
-              </Box>
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                업로드된 파일이 없습니다.
-              </Typography>
-            )}
-          </Box>
-
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              간이투시도
-            </Typography>
-            {picture.adminFiles && picture.adminFiles.length > 0 ? (
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {picture.adminFiles.map((file) => (
-                  <Button
-                    key={file.id}
-                    variant="outlined"
-                    size="small"
-                    startIcon={<DownloadIcon />}
-                    onClick={() => pictureService.downloadFile(file.id)}
-                  >
-                    {file.oriName}
-                  </Button>
-                ))}
-              </Box>
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                등록된 파일이 없습니다.
-              </Typography>
-            )}
-          </Box>
-
-          <Divider sx={{ my: 3 }} />
-
-          <Box sx={{ mb: 3 }}>
-            <FileAttachment
-              files={files}
-              onFilesChange={setFiles}
-              title="간이투시도 파일 업로드"
-              accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx"
-            />
-            {files.length > 0 && (
-              <Box sx={{ mt: 2 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={async () => {
-                    try {
-                      await pictureService.uploadAdminFiles(picture.id, files);
-                      const updated = await pictureService.getPictureById(picture.id);
-                      setPicture(updated);
-                      setFiles([]);
-                      setError(null);
-                    } catch (err) {
-                      setError('파일 업로드에 실패했습니다.');
-                      console.error('Error uploading files:', err);
-                    }
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.default',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'divider'
+                }}
+              >
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  요청내용
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    lineHeight: 1.7
                   }}
                 >
-                  업로드
-                </Button>
+                  {picture.description || '없음'}
+                </Typography>
               </Box>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.default',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'divider'
+                }}
+              >
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  첨부파일
+                </Typography>
+                <Stack spacing={1}>
+                  {picture.files?.map((file) => (
+                    <Box
+                      key={file.id}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        p: 1,
+                        bgcolor: 'background.paper',
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'divider'
+                      }}
+                    >
+                      <Button
+                        variant="text"
+                        size="small"
+                        startIcon={<DownloadIcon color="primary" fontSize="small" />}
+                        onClick={() => pictureService.downloadFile(file.id)}
+                        sx={{ color: 'text.primary' }}
+                      >
+                        {file.oriName}
+                      </Button>
+                    </Box>
+                  ))}
+                  {(!picture.files || picture.files.length === 0) && (
+                    <Typography color="text.secondary">첨부파일 없음</Typography>
+                  )}
+                </Stack>
+              </Box>
+            </Grid>
+
+            {picture.status === 'S4' && (
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    p: 2,
+                    bgcolor: 'background.default',
+                    borderRadius: 1,
+                    border: '1px solid',
+                    borderColor: 'divider'
+                  }}
+                >
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    간이투시도
+                  </Typography>
+                  <Stack spacing={1}>
+                    {picture.adminFiles?.map((file) => (
+                      <Box
+                        key={file.id}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          p: 1,
+                          bgcolor: 'background.paper',
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider'
+                        }}
+                      >
+                        <Button
+                          variant="text"
+                          size="small"
+                          startIcon={<DownloadIcon color="primary" fontSize="small" />}
+                          onClick={() => pictureService.downloadFile(file.id)}
+                          sx={{ color: 'text.primary' }}
+                        >
+                          {file.oriName}
+                        </Button>
+                      </Box>
+                    ))}
+                    {(!picture.adminFiles || picture.adminFiles.length === 0) && (
+                      <Typography color="text.secondary">등록된 간이투시도 없음</Typography>
+                    )}
+                  </Stack>
+                </Box>
+              </Grid>
             )}
-          </Box>
-
-          <Divider sx={{ my: 3 }} />
-
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-            <Button
-              variant="outlined"
-              onClick={() => navigate(location.pathname.includes('/admin') ? '/admin/pictures' : '/picture')}
-            >
-              목록
-            </Button>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+          </Grid>
+        </Box>
+      )}
+    </PageLayout>
   );
 };
 

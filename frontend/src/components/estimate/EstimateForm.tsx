@@ -7,10 +7,9 @@ import {
   Step,
   StepLabel,
   Stepper,
-  Typography,
-  Container,
-  Paper,
+  Alert,
   CircularProgress,
+  Stack,
 } from '@mui/material';
 import { FrontendStructure, StructureDetail, ListItem } from '../../types/estimate';
 import { estimateService } from '../../services/estimateService';
@@ -19,9 +18,11 @@ import BuildingInfo from './steps/BuildingInfo';
 import MaterialSelectionStep from './steps/MaterialSelection';
 import Specifications from './steps/Specifications';
 import Summary from './steps/Summary';
-//import { sampleEstimates } from '../../data/sampleEstimates';
 import { useSnackbar } from '../../context/SnackbarContext';
 import ListIcon from '@mui/icons-material/List';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import PageLayout from '../common/PageLayout';
 import { validateEstimate } from '../../utils/estimateValidation';
 
 const steps = ['기본정보', '건물정보', '자재선택', '상세정보', '요약'];
@@ -70,7 +71,7 @@ const initialStructure: FrontendStructure = {
 
 const EstimateForm: React.FC = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [structure, setStructure] = useState<FrontendStructure>(initialStructure);
   const { showSnackbar } = useSnackbar();
@@ -79,7 +80,7 @@ const EstimateForm: React.FC = () => {
     // If we're at step 3, validate and save the estimate before moving to summary
     if (activeStep === 3) {
       try {
-        setLoading(true);
+        setSaving(true);
 
         // Validate the estimate
         const validation = validateEstimate(structure);
@@ -103,7 +104,7 @@ const EstimateForm: React.FC = () => {
         showSnackbar(error?.response?.data?.message || '견적서 생성 중 오류가 발생했습니다.', 'error');
         console.error('Error creating estimate:', error);
       } finally {
-        setLoading(false);
+        setSaving(false);
       }
       return;
     } 
@@ -119,7 +120,7 @@ const EstimateForm: React.FC = () => {
 
   const handleSubmit = useCallback(async () => {
     try {
-      setLoading(true);
+      setSaving(true);
 
       // Validate the estimate
       const validation = validateEstimate(structure);
@@ -138,7 +139,7 @@ const EstimateForm: React.FC = () => {
       showSnackbar(error?.response?.data?.message || '견적서 제출 중 오류가 발생했습니다.', 'error');
       console.error('Error submitting estimate:', error);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   }, [navigate, structure, showSnackbar]);
 
@@ -225,124 +226,113 @@ const EstimateForm: React.FC = () => {
   };
 
   return (
-    <Box sx={{ py: { xs: 2, sm: 3 }, bgcolor: 'background.default', minHeight: '100vh' }}>
-      <Container maxWidth="lg">
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-          <Typography variant="h4" component="h1">
-            견적서 생성
-          </Typography>
-          <Box>
-            <Button variant="contained" startIcon={<ListIcon />} onClick={handleListEstimate}>
-              목록
-            </Button>
-          </Box>
-        </Box>      
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: { xs: 2, sm: 3 }, 
-            position: 'relative', 
-            mb: { xs: 8, sm: 0 },
-            borderRadius: 2,
-            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)'
-          }}
-        >
-          <Box sx={{ width: '100%', mb: 4 }}>
-            <Stepper activeStep={activeStep} alternativeLabel>
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Box>
+    <PageLayout
+      title="견적서 작성"
+      description="견적서 내용을 작성하세요"
+      actions={
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ListIcon />}
+            onClick={handleListEstimate}
+          >
+            목록
+          </Button>
+        </Stack>
+      }
+    >
 
-          <Box sx={{ width: '100%', mb: { xs: 6, sm: 4 } }}>
-            {getStepContent(activeStep)}
-          </Box>
+      <Box sx={{ p: 3, position: 'relative' }}>
+        {/* Stepper */}
+        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
 
-          {/* Desktop Navigation */}
-          <Box sx={{ 
-            display: { xs: 'none', sm: 'flex' }, 
-            pt: 2, 
-            width: '100%', 
-            justifyContent: 'space-between',
-            borderTop: 1,
-            borderColor: 'divider',
-            mt: 2
-          }}>
-            <Button
-              variant="outlined"
-              color="inherit"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ minWidth: 120 }}
-            >
-              이전
-            </Button>
+        {/* Step content */}
+        <Box sx={{ mb: 4 }}>
+          {getStepContent(activeStep)}
+        </Box>
+
+        {/* Desktop Navigation */}
+        <Box sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'space-between', mt: 4 }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleBack}
+            disabled={activeStep === 0}
+            startIcon={<ArrowBackIcon />}
+          >
+            이전
+          </Button>
+          <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
+              color="primary"
               onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-              disabled={loading}
-              sx={{ minWidth: 120 }}
+              disabled={saving}
+              endIcon={<ArrowForwardIcon />}
             >
-              {activeStep === 3 ? (loading ? '저장 중...' : '저장') : 
-               activeStep === steps.length - 1 ? (loading ? '제출 중...' : '제출') : 
+              {activeStep === 3 ? (saving ? '저장 중...' : '저장') : 
+               activeStep === steps.length - 1 ? (saving ? '제출 중...' : '완료') : 
                '다음'}
             </Button>
           </Box>
+        </Box>
 
-          {/* Mobile Navigation */}
-          <Box 
-            component="div"
-            sx={{ 
-              display: { xs: 'block', sm: 'none' },
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              width: '100%',
-              zIndex: 1000,
-              bgcolor: 'background.paper',
-              borderTop: '1px solid',
-              borderColor: 'divider',
-              boxShadow: '0px -2px 4px rgba(0, 0, 0, 0.05)'
-            }}
-          >
-            <MobileStepNavigation
-              onBack={handleBack}
-              onNext={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-              isFirstStep={activeStep === 0}
-              isLastStep={activeStep === steps.length - 1}
-              nextLabel={activeStep === 3 ? (loading ? '저장 중...' : '저장') : 
-                        activeStep === steps.length - 1 ? (loading ? '제출 중...' : '완료') : 
-                        '다음'}
-              disableNext={loading}
-            />
-          </Box>
-        </Paper>
-      </Container>
-      
-      {/* Loading Overlay */}
-      {loading && (
+        {/* Mobile Navigation */}
         <Box
           sx={{
+            display: { xs: 'block', sm: 'none' },
             position: 'fixed',
-            top: 0,
+            bottom: 0,
             left: 0,
+            right: 0,
             width: '100%',
-            height: '100%',
-            bgcolor: 'rgba(255, 255, 255, 0.6)',
-            zIndex: 1300,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
+            zIndex: 1000,
+            bgcolor: 'background.paper',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            boxShadow: '0px -2px 4px rgba(0, 0, 0, 0.05)'
           }}
         >
-          <CircularProgress />
+          <MobileStepNavigation
+            onBack={handleBack}
+            onNext={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+            isFirstStep={activeStep === 0}
+            isLastStep={activeStep === steps.length - 1}
+            nextLabel={activeStep === 3 ? (saving ? '저장 중...' : '저장') : 
+                      activeStep === steps.length - 1 ? (saving ? '제출 중...' : '완료') : 
+                      '다음'}
+            disableNext={saving}
+          />
         </Box>
-      )}
-    </Box>
+
+        {/* Loading Overlay */}
+        {saving && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              bgcolor: 'rgba(255, 255, 255, 0.6)',
+              zIndex: 1300,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
+      </Box>
+    </PageLayout>
   );
 };
 

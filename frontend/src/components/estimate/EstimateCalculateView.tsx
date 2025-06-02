@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import {
-  Box,
-  Container,
-  Paper,
-  Typography,
-  Alert,
-  CircularProgress,
-  Button,
-} from '@mui/material';
+import { Box, Button, CircularProgress, Alert, Stack } from '@mui/material';
 import { estimateService } from '../../services/estimateService';
 import { FrontendStructure } from '../../types/estimate';
 import Summary from './steps/Summary';
 import { useSnackbar } from '../../context/SnackbarContext';
 import { useNavigate } from 'react-router-dom';
 import ListIcon from '@mui/icons-material/List';
+import PageLayout from '../../components/common/PageLayout';
 
 const EstimateCalculateView: React.FC = () => {
   const navigate = useNavigate();
@@ -49,40 +42,47 @@ const EstimateCalculateView: React.FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <PageLayout
+        title="산출내역 요약"
+        description="견적서 산출내역을 확인하세요"
+      >
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
           <CircularProgress />
         </Box>
-      </Container>
+      </PageLayout>
     );
   }
 
   if (!structure) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <PageLayout
+        title="산출내역 요약"
+        description="견적서 산출내역을 확인하세요"
+      >
         <Alert severity="error">견적서를 찾을 수 없습니다.</Alert>
-      </Container>
+      </PageLayout>
     );
   }
 
   return (
-    <Box sx={{ py: { xs: 2, sm: 3 }, bgcolor: 'background.default', minHeight: '100vh' }}>
-        <Container maxWidth="lg">
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-          <Typography variant="h4" component="h1">
-            산출내역 요약
-          </Typography>
-          <Box>
-          <Button variant="contained" startIcon={<ListIcon />} onClick={handleListEstimate}>
-              목록
-            </Button>
-          </Box>
-        </Box>            
-        <Paper sx={{ p: { xs: 2, sm: 3 } }}>
-            <Summary structure={structure} />
-        </Paper>
-        </Container>
-    </Box>
+    <PageLayout
+      title="산출내역 요약"
+      description="견적서 산출내역을 확인하세요"
+      actions={
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ListIcon />}
+            onClick={handleListEstimate}
+          >
+            목록
+          </Button>
+        </Stack>
+      }
+    >
+      <Summary structure={structure} />
+    </PageLayout>
   );
 };
 

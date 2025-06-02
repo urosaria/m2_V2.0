@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { SnackbarProvider } from './context/SnackbarContext';
 import './App.css';
 
 // Components
@@ -14,14 +15,14 @@ import Dashboard from './pages/admin/Dashboard';
 import UserRegister from './components/user/UserRegister';
 import UserModify from './components/user/UserModify';
 import MyPage from './components/user/MyPage';
+import PasswordReset from './components/user/PasswordReset';
+import EstimatePage from './pages/estimate';
 import EstimateForm from './components/estimate/EstimateForm';
 import EstimateEditForm from './components/estimate/EstimateEditForm';
-import EstimateList from './components/estimate/EstimateList';
-import Estimate from './components/estimate/Estimate';
-import BoardList from './components/board/BoardList';
 import BoardRegister from './components/board/BoardRegister';
 import BoardModify from './components/board/BoardModify';
 import BoardShow from './components/board/BoardShow';
+import BoardTemplate from './components/board/BoardTemplate';
 import EstimateCalculateView from './components/estimate/EstimateCalculateView';
 import Picture from './pages/picture';
 import PictureRegister from './components/picture/PictureRegister';
@@ -118,33 +119,34 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <SnackbarProvider>
         <Router>
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/user/register" element={<UserRegister />} />
+            <Route path="/user/password-reset" element={<PasswordReset />} />
 
             {/* Wrap all layout-based pages inside Main */}
             <Route path="/" element={<Main />}>
               <Route path="main" element={<div>Main Home Content</div>} />
 
-              {/* Nested estimate routes with context */}
-              <Route path="estimates" element={<Estimate />}>
-                <Route index element={<EstimateList />} />
-                <Route path="new" element={<EstimateForm />} />
-                <Route path="edit/:id" element={<EstimateEditForm />} />
-                <Route path="calculate/:id" element={<EstimateCalculateView />} />
-              </Route>
+              {/* Estimate routes */}
+              <Route path="estimates" element={<EstimatePage />} />
+              <Route path="estimates/new" element={<EstimateForm />} />
+              <Route path="estimates/edit/:id" element={<EstimateEditForm />} />
+              <Route path="estimates/calculate/:id" element={<EstimateCalculateView />} />
 
               <Route path="picture" element={<Picture />} />
               <Route path="picture/register" element={<PictureRegister />} />
               <Route path="picture/:id" element={<PictureView />} />
               <Route path="picture/edit/:id" element={<PictureEdit />} />
-              <Route path="board/new" element={<BoardRegister />} />
-              <Route path="board/edit/:id" element={<BoardModify />} />
-              <Route path="board/show/:postId" element={<BoardShow />} />
-              <Route path="board/:boardId" element={<BoardList />} />
+              
+              <Route path="boards/:boardId/posts/register" element={<BoardRegister />} />
+              <Route path="boards/:boardId/posts/:postId/edit" element={<BoardModify />} />
+              <Route path="boards/:boardId/posts/:postId" element={<BoardShow />} />
+              <Route path="boards/:boardId" element={<BoardTemplate />} />
 
-              <Route path="user/register" element={<UserRegister />} />
               <Route path="user/modify" element={<UserModify />} />
               <Route path="user/mypage" element={<MyPage />} />
 
@@ -158,6 +160,7 @@ function App() {
             </Route>
           </Routes>
         </Router>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

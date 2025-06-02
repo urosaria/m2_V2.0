@@ -1,63 +1,98 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Box,
-  Container,
   Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
   Button,
-  Card,
-  CardContent,
-  IconButton,
+  Stack,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
   Pagination,
 } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import PageLayout from '../common/PageLayout';
 import { formatDate } from '../../utils/dateUtils';
 import { boardMasterService } from '../../services/boardMasterService';
 import { boardService, BoardPost } from '../../services/boardService';
+import {
+  CenteredBox,
+} from './styles/BoardStyles';
 
 
 
-const BoardList: React.FC = () => {
-  const { boardId } = useParams();
+interface BoardListProps {
+  title?: string;
+  description?: string;
+  boardId?: string;
+}
+
+const BoardList: React.FC<BoardListProps> = ({ title, description, boardId: propBoardId }) => {
+  const { boardId: paramBoardId } = useParams<{ boardId: string }>();
+  const boardId = propBoardId || paramBoardId || '0';
   const [posts, setPosts] = useState<BoardPost[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [boardTitle, setBoardTitle] = useState('');
   const [totalElements, setTotalElements] = useState(0);
+  const [boardInfo, setBoardInfo] = useState<{ name: string; description: string } | null>(null);
+
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    window.scrollTo(0, 0);
+  };
 
   const loadBoardInfo = useCallback(async () => {
     if (!boardId) return;
     try {
       const board = await boardMasterService.get(parseInt(boardId));
-      setBoardTitle(board.name);
+      if (!title) {
+        setBoardInfo({
+          name: board.name,
+          description: board.description || ''
+        });
+      }
     } catch (error) {
       console.error('Error loading board info:', error);
     }
-  }, [boardId]);
+  }, [boardId, title]);
 
   const loadPosts = useCallback(async () => {
     if (!boardId) return;
+
     try {
-      const response = await boardService.getList(page, boardId); // Page is now 1-based
+      const response = await boardService.getList(page, boardId);
       setPosts(response.content);
-      setTotalElements(response.totalElements);
       setTotalPages(response.totalPages);
+      setTotalElements(response.totalElements);
     } catch (error) {
       console.error('Error loading posts:', error);
+      setError('게시물을 불러오는 중 오류가 발생했습니다.');
     }
   }, [boardId, page]);
 
   useEffect(() => {
     if (boardId) {
       setPage(1);
+      const loadBoardInfo = async () => {
+        try {
+          const info = await boardMasterService.get(parseInt(boardId));
+          setBoardInfo({
+            name: info.name,
+            description: info.description || ''
+          });
+        } catch (error) {
+          console.error('Error loading board info:', error);
+        }
+      };
       loadBoardInfo();
     }
-  }, [boardId, loadBoardInfo]);
+  }, [boardId]);
 
   useEffect(() => {
     if (boardId) {
@@ -66,107 +101,82 @@ const BoardList: React.FC = () => {
   }, [boardId, page, loadPosts]);
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 2 }}>
-      <Card elevation={0}>
-        <Box
-          sx={{
-            p: 3,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottom: theme => `1px solid ${theme.palette.divider}`
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton onClick={() => navigate('/admin/boards')} sx={{ mr: 2 }}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6">{boardTitle || '게시판'}</Typography>
-          </Box>
+    <PageLayout
+      title={boardInfo?.name || ''}
+      description={boardInfo?.description || ''}
+      actions={
+        <Stack direction="row" spacing={1} alignItems="center">
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate(`/board/new?boardId=${boardId}`)}
+            onClick={() => navigate(`/boards/${boardId}/posts/register`)}
           >
             글쓰기
           </Button>
-        </Box>
-        <CardContent>
-          <List>
-            {totalElements === 0 ? (
-              <ListItem>
-                <ListItemText
-                  primary={
-                    <Typography variant="body1" color="text.secondary" align="center">
-                      등록된 게시물이 없습니다.
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            ) : (
-              posts.map((post, index) => (
-                <React.Fragment key={post.id}>
-                  <ListItem
-                    component="div"
-                    sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}
-                    onClick={() => navigate(`/board/show/${post.id}`)}
-                  >
-                    <ListItemText
-                      primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Typography variant="body1" sx={{ flex: 1 }}>
-                            {post.title}
-                          </Typography>
-                          {post.files.length > 0 && (
-                            <Typography variant="caption" color="primary" sx={{ ml: 1 }}>
-                              📎 {post.files.length}
-                            </Typography>
-                          )}
-                        </Box>
-                      }
-                      secondary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                          <Typography
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                            sx={{ mr: 2 }}
-                          >
-                            {post.userName}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ mr: 2 }}>
-                            {formatDate(post.createDate)}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            조회수: {post.readcount}
-                          </Typography>
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                  {index < posts.length - 1 && <Divider />}
-                </React.Fragment>
-              ))
-            )}
-          </List>
-          {totalPages > 0 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(e, value) => {
-                  setPage(value);
-                  window.scrollTo(0, 0);
-                }}
-                color="primary"
-                showFirstButton
-                showLastButton
-              />
-            </Box>
-          )}
-        </CardContent>
-      </Card>
-    </Container>
+        </Stack>
+      }
+    >
+      <TableContainer component={Paper}>
+        {totalElements === 0 ? (
+          <Box p={4} textAlign="center">
+            <Typography variant="body1" color="text.secondary">
+              등록된 게시물이 없습니다.
+            </Typography>
+          </Box>
+        ) : (
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell width="60%"><strong>제목</strong></TableCell>
+                <TableCell width="15%"><strong>작성자</strong></TableCell>
+                <TableCell width="15%"><strong>작성일</strong></TableCell>
+                <TableCell width="10%" align="center"><strong>첨부</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {posts.map((post) => (
+                <TableRow 
+                  key={post.id}
+                  hover
+                  sx={{ 
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: 'action.hover'
+                    }
+                  }}
+                  onClick={() => navigate(`/boards/${boardId}/posts/${post.id}`)}
+                >
+                  <TableCell>
+                      {post.title}
+                  </TableCell>
+                  <TableCell >
+                    {post.userName}
+                  </TableCell>
+                  <TableCell>
+                    {formatDate(post.createDate)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {post.files?.length || 0}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </TableContainer>
+      {totalPages > 0 && (
+        <CenteredBox>
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', bgcolor: 'background.default', p: 2, borderRadius: 1 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
+        </CenteredBox>
+      )}
+    </PageLayout>
   );
 };
 

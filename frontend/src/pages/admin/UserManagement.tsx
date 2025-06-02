@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { Add as AddIcon } from '@mui/icons-material';
 import UserList from '../../components/user/UserList';
 import UserForm from '../../components/user/UserForm';
-import { Container } from '@mui/material';
 import userService, { User } from '../../services/userService';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import { AdminButton } from '../../components/admin/AdminButton';
 
 const UserManagement: React.FC = () => {
   const [formOpen, setFormOpen] = useState(false);
@@ -43,11 +45,24 @@ const UserManagement: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg">
+    <AdminPageLayout
+      title="사용자 관리"
+      description="사용자 계정 생성 및 관리"
+      actions={
+        <AdminButton
+          variant="contained"
+          color="primary"
+          onClick={() => handleEdit({ num: 0 } as User)}
+          startIcon={<AddIcon />}
+        >
+          사용자 추가
+        </AdminButton>
+      }
+    >
       <UserList 
         onEdit={handleEdit} 
         key={refreshList}
-        refreshTrigger={refreshList}  // Ensure this is used correctly to trigger a refresh
+        refreshTrigger={refreshList}
       />
       <UserForm
         user={selectedUser}
@@ -55,7 +70,7 @@ const UserManagement: React.FC = () => {
         onClose={handleClose}
         onSuccess={handleSuccess}
       />
-    </Container>
+    </AdminPageLayout>
   );
 };
 

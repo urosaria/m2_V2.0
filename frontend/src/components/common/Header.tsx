@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     AppBar,
     Box,
@@ -24,14 +25,45 @@ import LanguageIcon from '@mui/icons-material/Language';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { useThemeContext } from '../../theme/ThemeContext';
+import logo from '../../assets/images/m2/logo_header.png';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.text.primary,
-    boxShadow: 'none',
+    boxShadow: theme.shadows[2],
     transition: theme.transitions.create(['background-color', 'color'], {
         duration: theme.transitions.duration.standard,
     }),
+}));
+
+const IconWrapper = styled(IconButton)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'light' 
+        ? theme.palette.primary.light + '20' // 20% opacity
+        : theme.palette.primary.dark + '30', // 30% opacity
+    borderRadius: '50%',
+    padding: 8,
+    marginLeft: theme.spacing(1),
+    color: theme.palette.mode === 'light'
+        ? theme.palette.primary.main
+        : theme.palette.primary.light,
+    '&:hover': {
+        backgroundColor: theme.palette.mode === 'light'
+            ? theme.palette.primary.light + '40' // 40% opacity
+            : theme.palette.primary.dark + '50', // 50% opacity
+        color: theme.palette.mode === 'light'
+            ? theme.palette.primary.dark
+            : theme.palette.primary.light,
+    },
+    transition: theme.transitions.create(['background-color', 'color'], {
+        duration: theme.transitions.duration.short,
+    }),
+}));
+
+const BrandTitle = styled(Typography)(({ theme }) => ({
+    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
+    fontWeight: 700,
+    fontSize: '1.25rem',
+    letterSpacing: '-0.025em',
 }));
 
 interface HeaderProps {
@@ -40,6 +72,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onDrawerToggle, onCollapseToggle }) => {
+    const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { darkMode, toggleDarkMode } = useThemeContext();
@@ -83,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle, onCollapseToggle }) => 
                     {!searchMobileOpen && (
                         <>
                             <IconButton
-                                color="secondary"
+                                color="primary"
                                 edge="start"
                                 onClick={isMobile ? onDrawerToggle : onCollapseToggle}
                                 sx={{ mr: 2 }}
@@ -93,9 +126,9 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle, onCollapseToggle }) => 
 
                             {!isMobile && (
                                 <>
-                                    <Typography variant="h5" noWrap sx={{ mr: 2 }}>
-                                        M2 Panel
-                                    </Typography>
+                                    <BrandTitle variant="h5" noWrap sx={{ mr: 2 }}>
+                                        <img src={logo} alt="M2" style={{ width: '100px' }} />
+                                    </BrandTitle>
                                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
                                         <form onSubmit={handleSearchSubmit}>
                                             <SearchContainer>
@@ -114,26 +147,35 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle, onCollapseToggle }) => 
 
                             <Box sx={{ flexGrow: 1 }} />
 
-                            <Stack direction="row" spacing={1}>
+                            <Stack direction="row" spacing={1} alignItems="center">
                                 {isMobile && (
-                                    <IconButton color="primary" onClick={() => setSearchMobileOpen(true)}>
+                                    <IconWrapper color="secondary" onClick={() => setSearchMobileOpen(true)}>
                                         <SearchIcon />
-                                    </IconButton>
+                                    </IconWrapper>
                                 )}
-                                <IconButton color="primary" onClick={(e) => setNotificationAnchorEl(e.currentTarget)}>
-                                    <Badge badgeContent={2} color="primary">
+                                <IconWrapper color="secondary" onClick={toggleDarkMode}>
+                                    {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+                                </IconWrapper>
+                                <IconWrapper
+                                    color="secondary"
+                                    onClick={(e) => setLangAnchorEl(e.currentTarget)}
+                                >
+                                    <LanguageIcon />
+                                </IconWrapper>
+                                <IconWrapper
+                                    color="secondary"
+                                    onClick={(e) => setNotificationAnchorEl(e.currentTarget)}
+                                >
+                                    <Badge badgeContent={4} color="error">
                                         <NotificationsIcon />
                                     </Badge>
-                                </IconButton>
-                                <IconButton color="primary" onClick={toggleDarkMode}>
-                                    {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-                                </IconButton>
-                                <IconButton color="primary" onClick={(e) => setLangAnchorEl(e.currentTarget)}>
-                                    <LanguageIcon />
-                                </IconButton>
-                                <IconButton edge="end" color="primary" onClick={(e) => setAnchorEl(e.currentTarget)}>
+                                </IconWrapper>
+                                <IconWrapper
+                                    color="secondary"
+                                    onClick={(e) => setAnchorEl(e.currentTarget)}
+                                >
                                     <AccountCircleIcon />
-                                </IconButton>
+                                </IconWrapper>
                             </Stack>
                         </>
                     )}
@@ -163,8 +205,14 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle, onCollapseToggle }) => 
 
             {/* Menus */}
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                <MenuItem onClick={handleMenuClose}>프로필</MenuItem>
-                <MenuItem onClick={handleMenuClose}>설정</MenuItem>
+                <MenuItem 
+                  onClick={() => {
+                    handleMenuClose();
+                    navigate('/user/mypage');
+                  }}
+                >
+                  설정
+                </MenuItem>
                 <MenuItem onClick={handleMenuClose}>로그아웃</MenuItem>
             </Menu>
 

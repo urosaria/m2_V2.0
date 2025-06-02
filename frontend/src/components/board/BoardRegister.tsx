@@ -1,25 +1,36 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
-  Box,
-  Container,
-  Typography,
-  TextField,
   Button,
-  Card,
-  CardContent,
+  TextField,
+  CircularProgress,
+  Alert,
+  Stack,
+  Paper,
+  Box,
+  Typography,
   IconButton,
   List,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Alert,
-  CircularProgress,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { Delete as DeleteIcon, CloudUpload as CloudUploadIcon } from '@mui/icons-material';
+import {
+  CloudUpload as CloudUploadIcon,
+  Delete as DeleteIcon,
+  Save as SaveIcon,
+  ArrowBack as ArrowBackIcon,
+} from '@mui/icons-material';
+
 import { boardService, BoardPost } from '../../services/boardService';
 import { boardMasterService, BoardMaster } from '../../services/boardMasterService';
 import useAuth from '../../hooks/useAuth';
+import PageLayout from '../common/PageLayout';
+import {
+  FlexBox,
+  FlexColumnBox,
+  FileUploadBox
+} from './styles/BoardStyles';
 
 interface PostState {
   title: string;
@@ -47,10 +58,16 @@ const BoardRegister: React.FC = () => {
     } : null
   });
 
+  const { boardId } = useParams<{ boardId: string }>();
+
   useEffect(() => {
     const fetchBoardMaster = async () => {
+      if (!boardId) {
+        setError('게시판 ID가 없습니다.');
+        return;
+      }
       try {
-        const boardMaster = await boardMasterService.get(2); // Default board ID
+        const boardMaster = await boardMasterService.get(parseInt(boardId));
         setPost(prev => ({
           ...prev,
           boardMaster
@@ -61,7 +78,7 @@ const BoardRegister: React.FC = () => {
       }
     };
     fetchBoardMaster();
-  }, []);
+  }, [boardId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +113,7 @@ const BoardRegister: React.FC = () => {
         user: post.user || undefined
       };
       await boardService.createPost(postData, files);
-      navigate('/board/list');
+      navigate(`/boards/${post.boardMaster.id}`);
     } catch (error) {
       setError(error instanceof Error ? error.message : '게시글 등록에 실패했습니다.');
     } finally {
@@ -124,117 +141,169 @@ const BoardRegister: React.FC = () => {
   }, []);
 
   return (
-    <Container maxWidth="lg">
-      <Card elevation={0}>
-        <Box
-          sx={{
-            p: 3,
-            borderBottom: theme => `1px solid ${theme.palette.divider}`
-          }}
-        >
-          <Typography variant="h6">게시글 작성</Typography>
-        </Box>
+    <PageLayout
+      title="게시글 작성"
+      description={post.boardMaster?.name || ''}
+      actions={
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(`/boards/${post.boardMaster?.id || ''}`)}
+          >
+            취소
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<SaveIcon />}
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={20} /> : '등록'}
+          </Button>
+        </Stack>
+      }
+    >
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-        <CardContent>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <TextField
-                fullWidth
-                label="제목"
-                name="title"
-                value={post.title}
-                onChange={handleChange}
-                required
-                disabled={loading}
-              />
-              <TextField
-                fullWidth
-                label="내용"
-                name="contents"
-                value={post.contents}
-                onChange={handleChange}
-                multiline
-                rows={6}
-                required
-                disabled={loading}
-              />
-
-              <Box>
-                <input
-                  accept="*/*"
-                  id="file-upload"
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                  disabled={loading}
-                />
-                <label htmlFor="file-upload">
-                  <Button
-                    component="span"
-                    variant="outlined"
-                    startIcon={<CloudUploadIcon />}
-                    disabled={loading}
-                  >
-                    파일 첨부
-                  </Button>
-                </label>
-
-                {files.length > 0 && (
-                  <List>
-                    {files.map((file, index) => (
-                      <ListItem key={index}>
-                        <ListItemText primary={file.name} secondary={`${(file.size / 1024).toFixed(1)} KB`} />
-                        <ListItemSecondaryAction>
-                          <IconButton
-                            edge="end"
-                            onClick={() => handleRemoveFile(index)}
-                            disabled={loading}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    ))}
-                  </List>
-                )}
-              </Box>
-
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: 2,
-                  mt: 2
+      <Paper 
+        elevation={1} 
+        sx={{ 
+          p: 3,
+          borderRadius: 1,
+          bgcolor: 'background.paper',
+          '& .MuiTextField-root': {
+            mb: 2
+          }
+        }}
+      >
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="제목"
+            name="title"
+            value={post.title}
+            onChange={handleChange}
+            required
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                bgcolor: 'background.default'
+              }
+            }}
+          />
+          <TextField
+            fullWidth
+            label="내용"
+            name="contents"
+            value={post.contents}
+            onChange={handleChange}
+            multiline
+            rows={6}
+            required
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                bgcolor: 'background.default'
+              }
+            }}
+          />
+          <Paper 
+            variant="outlined" 
+            sx={{ 
+              mt: 2,
+              p: 3,
+              bgcolor: 'background.default',
+              borderStyle: 'dashed',
+              borderRadius: 1
+            }}
+          >
+            <Box
+              component="div"
+              role="button"
+              tabIndex={0}
+              onDrop={(e: React.DragEvent) => {
+                e.preventDefault();
+                const droppedFiles = Array.from(e.dataTransfer.files);
+                setFiles(prev => [...prev, ...droppedFiles]);
+              }}
+              onDragOver={(e: React.DragEvent) => e.preventDefault()}
+            >
+              <input
+                type="file"
+                multiple
+                id="file-input"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (e.target.files) {
+                    setFiles(prev => [...prev, ...Array.from(e.target.files || [])]);
+                  }
                 }}
-              >
+                style={{ display: 'none' }}
+              />
+              <Stack spacing={1} alignItems="center">
+                <CloudUploadIcon color="primary" sx={{ fontSize: 40 }} />
+                <Typography variant="body1" color="text.secondary">
+                  파일을 드래그하거나 클릭하여 업로드하세요
+                </Typography>
                 <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={loading}
-                >
-                  {loading ? <CircularProgress size={24} /> : '등록'}
-                </Button>
-                <Button
+                  component="span"
                   variant="outlined"
-                  onClick={() => navigate('/board/list')}
-                  disabled={loading}
+                  size="small"
+                  sx={{ mt: 1 }}
                 >
-                  목록
+                  파일 선택
                 </Button>
-              </Box>
+              </Stack>
             </Box>
-          </form>
-        </CardContent>
-      </Card>
-    </Container>
+          </Paper>
+
+          {/* New Files */}
+          {files.length > 0 && (
+            <Paper variant="outlined" sx={{ mt: 2, p: 2, bgcolor: 'background.default' }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                첨부된 파일
+              </Typography>
+              <Stack spacing={1}>
+                {files.map((file, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      p: 1,
+                      bgcolor: 'background.paper',
+                      borderRadius: 1,
+                      border: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    <Typography variant="body2">
+                      {file.name}
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                        {Math.round(file.size / 1024)} KB
+                      </Typography>
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleRemoveFile(index)}
+                      disabled={loading}
+                      sx={{ color: 'error.main' }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                ))}
+              </Stack>
+            </Paper>
+          )}
+        </Box>
+      </Paper>
+    </PageLayout>
   );
 };
 

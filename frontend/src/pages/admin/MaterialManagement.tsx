@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Box, Button, Typography } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { materialService, Material } from '../../services/materialService';
 import MaterialList from '../../components/material/MaterialList';
 import MaterialForm from '../../components/material/MaterialForm';
 import GlobalSnackbar from '../../components/common/GlobalSnackbar';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import { AdminButton } from '../../components/admin/AdminButton';
 import {
   MaterialSearchCriteria,
   GubunCode,
@@ -191,17 +193,19 @@ const MaterialManagement: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" component="h1">가격 관리</Typography>
-        <Button
+    <AdminPageLayout
+      title="자재 가격 관리"
+      description="자재 및 가격 정보 관리"
+      actions={
+        <AdminButton
           variant="contained"
           color="primary"
           onClick={() => handleOpenDialog()}
+          startIcon={<AddIcon />}
         >
           가격 추가
-        </Button>
-      </Box>
+        </AdminButton>
+      }>
 
       <MaterialList
         materials={materials}
@@ -233,7 +237,7 @@ const MaterialManagement: React.FC = () => {
         severity={snackbar.severity}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       />
-    </Container>
+    </AdminPageLayout>
   );
 };
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Alert } from '@mui/material';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Alert, styled, Tooltip, Typography } from '@mui/material';
 import { Delete as DeleteIcon, Visibility as ViewIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Picture } from '../../types/picture';
 import { pictureService } from '../../services/pictureService';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import { AdminButton } from '../../components/admin/AdminButton';
 
 const PictureManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -57,20 +59,47 @@ const PictureManagement: React.FC = () => {
     }
   };
 
+  const StyledTableContainer = styled(Paper)(({ theme }) => ({
+    marginBottom: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius * 2,
+    boxShadow: theme.shadows[2],
+    '& .MuiTableHead-root': {
+      '& .MuiTableCell-head': {
+        backgroundColor: theme.palette.background.default,
+        fontWeight: 600,
+      },
+    },
+    '& .MuiTableBody-root': {
+      '& .MuiTableRow-root': {
+        '&:hover': {
+          backgroundColor: theme.palette.action.hover,
+        },
+      },
+    },
+  }));
+
+  const ActionButton = styled(Button)(({ theme }) => ({
+    margin: theme.spacing(0, 0.5),
+  }));
+
   if (loading) {
     return (
-      <Container maxWidth="lg">
-        <Box sx={{ py: 4, textAlign: 'center' }}>Loading...</Box>
-      </Container>
+      <AdminPageLayout
+        title="간이투시도 관리"
+        description="간이투시도 신청 및 처리 현황"
+      >
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          Loading...
+        </Paper>
+      </AdminPageLayout>
     );
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          간이투시도 관리
-        </Typography>
+    <AdminPageLayout
+      title="간이투시도 관리"
+      description="간이투시도 신청 및 처리 현황"
+    >
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
@@ -78,7 +107,7 @@ const PictureManagement: React.FC = () => {
           </Alert>
         )}
 
-        <Paper>
+        <StyledTableContainer>
           <TableContainer>
             <Table>
               <TableHead>
@@ -137,20 +166,28 @@ const PictureManagement: React.FC = () => {
                         {new Date(picture.createDate).toLocaleDateString()}
                       </TableCell>
                       <TableCell align="center">
-                        <IconButton
-                          onClick={() => handleViewPicture(picture.id)}
-                          size="small"
-                          color="primary"
-                        >
-                          <ViewIcon />
-                        </IconButton>
-                        <IconButton
-                          onClick={() => handleDeleteClick(picture)}
-                          size="small"
-                          color="error"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
+                        <Tooltip title="상세보기">
+                          <AdminButton
+                            variant="outlined"
+                            onClick={() => handleViewPicture(picture.id)}
+                            size="small"
+                            color="primary"
+                            startIcon={<ViewIcon />}
+                          >
+                            상세보기
+                          </AdminButton>
+                        </Tooltip>
+                        <Tooltip title="삭제">
+                          <AdminButton
+                            variant="outlined"
+                            onClick={() => handleDeleteClick(picture)}
+                            size="small"
+                            color="error"
+                            startIcon={<DeleteIcon />}
+                          >
+                            삭제
+                          </AdminButton>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   );
@@ -159,7 +196,7 @@ const PictureManagement: React.FC = () => {
             </Table>
           </TableContainer>
 
-        </Paper>
+        </StyledTableContainer>
 
         <Dialog
           open={deleteDialogOpen}
@@ -178,8 +215,7 @@ const PictureManagement: React.FC = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    </Container>
+    </AdminPageLayout>
   );
 };
 

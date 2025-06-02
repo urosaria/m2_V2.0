@@ -4,6 +4,8 @@ export interface Picture {
   etc?: string;
   status: string;
   createDate: string;
+  modifiedDate?: string;
+  description?: string;
   userNum?: number;
   userName: string;
   userPhone: string;

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Box, Button, Typography } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { boardMasterService, BoardMaster } from '../../services/boardMasterService';
 import GlobalSnackbar from '../../components/common/GlobalSnackbar';
 import BoardMasterList from '../../components/board/BoardMasterList';
 import BoardMasterForm from '../../components/board/BoardMasterForm';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import { AdminButton } from '../../components/admin/AdminButton';
 
 const BoardManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -104,7 +106,7 @@ const BoardManagement: React.FC = () => {
   };
 
   const handleBoardClick = (board: BoardMaster) => {
-    navigate(`/board/${board.id}`);
+    navigate(`/boards/${board.id}`);
   };
 
   const handleSubmit = async () => {
@@ -124,20 +126,20 @@ const BoardManagement: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          게시판 관리
-        </Typography>
-        <Button
+    <AdminPageLayout
+      title="게시판 관리"
+      description="게시판 생성 및 관리"
+      actions={
+        <AdminButton
           variant="contained"
           color="primary"
           onClick={() => handleOpenDialog()}
-          sx={{ mb: 2 }}
+          startIcon={<AddIcon />}
         >
           게시판 추가
-        </Button>
-      </Box>
+        </AdminButton>
+      }
+    >
 
       <BoardMasterList
         boards={boards}
@@ -168,7 +170,7 @@ const BoardManagement: React.FC = () => {
         severity={snackbar.severity}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       />
-    </Container>
+    </AdminPageLayout>
   );
 }; 
 

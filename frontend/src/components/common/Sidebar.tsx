@@ -46,9 +46,9 @@ const menuItems: MenuItem[] = [
     text: '게시판',
     icon: <ForumIcon />,
     children: [
-      { id: 21, text: '공지사항', icon: <Campaign fontSize="small" />, path: '/board/1' },
-      { id: 22, text: 'FAQ', icon: <HelpOutline fontSize="small" />, path: '/board/3' },
-      { id: 23, text: 'Q&A', icon: <QuestionAnswer fontSize="small" />, path: '/board/2' },
+      { id: 21, text: '공지사항', icon: <Campaign fontSize="small" />, path: '/boards/1' },
+      { id: 22, text: 'FAQ', icon: <HelpOutline fontSize="small" />, path: '/boards/3' },
+      { id: 23, text: 'Q&A', icon: <QuestionAnswer fontSize="small" />, path: '/boards/2' },
     ],
   },
   { id: 3, text: '금주판넬단가표', icon: <PriceChangeIcon />, path: '/price-list' },

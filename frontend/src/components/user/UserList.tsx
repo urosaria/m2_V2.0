@@ -81,19 +81,6 @@ const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h5" component="h2">
-          사용자 관리
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => onEdit({ num: null } as User)}
-        >
-          사용자 추가
-        </Button>
-      </Box>
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

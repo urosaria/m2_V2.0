@@ -1,30 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
-  Box,
-  Container,
-  Typography,
-  TextField,
   Button,
-  Card,
-  CardContent,
-  IconButton,
+  TextField,
+  CircularProgress,
+  Stack,
   List,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  IconButton,
 } from '@mui/material';
-import { Delete as DeleteIcon, CloudUpload as CloudUploadIcon } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router-dom';
+import {
+  Delete as DeleteIcon,
+  CloudUpload as CloudUploadIcon,
+  Save as SaveIcon,
+  ArrowBack as ArrowBackIcon,
+} from '@mui/icons-material';
 
 import { boardService, BoardPost } from '../../services/boardService';
+import PageLayout from '../common/PageLayout';
+import {
+  CenteredBox,
+  FlexBox,
+  FlexColumnBox,
+  FileUploadBox
+} from './styles/BoardStyles';
 
 const BoardModify: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const postId = id;
+  const { boardId, postId } = useParams<{ boardId: string; postId: string }>();
   const navigate = useNavigate();
   const [post, setPost] = useState<BoardPost | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [filesToDelete, setFilesToDelete] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -34,16 +43,16 @@ const BoardModify: React.FC = () => {
         setPost(data);
       } catch (error) {
         console.error('Error fetching post:', error);
-        navigate('/board');
+        navigate(`/boards/${boardId}`);
       }
     };
 
     fetchPost();
   }, [postId, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!post || !postId || !post.boardMaster?.id) return;
+    setLoading(true);
     try {
       await boardService.updatePost(
         post.boardMaster.id.toString(),
@@ -52,9 +61,11 @@ const BoardModify: React.FC = () => {
         files,
         filesToDelete
       );
-      navigate(`/board/show/${postId}`);
+      navigate(`/boards/${boardId}/posts/${postId}`);
     } catch (error) {
       console.error('Error updating post:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,163 +79,158 @@ const BoardModify: React.FC = () => {
     }
   };
 
+  const handleFileDelete = (index: number) => {
+    if (post) {
+      setFilesToDelete(prev => [...prev, post.files[index].id.toString()]);
+      setPost(prev => ({
+        ...prev!,
+        files: prev!.files.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  const handleNewFileDelete = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
+
   if (!post) {
-    return null;
+    return (
+      <PageLayout title="글 수정" description="">
+        <FlexColumnBox sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+          <CircularProgress />
+        </FlexColumnBox>
+      </PageLayout>
+    );
   }
 
   return (
-    <Container maxWidth="lg">
-      <Card elevation={0}>
-        <Box
-          sx={{
-            p: 3,
-            borderBottom: theme => `1px solid ${theme.palette.divider}`
+    <PageLayout 
+      title="게시글 수정" 
+      description=""
+      actions={
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(`/boards/${boardId}/posts/${postId}`)}
+            disabled={loading}
+          >
+            취소
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<SaveIcon />}
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={20} /> : '수정'}
+          </Button>
+        </Stack>
+      }
+    >
+      <FlexColumnBox component="form" onSubmit={handleSubmit}>
+        <TextField
+          fullWidth
+          label="제목"
+          name="title"
+          value={post.title}
+          onChange={handleChange}
+          required
+        />
+        <TextField
+          fullWidth
+          label="내용"
+          name="contents"
+          value={post.contents}
+          onChange={handleChange}
+          multiline
+          rows={6}
+          required
+        />
+        <FileUploadBox
+          component="div"
+          role="button"
+          tabIndex={0}
+          onDrop={(e) => {
+            e.preventDefault();
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            setFiles(prev => [...prev, ...droppedFiles]);
           }}
+          onDragOver={(e) => e.preventDefault()}
         >
-          <Typography variant="h6">게시글 수정</Typography>
-        </Box>
+          <input
+            type="file"
+            multiple
+            id="file-input"
+            onChange={(e) => {
+              if (e.target.files) {
+                setFiles(prev => [...prev, ...Array.from(e.target.files || [])]);
+              }
+            }}
+            style={{ display: 'none' }}
+          />
+          <Button
+            component="span"
+            startIcon={<CloudUploadIcon />}
+            variant="text"
+          >
+            파일 선택 또는 드래그 앤 드롭
+          </Button>
+        </FileUploadBox>
 
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <TextField
-                fullWidth
-                label="제목"
-                name="title"
-                value={post.title}
-                onChange={handleChange}
-                required
-              />
-              <TextField
-                fullWidth
-                label="내용"
-                name="contents"
-                value={post.contents}
-                onChange={handleChange}
-                multiline
-                rows={6}
-                required
-              />
-              <Box
-                sx={{
-                  border: '2px dashed',
-                  borderColor: 'primary.main',
-                  borderRadius: 1,
-                  p: 2,
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    bgcolor: 'action.hover'
-                  }
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const droppedFiles = Array.from(e.dataTransfer.files);
-                  setFiles(prev => [...prev, ...droppedFiles]);
-                }}
-                onDragOver={(e) => e.preventDefault()}
-              >
-                <input
-                  type="file"
-                  multiple
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      setFiles(prev => [...prev, ...Array.from(e.target.files || [])]);
-                    }
-                  }}
-                  style={{ display: 'none' }}
-                  id="file-upload"
+        {/* Existing Files */}
+        {post.files && post.files.length > 0 && (
+          <List>
+            {post.files.map((file) => (
+              <ListItem key={file.id}>
+                <ListItemText
+                  primary={file.oriName}
+                  secondary={`${(file.size || 0) / 1024} KB`}
                 />
-                <label htmlFor="file-upload">
-                  <Button
-                    component="span"
-                    startIcon={<CloudUploadIcon />}
-                    variant="text"
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    onClick={() => {
+                      setFilesToDelete(prev => [...prev, file.id.toString()]);
+                      setPost(prev => ({
+                        ...prev!,
+                        files: prev!.files.filter(f => f.id !== file.id)
+                      }));
+                    }}
                   >
-                    파일 선택 또는 드래그 앤 드롭
-                  </Button>
-                </label>
-              </Box>
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        )}
 
-              {/* Existing Files */}
-              {post.files && post.files.length > 0 && (
-                <List>
-                  {post.files.map((file) => (
-                    <ListItem key={file.id}>
-                      <ListItemText
-                        primary={file.oriName}
-                        secondary={`${(file.size || 0) / 1024} KB`}
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton
-                          edge="end"
-                          onClick={() => {
-                            setFilesToDelete(prev => [...prev, file.id.toString()]);
-                            setPost(prev => ({
-                              ...prev!,
-                              files: prev!.files.filter(f => f.id !== file.id)
-                            }));
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-
-              {/* New Files */}
-              {files.length > 0 && (
-                <List>
-                  {files.map((file, index) => (
-                    <ListItem key={index}>
-                      <ListItemText
-                        primary={file.name}
-                        secondary={`${Math.round(file.size / 1024)} KB`}
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton
-                          edge="end"
-                          onClick={() => {
-                            setFiles(files.filter((_, i) => i !== index));
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: 2,
-                  mt: 2
-                }}
-              >
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                >
-                  수정
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate(`/board/show/${postId}`)}
-                >
-                  취소
-                </Button>
-              </Box>
-            </Box>
-          </form>
-        </CardContent>
-      </Card>
-    </Container>
+        {/* New Files */}
+        {files.length > 0 && (
+          <List>
+            {files.map((file, index) => (
+              <ListItem key={index}>
+                <ListItemText
+                  primary={file.name}
+                  secondary={`${Math.round(file.size / 1024)} KB`}
+                />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    onClick={() => {
+                      setFiles(files.filter((_, i) => i !== index));
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        )}
+      </FlexColumnBox>
+    </PageLayout>
   );
 };
 

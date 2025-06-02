@@ -5,6 +5,7 @@ const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/board/master`;
 export interface BoardMaster {
   id: number;
   name: string;
+  description?: string;
   replyYn: string;
   status: string;
   skinName: string;
