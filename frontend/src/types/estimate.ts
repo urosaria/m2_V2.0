@@ -91,6 +91,15 @@ export type WallThickness = 50 | 75 | 100 | 125 | 150;
 export type CeilingThickness = 0 | 50 | 75 | 100 | 125;
 export type RoofThickness = 50 | 75 | 100 | 125 | 150 | 175 | 200 | 225 | 260;
 
+export interface Excel {
+  id: number;
+  name: string;
+  oriName: string;
+  ext: string;
+  path: string;
+  totalPrice: number;
+  createDate: string;
+}
 export interface StructureDetail {
   insideWallYn: YesNo;
   ceilingYn: YesNo;
@@ -147,6 +156,7 @@ export interface Structure {
   updatedAt?: string;
   totalAmount?: number;
   calculateList?: CalculateItem[];
+  excel?: Excel;
 }
 
 export interface CalculateItem {

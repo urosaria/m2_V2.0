@@ -271,6 +271,21 @@ public class EstimateMapper {
             detailDTO.setWindowList(detail.getWindowList().stream().map(this::toComponentDTO).toList());
         }
 
+        if (structure.getStructureExcel() != null) {
+            StructureExcel excel = structure.getStructureExcel();
+            dto.setExcel(
+                    EstimateExcelResponseDTO.builder()
+                            .id(excel.getId())
+                            .name(excel.getName())
+                            .oriName(excel.getOriName())
+                            .ext(excel.getExt())
+                            .path(excel.getPath())
+                            .totalPrice(excel.getTotalPrice())
+                            .createDate(excel.getCreateDate())
+                            .build()
+            );
+        }
+
         // Calculate items (optional)
         if (structure.getCalculateList() != null) {
             dto.setCalculateList(

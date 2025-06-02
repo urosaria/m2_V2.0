@@ -32,6 +32,7 @@
         <postgresql.version>42.7.1</postgresql.version>
         <mysql.version>8.0.33</mysql.version>
         <handlebars.version>4.3.1</handlebars.version>
+        <thumbnailator.verson>0.4.14</thumbnailator.verson>
     </properties>
 
     <dependencies>
@@ -149,7 +150,11 @@
             <artifactId>jpa-cloner</artifactId>
             <version>${jpa.cloner.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>${thumbnailator.verson}</version>
+        </dependency>
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -184,6 +189,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <repositories>

@@ -8,6 +8,9 @@ export interface FileDownloadParams {
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/files`;
 
 export const fileService = {
+  getThumbnailUrl: (path: string): string => {
+    return `${API_URL}/thumbnail?path=${encodeURIComponent(path)}`;
+  },
   downloadFile: async (params: FileDownloadParams): Promise<void> => {
     try {
       const response = await axios.get(`${API_URL}/download`, {

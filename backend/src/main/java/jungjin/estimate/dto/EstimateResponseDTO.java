@@ -35,4 +35,5 @@ public class EstimateResponseDTO {
     // For structure detail
     private EstimateDetailResponseDTO structureDetail;
     private List<CalculateDTO> calculateList = new ArrayList<>();
+    private EstimateExcelResponseDTO excel;
 }

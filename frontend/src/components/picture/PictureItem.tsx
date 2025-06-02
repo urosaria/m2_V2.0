@@ -14,10 +14,12 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Download as DownloadIcon,
+  Image as ImageIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Picture } from '../../types/picture';
 import { getPictureStatusInfo } from '../../utils/pictureUtils';
+import { fileService } from '../../services/fileService';
 
 interface PictureItemProps {
   picture: Picture;
@@ -32,9 +34,9 @@ const PictureItem: React.FC<PictureItemProps> = ({
 }) => {
   const navigate = useNavigate();
   const statusInfo = getPictureStatusInfo(picture.status);
-  const thumbnailUrl = picture.status === 'S4'
-    ? `/uploads/picture/${picture.id}/thumbnail.jpg`
-    : '/assets/images/preview-placeholder.jpg';
+  const thumbnailUrl = picture.adminFiles?.length
+    ? fileService.getThumbnailUrl(picture.adminFiles[0].path)
+    : null;
 
   const handleClick = () => {
     navigate(`/picture/${picture.id}`);
@@ -96,25 +98,45 @@ const PictureItem: React.FC<PictureItemProps> = ({
           backgroundColor: 'grey.100',
         }}
       >
-        <Box
-          component="img"
-          src={thumbnailUrl}
-          alt={picture.name}
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          }}
-        />
+        {thumbnailUrl ? (
+          <Box
+            component="img"
+            src={thumbnailUrl}
+            alt={picture.name}
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        ) : (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'grey.500',
+            }}
+          >
+            <ImageIcon sx={{ fontSize: 64 }} />
+          </Box>
+        )}
       </CardMedia>
 
       <CardContent sx={{ flexGrow: 1, p: 2 }}>
-        <Typography variant="h6" component="h2" noWrap>
-          {picture.name}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+          <Typography variant="h6" component="h2" noWrap sx={{ flex: 1, mr: 1 }}>
+            {picture.name}
+          </Typography>
+        </Box>
         <Typography variant="body2" color="text.secondary" gutterBottom>
           요청일: {new Date(picture.createDate).toLocaleDateString()}
         </Typography>
@@ -126,6 +148,12 @@ const PictureItem: React.FC<PictureItemProps> = ({
       </CardContent>
 
       <CardActions sx={{ justifyContent: 'flex-end', p: 1 }}>
+        <Chip
+          label={statusInfo.label}
+          color={statusInfo.color as any}
+          size="small"
+          sx={{ fontWeight: 600, flexShrink: 0, marginRight: 'auto' }}
+        />
         <Tooltip title="수정">
           <IconButton size="small" onClick={handleEdit}>
             <EditIcon />

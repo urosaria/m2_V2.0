@@ -53,7 +53,7 @@ public class StructureDetail {
     private InsulationSubTypeCode insideWallPaper;
 
     @Column(name = "inside_wall_thick")
-    private Integer insideWallThick;
+    private Integer insideWallThick = 0;
 
     @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "outside_wall_type")
@@ -64,7 +64,7 @@ public class StructureDetail {
     private InsulationSubTypeCode outsideWallPaper;
 
     @Column(name = "outside_wall_thick")
-    private Integer outsideWallThick;
+    private Integer outsideWallThick = 0;
 
     @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "roof_type")
@@ -75,7 +75,7 @@ public class StructureDetail {
     private InsulationSubTypeCode roofPaper;
 
     @Column(name = "roof_thick")
-    private Integer roofThick;
+    private Integer roofThick = 0;
 
     @Convert(converter = InsulationTypeCodeConverter.class)
     @Column(name = "ceiling_type")
@@ -86,7 +86,7 @@ public class StructureDetail {
     private InsulationSubTypeCode ceilingPaper;
 
     @Column(name = "ceiling_thick")
-    private Integer ceilingThick;
+    private Integer ceilingThick = 0;
 
     @OneToOne
     @JoinColumn(name = "structure_id")
@@ -101,16 +101,16 @@ public class StructureDetail {
     private LocalDateTime updateDate;
 
     @Column(name = "gucci")
-    private Integer gucci;
+    private Integer gucci = 0;
 
     @Column(name = "gucci_inside")
-    private Integer gucciInside;
+    private Integer gucciInside = 0;
 
     @Column(name = "gucci_inside_amount")
-    private Integer gucciInsideAmount;
+    private Integer gucciInsideAmount = 0;
 
     @Column(name = "gucci_amount")
-    private Integer gucciAmount;
+    private Integer gucciAmount = 0;
 
     @OneToMany(mappedBy = "structureDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Canopy> canopyList = new ArrayList<>();

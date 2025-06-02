@@ -38,13 +38,6 @@ export const estimateService = {
     return response.data;
   },
 
-  downloadEstimate: async (id: number): Promise<{ data: Blob; headers: any }> => {
-    const response = await axios.get<Blob>(`${API_URL}/${id}/excelDownload`, {
-      responseType: 'blob',
-    });
-    return response;
-  },
-
   createEstimate: async (estimate: FrontendStructure) => {
     const testMode = estimateService.getTestMode();
     if (testMode === 'json') {

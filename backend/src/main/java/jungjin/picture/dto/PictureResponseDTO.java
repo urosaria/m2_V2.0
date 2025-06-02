@@ -20,6 +20,7 @@ public class PictureResponseDTO {
     private Long id;
     private String name;
     private String etc;
+    @Builder.Default
     private String status = "S1";
     private LocalDateTime createDate;
     private List<PictureFileDTO> files;

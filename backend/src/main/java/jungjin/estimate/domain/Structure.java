@@ -95,13 +95,12 @@ public class Structure {
     @Column(name = "status", length = 1, nullable = false)
     private String status = "S";
 
-/*
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "structure")
-    @OrderBy("sort ASC")
-*/
     @OneToMany(mappedBy = "structure", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calculate> calculateList = new ArrayList<>();
 
     @OneToOne(mappedBy = "structure", cascade = CascadeType.ALL, orphanRemoval = true)
     private StructureDetail structureDetail;
+
+    @OneToOne(mappedBy = "structure", cascade = CascadeType.ALL, orphanRemoval = true)
+    private StructureExcel structureExcel;
 }

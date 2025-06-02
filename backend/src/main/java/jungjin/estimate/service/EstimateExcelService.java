@@ -6,8 +6,11 @@ import jungjin.config.UploadConfig;
 import jungjin.estimate.domain.Calculate;
 import jungjin.estimate.domain.Structure;
 import jungjin.estimate.domain.StructureDetail;
+import jungjin.estimate.domain.StructureExcel;
+import jungjin.estimate.repository.EstimateExcelRepository;
 import jungjin.estimate.repository.EstimateRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
@@ -15,19 +18,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class EstimateExcelService {
     private final UploadConfig uploadConfig;
     private final EstimateRepository estimateRepository;
+    private final EstimateExcelRepository estimateExcelRepository;
+    private long totalPrice = 0;
 
-    public File generateExcelAndReturnFile(Long id) throws IOException {
-        createExcel(id);
+    public File returnFile(Long id) {
         File file = new File(uploadConfig.getUploadDir() + "/estimate/estimate" + id + ".xlsx");
         if (!file.exists()) throw new NotFoundException("Excel not found");
         return file;
@@ -95,16 +103,37 @@ public class EstimateExcelService {
             int doorSubtotalRow = writeSubtotal(sheet, rowindex++, totalCellStyle, doorStart);
 
             // Grand Total Row
-            writeGrandTotal(sheet, rowindex++, totalCellStyle, etcSubtotalRow, doorSubtotalRow);
+            writeGrandTotal(workbook, sheet, rowindex++, totalCellStyle, etcSubtotalRow, doorSubtotalRow);
 
-            // Note Section
-            createNoteRow(sheet, rowindex + 2, lastNoteStyle);
-
-            // Save File
+            // === Define file info ===
             String fileName = "estimate" + structureId + ".xlsx";
-            try (FileOutputStream out = new FileOutputStream(new File(uploadConfig.getUploadDir() + "/estimate/" + fileName))) {
+            Path relativePath = Paths.get("estimate", fileName);
+            Path baseDir = Paths.get(uploadConfig.getUploadDir());
+            Path absolutePath = baseDir.resolve(relativePath);
+
+            File file = absolutePath.toFile();
+            if (file.exists() && !file.delete()) {
+                log.warn("Failed to delete old estimate file: {}", file.getAbsolutePath());
+            }
+
+            // === Create directories if not exist ===
+            Files.createDirectories(absolutePath.getParent());
+
+            try (FileOutputStream out = new FileOutputStream(absolutePath.toFile())) {
                 workbook.write(out);
             }
+
+            StructureExcel excel = new StructureExcel()
+                    .setName(fileName)
+                    .setOriName(fileName)
+                    .setExt("xlsx")
+                    .setPath("/"+relativePath.toString().replace("\\", "/"))
+                    .setTotalPrice(totalPrice)
+                    .setStructure(structure);
+
+            // === Delete existing DB record if present ===
+            estimateExcelRepository.findByStructureId(structureId).ifPresent(estimateExcelRepository::delete);
+            estimateExcelRepository.save(excel);
         }
     }
 
@@ -217,7 +246,7 @@ public class EstimateExcelService {
         }
     }
 
-    private void writeGrandTotal(XSSFSheet sheet, int rowIdx, XSSFCellStyle style, int etcRow, int doorRow) {
+    private void writeGrandTotal(XSSFWorkbook workbook, XSSFSheet sheet, int rowIdx, XSSFCellStyle style, int etcRow, int doorRow) {
         XSSFRow row = sheet.createRow(rowIdx);
 
         XSSFCell titleCell = row.createCell(0);
@@ -235,6 +264,9 @@ public class EstimateExcelService {
                 cell.setCellFormula(colChar + String.valueOf(etcRow + 1) + "+" + colChar + String.valueOf(doorRow + 1));
             }
         }
+        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+        evaluator.evaluateFormulaCell(row.getCell(11));
+        totalPrice = (long) row.getCell(11).getNumericCellValue();
     }
 
     private void createNoteRow(XSSFSheet sheet, int rowIndex, XSSFCellStyle style) {

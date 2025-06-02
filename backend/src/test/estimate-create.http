@@ -6,45 +6,120 @@ POST http://localhost:8080/api/estimates
 Content-Type: application/json
 
 {
-  "title": "Test Estimate",
-  "cityName": "30",
-  "placeName": "Test Site A",
+  "id": 359,
+  "title": null,
+  "cityName": "10",
+  "placeName": "Test",
   "structureType": "AT",
-  "width": 5000,
-  "length": 7000,
-  "height": 3500,
-  "trussHeight": 400,
-  "eavesLength": 250,
-  "rearTrussHeight": 300,
-  "insideWidth": 4900,
-  "insideLength": 6900,
+  "width": 11,
+  "length": 11,
+  "height": 11,
+  "trussHeight": 1,
+  "eavesLength": 0,
+  "rearTrussHeight": 0,
+  "insideWidth": 0,
+  "insideLength": 0,
   "rooftopSideHeight": 0,
   "rooftopWidth": 0,
   "rooftopHeight": 0,
   "rooftopLength": 0,
-  "insideWallYn": "Y",
-  "ceilingYn": "Y",
-  "windowYn": "Y",
-  "doorYn": "Y",
-  "canopyYn": "Y",
-  "downpipeYn": "Y",
-  "insideWallType": "E",
-  "insideWallPaper": "E1",
-  "insideWallThick": 75,
-  "outsideWallType": "E",
-  "outsideWallPaper": "E1",
-  "outsideWallThick": 100,
-  "roofType": "W",
-  "roofPaper": "W1",
-  "roofThick": 150,
-  "ceilingType": "E",
-  "ceilingPaper": "E1",
-  "canopyList": [{ "length": 1000, "amount": 2 }],
-  "ceilingList": [{ "length": 2000, "height": 300, "amount": 1 }],
-  "doorList": [{ "width": 900, "height": 2100, "amount": 1, "type": "SLIDE", "subType": "S" }],
-  "downpipeList": [{ "width": 100, "height": 3000, "amount": 2 }],
-  "insideWallList": [{ "length": 3000, "height": 2400, "amount": 4 }],
-  "windowList": [{ "width": 1200, "height": 1000, "amount": 2, "type": "SLIDING" }]
+  "createdAt": "2025-06-02T21:25:51.407134",
+  "updatedAt": "2025-06-02T21:25:51.407134",
+  "structureDetail": {
+    "insideWallYn": "Y",
+    "ceilingYn": "Y",
+    "windowYn": "Y",
+    "doorYn": "Y",
+    "canopyYn": "Y",
+    "downpipeYn": "N",
+    "insideWallType": "E",
+    "insideWallPaper": "E1",
+    "insideWallThick": 75,
+    "outsideWallType": "E",
+    "outsideWallPaper": "E1",
+    "outsideWallThick": 75,
+    "roofType": "W",
+    "roofPaper": "W1",
+    "roofThick": 75,
+    "ceilingType": "G",
+    "ceilingPaper": "G1",
+    "ceilingThick": 75,
+    "gucci": 100,
+    "gucciInside": null,
+    "gucciInsideAmount": null,
+    "gucciAmount": 1,
+    "canopyList": [
+      {
+        "id": 366,
+        "length": 11,
+        "amount": 1,
+        "width": 0,
+        "height": 0,
+        "type": null,
+        "subType": null,
+        "selectWh": null
+      }
+    ],
+    "ceilingList": [
+      {
+        "id": 354,
+        "length": 11,
+        "amount": 1,
+        "width": 0,
+        "height": 1,
+        "type": null,
+        "subType": null,
+        "selectWh": null
+      }
+    ],
+    "doorList": [
+      {
+        "id": 354,
+        "length": 0,
+        "amount": 1,
+        "width": 11,
+        "height": 111,
+        "type": "O",
+        "subType": "S",
+        "selectWh": null
+      }
+    ],
+    "downpipeList": [],
+    "insideWallList": [
+      {
+        "id": 355,
+        "length": 11,
+        "amount": 1,
+        "width": 0,
+        "height": 1,
+        "type": null,
+        "subType": null,
+        "selectWh": null
+      }
+    ],
+    "windowList": [
+      {
+        "id": 354,
+        "length": 0,
+        "amount": 1,
+        "width": 11,
+        "height": 1,
+        "type": "D",
+        "subType": null,
+        "selectWh": null
+      },
+      {
+        "id": 355,
+        "length": 0,
+        "amount": 2,
+        "width": 22,
+        "height": 2,
+        "type": "S",
+        "subType": null,
+        "selectWh": null
+      }
+    ]
+  }
 }
 
 ### UPDATE Estimate

@@ -63,6 +63,7 @@ public class EstimateController {
             //User user = userService.showUser(2L);
 
             EstimateResponseDTO result = estimateService.createEstimate(request);
+            excelService.createExcel(result.getId());
             return ResponseEntity.ok(result);
 
         } catch (Exception e) {
@@ -89,6 +90,7 @@ public class EstimateController {
     public ResponseEntity<?> updateEstimate(@PathVariable Long id, @RequestBody EstimateRequestDTO request) {
         try {
             EstimateResponseDTO updated = estimateService.updateEstimate(id, request);
+            excelService.createExcel(id);
             return ResponseEntity.ok(updated);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -111,17 +113,5 @@ public class EstimateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to delete estimate: " + e.getMessage());
         }
-    }
-
-    @GetMapping("/{id}/excelDownload")
-    public ResponseEntity<Resource> downloadExcel(@PathVariable Long id) throws IOException {
-        File file = excelService.generateExcelAndReturnFile(id);
-
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"estimate" + id + ".xlsx\"")
-                .contentLength(file.length())
-                .body(resource);
     }
 }

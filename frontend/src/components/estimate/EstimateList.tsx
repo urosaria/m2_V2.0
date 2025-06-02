@@ -1,26 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
+import { 
   Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
-  Card,
-  CardContent,
-  CardActions,
-  CardMedia,
+  DialogTitle,
   Grid,
-  Chip,
   Pagination,
-  useTheme,
-  alpha,
-  Button,
   Typography,
 } from '@mui/material';
 
 import { estimateService } from '../../services/estimateService';
+import { fileService } from '../../services/fileService';
 import { getCityLabel } from '../../types/estimate';
 import { FrontendStructure } from '../../types/estimate';
 
@@ -39,7 +37,7 @@ interface EstimateListProps {
 
 const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange }) => {
   const navigate = useNavigate();
-  const theme = useTheme();
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedEstimateId, setSelectedEstimateId] = useState<number | null>(null);
 
@@ -72,8 +70,6 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
     setPage(value);
   };
 
-  const handleAddEstimate = () => navigate('/estimates/new');
-
   const handleEstimateClick = (id: number) => {
     navigate(`/estimates/calculate/${id}`);
   };
@@ -85,33 +81,20 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
 
   const handleDownloadClick = async (id: number, event: React.MouseEvent) => {
     event.stopPropagation();
+    const estimate = estimates.find(e => e.id === id);
+    if (!estimate?.excel) {
+      showSnackbar('엑셀 파일이 존재하지 않습니다.', 'error');
+      return;
+    }
+
     try {
-      const response = await estimateService.downloadEstimate(id);
-      const blob = new Blob([response.data], {
-        type: response.headers['content-type'] || 'application/octet-stream'
+      await fileService.downloadFile({
+        path: estimate.excel.path,
+        name: estimate.excel.oriName
       });
-  
-      let filename = `estimate-${id}.xlsx`;
-      const disposition = response.headers['content-disposition'];
-      if (disposition && disposition.includes('filename=')) {
-        const match = disposition.match(/filename="?([^"]+)"?/);
-        if (match && match[1]) {
-          filename = decodeURIComponent(match[1]);
-        }
-      }
-  
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-  
       showSnackbar('엑셀 파일이 성공적으로 다운로드되었습니다.', 'success');
     } catch (error) {
-      console.error('Download failed:', error);
+      console.error('Error downloading estimate:', error);
       showSnackbar('엑셀 다운로드에 실패했습니다.', 'error');
     }
   };
@@ -134,10 +117,6 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
     }
   };
 
-  const toggleViewMode = () => {
-    onViewModeChange(viewMode === 'card' ? 'list' : 'card');
-  };
-
   const formatAmount = (amount: number) =>
     new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(amount);
 
@@ -147,26 +126,6 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
     return date.toLocaleString('ko-KR', {
       year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false
     }).replace(/\. /g, '/').replace(',', '');
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'DRAFT': return theme.palette.text.secondary;
-      case 'SUBMITTED': return theme.palette.info.main;
-      case 'APPROVED': return theme.palette.success.main;
-      case 'REJECTED': return theme.palette.error.main;
-      default: return theme.palette.text.primary;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'DRAFT': return '작성중';
-      case 'SUBMITTED': return '제출됨';
-      case 'APPROVED': return '승인됨';
-      case 'REJECTED': return '반려됨';
-      default: return status;
-    }
   };
 
   const getTypeIcon = (type: string) => {
@@ -207,17 +166,8 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
                 {formatDate(estimate.createdAt)}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                {formatAmount(estimate.totalAmount || 0)}
+                {formatAmount(estimate.excel?.totalPrice || 0)}
               </Typography>
-              <Chip
-                label={getStatusText(estimate.status)}
-                size="small"
-                sx={{
-                  bgcolor: alpha(getStatusColor(estimate.status), 0.1),
-                  color: getStatusColor(estimate.status),
-                  fontWeight: 500
-                }}
-              />
             </CardContent>
             <CardActions sx={{ justifyContent: 'flex-end' }}>
               <EstimateListActionButtons
@@ -277,7 +227,7 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
                 mr: 2,
                 p: 1,
                 borderRadius: 1,
-                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05)
+                bgcolor: 'primary.light'
               }}
             />
             <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
@@ -298,18 +248,8 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  {formatAmount(estimate.totalAmount || 0)}
+                  {formatAmount(estimate.excel?.totalPrice || 0)}
                 </Typography>
-                <Chip
-                  label={getStatusText(estimate.status)}
-                  size="small"
-                  sx={{
-                    bgcolor: alpha(getStatusColor(estimate.status), 0.1),
-                    color: getStatusColor(estimate.status),
-                    fontWeight: 500,
-                    whiteSpace: 'nowrap'
-                  }}
-                />
               </Box>
             </Box>
           </Box>
@@ -318,14 +258,7 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
             sx={{ 
               ml: 'auto', 
               display: 'flex', 
-              gap: 1,
-              opacity: 0,
-              transition: (theme) => theme.transitions.create('opacity', {
-                duration: theme.transitions.duration.shorter
-              }),
-              '.MuiBox-root:hover > &': {
-                opacity: 1
-              }
+              gap: 1
             }}
           >
             <EstimateListActionButtons
@@ -343,7 +276,6 @@ const EstimateList: React.FC<EstimateListProps> = ({ viewMode, onViewModeChange 
 
   return (
     <Box>
-
       <CardContent>
         {loading ? (
           <Grid container spacing={3}>

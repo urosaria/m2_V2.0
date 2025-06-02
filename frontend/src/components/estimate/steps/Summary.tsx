@@ -1,6 +1,8 @@
 import React from 'react';
-import { Container, Stack, Button, Box, Paper } from '@mui/material';
+import { Container, Stack, Button, Box } from '@mui/material';
 import { FrontendStructure } from '../../../types/estimate';
+import { fileService } from '../../../services/fileService';
+import { useSnackbar } from '../../../context/SnackbarContext';
 import PanelTable from './summary/PanelTable';
 import DoorWindowTable from './summary/DoorWindowTable';
 import StructureInfo from './summary/StructureInfo';
@@ -15,10 +17,24 @@ const Summary: React.FC<SummaryProps> = ({ structure }) => {
   const calculateList = structure.calculateList || [];
   const panelItems = calculateList.filter(item => item.type !== 'D');
   const doorItems = calculateList.filter(item => item.type === 'D');
+  const { showSnackbar } = useSnackbar();
 
-  const handleExcelDownload = () => {
-    // Replace with actual Excel download logic or endpoint
-    window.open('/api/estimates/export/excel', '_blank');
+  const handleExcelDownload = async () => {
+    if (!structure.excel) {
+      showSnackbar('엑셀 파일이 존재하지 않습니다.', 'error');
+      return;
+    }
+
+    try {
+      await fileService.downloadFile({
+        path: structure.excel.path,
+        name: structure.excel.oriName
+      });
+      showSnackbar('엑셀 파일이 성공적으로 다운로드되었습니다.', 'success');
+    } catch (error) {
+      console.error('Download failed:', error);
+      showSnackbar('엑셀 다운로드에 실패했습니다.', 'error');
+    }
   };
 
   return (
