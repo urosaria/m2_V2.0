@@ -19,6 +19,7 @@ import {
 import { DashboardData } from '../../types/dashboard';
 import { dashboardService } from '../../services/dashboardService';
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import GlobalSnackbar from '../../components/common/GlobalSnackbar';
 
 interface StatCardProps {
   title: string;
@@ -100,6 +101,11 @@ const StatCard: React.FC<StatCardProps> = ({ title, total, today, icon, color })
 };
 
 const Dashboard: React.FC = () => {
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'info' | 'warning' | 'error' }>({ 
+    open: false,
+    message: '',
+    severity: 'info'
+  });
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -113,6 +119,11 @@ const Dashboard: React.FC = () => {
         setError(null);
       } catch (err) {
         setError('대시보드 데이터를 불러오는데 실패했습니다.');
+      setSnackbar({
+        open: true,
+        message: '대시보드 데이터를 불러오는데 실패했습니다.',
+        severity: 'error'
+      });
         console.error('Error fetching dashboard data:', err);
       } finally {
         setLoading(false);
@@ -210,6 +221,12 @@ const Dashboard: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+      <GlobalSnackbar
+        open={snackbar.open}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+        severity={snackbar.severity}
+      />
     </AdminPageLayout>
   );
 };

@@ -5,8 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { Picture } from '../../types/picture';
 import { pictureService } from '../../services/pictureService';
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import GlobalSnackbar from '../../components/common/GlobalSnackbar';
 
 const PictureManagement: React.FC = () => {
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'info' | 'warning' | 'error' }>({ 
+    open: false,
+    message: '',
+    severity: 'info'
+  });
   const navigate = useNavigate();
   const [pictures, setPictures] = useState<Picture[]>([]);
 
@@ -23,6 +29,11 @@ const PictureManagement: React.FC = () => {
     } catch (err) {
       setPictures([]);
       setError('간이투시도 목록을 불러오는데 실패했습니다.');
+      setSnackbar({
+        open: true,
+        message: '간이투시도 목록을 불러오는데 실패했습니다.',
+        severity: 'error'
+      });
       console.error('Error fetching pictures:', err);
     } finally {
       setLoading(false);
@@ -47,6 +58,11 @@ const PictureManagement: React.FC = () => {
 
     try {
       await pictureService.deletePicture(pictureToDelete.id);
+      setSnackbar({
+        open: true,
+        message: '간이투시도가 성공적으로 삭제되었습니다.',
+        severity: 'success'
+      });
       await fetchPictures();
       setError(null);
     } catch (err) {
@@ -232,6 +248,13 @@ const PictureManagement: React.FC = () => {
             </Button>
           </DialogActions>
         </Dialog>
+
+        <GlobalSnackbar
+          open={snackbar.open}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          message={snackbar.message}
+          severity={snackbar.severity}
+        />
     </AdminPageLayout>
   );
 };

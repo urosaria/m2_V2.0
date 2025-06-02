@@ -11,8 +11,9 @@ import UserManagement from './pages/admin/UserManagement';
 import BoardManagement from './pages/admin/BoardManagement';
 import MaterialManagement from './pages/admin/MaterialManagement';
 import PictureManagement from './pages/admin/PictureManagement';
-import Dashboard from './pages/admin/Dashboard';
 import UserRegister from './components/user/UserRegister';
+import Dashboard from './components/dashboard/Dashboard';
+import AdminDashboard from './pages/admin/Dashboard';
 import UserModify from './components/user/UserModify';
 import MyPage from './components/user/MyPage';
 import PasswordReset from './components/user/PasswordReset';
@@ -31,6 +32,7 @@ import PictureEdit from './components/picture/PictureEdit';
 
 // New pages
 import PriceList from './pages/price/PriceList';
+import PriceGuide from './pages/price/PriceGuide';
 import OrderForm from './pages/order/OrderForm';
 import Contact from './pages/contact/Contact';
 
@@ -134,7 +136,7 @@ function App() {
 
             {/* Wrap all layout-based pages inside Main */}
             <Route path="/" element={<Main />}>
-              <Route path="main" element={<div>Main Home Content</div>} />
+              <Route path="main" element={<Dashboard />} />
 
               {/* Estimate routes */}
               <Route path="estimates" element={<EstimatePage />} />
@@ -148,6 +150,7 @@ function App() {
               <Route path="picture/edit/:id" element={<PictureEdit />} />
               
               <Route path="price-list" element={<PriceList />} />
+              <Route path="price-guide" element={<PriceGuide />} />
               <Route path="order" element={<OrderForm />} />
               <Route path="contact" element={<Contact />} />
               
@@ -163,7 +166,7 @@ function App() {
               <Route path="admin/users" element={<UserManagement />} />
               <Route path="admin/boards" element={<BoardManagement />} />
               <Route path="admin/materials" element={<MaterialManagement />} />
-              <Route path="admin/dashboard" element={<Dashboard />} />
+              <Route path="admin/dashboard" element={<AdminDashboard />} />
               <Route path="admin/pictures" element={<PictureManagement />} />
               <Route path="admin/pictures/:id" element={<PictureView />} />
             </Route>

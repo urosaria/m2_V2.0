@@ -28,6 +28,7 @@ import {
   Calculate as CalculateIcon,
   PriceChange as PriceChangeIcon,
   ContactSupport as ContactSupportIcon,
+  MonetizationOn as MonetizationOnIcon,
 } from '@mui/icons-material';
 
 interface MenuItem {
@@ -53,7 +54,8 @@ const menuItems: MenuItem[] = [
   },
   { id: 3, text: '금주판넬단가표', icon: <PriceChangeIcon />, path: '/price-list' },
   { id: 4, text: '판넬발주(문의)하기', icon: <ShoppingCartOutlined />, path: '/order' },
-  { id: 5, text: '발주 & 기타문의전화', icon: <ContactSupportIcon />, path: '/contact' },
+  { id: 5, text: '발주 & 기타문의전화', icon: <ContactSupportIcon />, path: '/contact' },  
+  { id: 6, text: '가격안내', icon: <MonetizationOnIcon />, path: '/price-guide' },
 ];
 
 const adminMenuItems: MenuItem[] = [
