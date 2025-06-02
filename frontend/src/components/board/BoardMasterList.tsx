@@ -4,6 +4,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableHead,
   TableRow,
   TablePagination,
   Skeleton,
@@ -14,7 +15,6 @@ import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { BoardMaster } from '../../services/boardMasterService';
 import {
   StyledTableContainer,
-  StyledTableHead,
   ActionButton
 } from './styles/BoardStyles';
 
@@ -52,7 +52,7 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
       <StyledTableContainer>
         <TableContainer>
         <Table>
-          <StyledTableHead>
+          <TableHead>
             <TableRow>
               <TableCell>이름</TableCell>
               <TableCell>게시판 유형</TableCell>
@@ -60,7 +60,7 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
               <TableCell>상태</TableCell>
               <TableCell align="center">작업</TableCell>
             </TableRow>
-          </StyledTableHead>
+          </TableHead>
           <TableBody>
             {loading ? (
               <TableRow>

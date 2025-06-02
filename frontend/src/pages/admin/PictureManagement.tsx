@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Alert, styled, Tooltip, Typography } from '@mui/material';
-import { Delete as DeleteIcon, Visibility as ViewIcon } from '@mui/icons-material';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Alert, styled, Tooltip, Typography, Box, CircularProgress, IconButton } from '@mui/material';
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Picture } from '../../types/picture';
 import { pictureService } from '../../services/pictureService';
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
-import { AdminButton } from '../../components/admin/AdminButton';
 
 const PictureManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -65,11 +64,15 @@ const PictureManagement: React.FC = () => {
     boxShadow: theme.shadows[2],
     '& .MuiTableHead-root': {
       '& .MuiTableCell-head': {
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.grey[50],
         fontWeight: 600,
+        padding: theme.spacing(2),
       },
     },
     '& .MuiTableBody-root': {
+      '& .MuiTableCell-body': {
+        padding: theme.spacing(2),
+      },
       '& .MuiTableRow-root': {
         '&:hover': {
           backgroundColor: theme.palette.action.hover,
@@ -78,7 +81,13 @@ const PictureManagement: React.FC = () => {
     },
   }));
 
-  const ActionButton = styled(Button)(({ theme }) => ({
+  const StyledChip = styled(Chip)(({ theme }) => ({
+    borderRadius: theme.shape.borderRadius,
+    fontWeight: 500,
+    minWidth: 80,
+  }));
+
+  const StyledIconButton = styled(IconButton)(({ theme }) => ({
     margin: theme.spacing(0, 0.5),
   }));
 
@@ -89,7 +98,9 @@ const PictureManagement: React.FC = () => {
         description="간이투시도 신청 및 처리 현황"
       >
         <Paper sx={{ p: 4, textAlign: 'center' }}>
-          Loading...
+          <Box sx={{ p: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <CircularProgress />
+          </Box>
         </Paper>
       </AdminPageLayout>
     );
@@ -124,7 +135,14 @@ const PictureManagement: React.FC = () => {
                 {Array.isArray(pictures) && pictures.map((picture) => {
                 
                   return (
-                    <TableRow key={picture.id}>
+                    <TableRow 
+                      key={picture.id}
+                      onClick={() => handleViewPicture(picture.id)}
+                      sx={{ 
+                        cursor: 'pointer',
+                        '&:hover td': { backgroundColor: 'action.hover' },
+                      }}
+                    >
                       <TableCell>
                         <Select
                           size="small"
@@ -138,6 +156,7 @@ const PictureManagement: React.FC = () => {
                             }
                           }}
                           sx={{
+                            minWidth: 130,
                             '& .MuiSelect-select': {
                               py: 0.5,
                               display: 'flex',
@@ -146,16 +165,16 @@ const PictureManagement: React.FC = () => {
                           }}
                         >
                           <MenuItem value="S1">
-                            <Chip label="결제대기중" color="warning" size="small" />
+                            <StyledChip label="결제대기중" color="warning" size="small" />
                           </MenuItem>
                           <MenuItem value="S2">
-                            <Chip label="결제완료" color="info" size="small" />
+                            <StyledChip label="결제완료" color="info" size="small" />
                           </MenuItem>
                           <MenuItem value="S3">
-                            <Chip label="진행중" color="primary" size="small" />
+                            <StyledChip label="진행중" color="primary" size="small" />
                           </MenuItem>
                           <MenuItem value="S4">
-                            <Chip label="완료" color="success" size="small" />
+                            <StyledChip label="완료" color="success" size="small" />
                           </MenuItem>
                         </Select>
                       </TableCell>
@@ -166,28 +185,26 @@ const PictureManagement: React.FC = () => {
                         {new Date(picture.createDate).toLocaleDateString()}
                       </TableCell>
                       <TableCell align="center">
-                        <Tooltip title="상세보기">
-                          <AdminButton
-                            variant="outlined"
-                            onClick={() => handleViewPicture(picture.id)}
-                            size="small"
-                            color="primary"
-                            startIcon={<ViewIcon />}
-                          >
-                            상세보기
-                          </AdminButton>
-                        </Tooltip>
-                        <Tooltip title="삭제">
-                          <AdminButton
-                            variant="outlined"
-                            onClick={() => handleDeleteClick(picture)}
-                            size="small"
-                            color="error"
-                            startIcon={<DeleteIcon />}
-                          >
-                            삭제
-                          </AdminButton>
-                        </Tooltip>
+                        <Box onClick={(e) => e.stopPropagation()}>
+                          <Tooltip title="수정">
+                            <StyledIconButton
+                              onClick={() => handleViewPicture(picture.id)}
+                              size="small"
+                              color="primary"
+                            >
+                              <EditIcon />
+                            </StyledIconButton>
+                          </Tooltip>
+                          <Tooltip title="삭제">
+                            <StyledIconButton
+                              onClick={() => handleDeleteClick(picture)}
+                              size="small"
+                              color="error"
+                            >
+                              <DeleteIcon />
+                            </StyledIconButton>
+                          </Tooltip>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   );

@@ -29,6 +29,11 @@ import PictureRegister from './components/picture/PictureRegister';
 import PictureView from './components/picture/PictureView';
 import PictureEdit from './components/picture/PictureEdit';
 
+// New pages
+import PriceList from './pages/price/PriceList';
+import OrderForm from './pages/order/OrderForm';
+import Contact from './pages/contact/Contact';
+
 const theme = createTheme({
   breakpoints: {
     values: {
@@ -141,6 +146,10 @@ function App() {
               <Route path="picture/register" element={<PictureRegister />} />
               <Route path="picture/:id" element={<PictureView />} />
               <Route path="picture/edit/:id" element={<PictureEdit />} />
+              
+              <Route path="price-list" element={<PriceList />} />
+              <Route path="order" element={<OrderForm />} />
+              <Route path="contact" element={<Contact />} />
               
               <Route path="boards/:boardId/posts/register" element={<BoardRegister />} />
               <Route path="boards/:boardId/posts/:postId/edit" element={<BoardModify />} />

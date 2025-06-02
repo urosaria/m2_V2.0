@@ -6,7 +6,6 @@ import {
   TableRow, 
   Paper, 
   Card,
-  Button,
   Typography,
   IconButton
 } from '@mui/material';
@@ -93,9 +92,12 @@ export const ContentBox = styled(Box)(({ theme }) => ({
 }));
 
 export const ActionButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  '&:hover': {
-    color: theme.palette.primary.main,
+  margin: theme.spacing(0, 0.5),
+  '&.MuiIconButton-colorPrimary:hover': {
+    backgroundColor: theme.palette.primary.light,
+  },
+  '&.MuiIconButton-colorError:hover': {
+    backgroundColor: theme.palette.error.light,
   },
 }));
 

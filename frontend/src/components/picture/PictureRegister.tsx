@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
-  Info as InfoIcon,
   Save as SaveIcon,
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';

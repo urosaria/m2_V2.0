@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
+  styled,
   Tab,
   Tabs,
-  TextField,
   Button,
-  Typography,
-  CircularProgress,
-  styled,
   Grid,
-  Paper,
+  TextField,
+  CircularProgress,
 } from '@mui/material';
 import PageLayout from '../common/PageLayout';
 
@@ -26,11 +23,6 @@ interface TabPanelProps {
   index: number;
   value: number;
 }
-
-const FormPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(3),
-}));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -53,7 +45,6 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const MyPage: React.FC = () => {
-  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
