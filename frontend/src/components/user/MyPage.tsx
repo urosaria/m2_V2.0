@@ -9,6 +9,7 @@ import {
   TextField,
   CircularProgress,
 } from '@mui/material';
+import { useSnackbar } from '../../context/SnackbarContext';
 import PageLayout from '../common/PageLayout';
 
 interface UserProfile {
@@ -16,6 +17,10 @@ interface UserProfile {
   email: string;
   phone: string;
   joinDate: string;
+  company_name?: string;
+  company_address?: string;
+  company_phone?: string;
+  company_website?: string;
 }
 
 interface TabPanelProps {
@@ -45,6 +50,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const MyPage: React.FC = () => {
+  const { showSnackbar } = useSnackbar();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -80,14 +86,20 @@ const MyPage: React.FC = () => {
 
   const handleUpdateProfile = async (event: React.FormEvent) => {
     event.preventDefault();
-    // TODO: Implement profile update
-    console.log('Update profile');
+    try {
+      // TODO: Implement profile update logic
+      console.log('Profile update:', profile);
+      showSnackbar('프로필이 성공적으로 업데이트되었습니다.', 'success');
+    } catch (error) {
+      console.error('Profile update failed:', error);
+      showSnackbar('프로필 업데이트에 실패했습니다.', 'error');
+    }
   };
 
   const handleChangePassword = async (event: React.FormEvent) => {
     event.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert('새 비밀번호가 일치하지 않습니다.');
+      showSnackbar('새 비밀번호가 일치하지 않습니다.', 'error');
       return;
     }
     // TODO: Implement password change
@@ -149,6 +161,34 @@ const MyPage: React.FC = () => {
                   label="가입일"
                   value={profile?.joinDate}
                   disabled
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <StyledTextField
+                  fullWidth
+                  label="회사명"
+                  value={profile?.company_name || ''}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <StyledTextField
+                  fullWidth
+                  label="회사 주소"
+                  value={profile?.company_address || ''}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <StyledTextField
+                  fullWidth
+                  label="회사 전화번호"
+                  value={profile?.company_phone || ''}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <StyledTextField
+                  fullWidth
+                  label="회사 웹사이트"
+                  value={profile?.company_website || ''}
                 />
               </Grid>
               <Grid item xs={12}>
