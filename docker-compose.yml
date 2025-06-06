@@ -8,9 +8,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db.qibjhketqjmupgdisash.supabase.co:5432/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: m2jungjin
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db.qibjhketqjmupgdisash.supabase.co:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=m2jungjin
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -20,3 +22,9 @@ services:
       - "3000:3000"
     stdin_open: true
     tty: true
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
