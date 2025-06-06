@@ -39,15 +39,17 @@ public class BoardFileService {
 
     public void saveOrUpdateFiles(Board board, List<MultipartFile> files, String deleteFiles) {
         Set<BoardFile> currentFiles = new HashSet<>(board.getFiles());
-        Set<String> existingFilePaths = currentFiles.stream()
-                .map(BoardFile::getPath)
+        // Check duplicates based on original file names rather than stored path
+        Set<String> existingFileNames = currentFiles.stream()
+                .map(BoardFile::getOriName)
                 .collect(Collectors.toSet());
 
         if(files!=null) {
             files.forEach(file -> {
                 String filePath = null;
                 try {
-                    if (!existingFilePaths.contains(file.getOriginalFilename())) {
+                    // Avoid uploading duplicate files with the same original name
+                    if (!existingFileNames.contains(file.getOriginalFilename())) {
                         filePath = storeFile(file);  // Store the file and get the file path
 
                         // Create new BoardFile entity and save it
@@ -60,6 +62,7 @@ public class BoardFileService {
 
                         boardFileRepository.save(newFile);
                         board.getFiles().add(newFile);  // Add to the board's file list
+                        existingFileNames.add(file.getOriginalFilename());
                     }
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to store file: " + file.getOriginalFilename(), e);
