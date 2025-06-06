@@ -4,21 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>jungjin</groupId>
-        <artifactId>m2-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
-    <artifactId>m2</artifactId>
-    <packaging>war</packaging>
+    <groupId>jungjin</groupId>
+    <artifactId>m2-backend</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>m2-backend</name>
     <description>Backend service for m2 project</description>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>21</java.version>
-        <spring.boot.version>3.2.1</spring.boot.version>
+        <spring-boot.version>3.2.1</spring-boot.version>
         <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
         <jakarta.validation.version>3.0.2</jakarta.validation.version>
         <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
@@ -32,7 +29,10 @@
         <postgresql.version>42.7.1</postgresql.version>
         <mysql.version>8.0.33</mysql.version>
         <handlebars.version>4.3.1</handlebars.version>
-        <thumbnailator.verson>0.4.14</thumbnailator.verson>
+        <thumbnailator.version>0.4.14</thumbnailator.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
     </properties>
 
     <dependencies>
@@ -153,7 +153,7 @@
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
-            <version>${thumbnailator.verson}</version>
+            <version>${thumbnailator.version}</version>
         </dependency>
         <!-- Lombok -->
         <dependency>
@@ -203,17 +203,31 @@
         </repository>
     </repositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

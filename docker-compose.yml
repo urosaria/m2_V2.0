@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: springboot-backend
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db.qibjhketqjmupgdisash.supabase.co:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: m2jungjin
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: react-frontend
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
