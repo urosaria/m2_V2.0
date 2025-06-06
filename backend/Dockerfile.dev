@@ -1,0 +1,10 @@
+FROM eclipse-temurin:21-jdk
+
+RUN apt-get update && apt-get install -y maven
+
+WORKDIR /app
+
+# Mount will overwrite this in dev anyway
+COPY . .
+
+CMD ["mvn", "spring-boot:run"]

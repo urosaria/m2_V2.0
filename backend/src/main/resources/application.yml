@@ -6,15 +6,21 @@ spring:
   freemarker:
     cache: false
 
+#  datasource:
+#    url: jdbc:postgresql://db.qibjhketqjmupgdisash.supabase.co:5432/postgres
+#    username: postgres
+#    password: m2jungjin
+#    driver-class-name: org.postgresql.Driver
+
   datasource:
-    url: jdbc:postgresql://db.qibjhketqjmupgdisash.supabase.co:5432/postgres
-    username: postgres
+    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres
+    username: postgres.qibjhketqjmupgdisash
     password: m2jungjin
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     open-in-view: false
     properties:
@@ -33,8 +39,6 @@ app:
 
 logging:
   level:
-    org.springframework.boot.autoconfigure: DEBUG
-    org.hibernate: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.hibernate.engine.jdbc.batch.internal.BatchingBatch: DEBUG

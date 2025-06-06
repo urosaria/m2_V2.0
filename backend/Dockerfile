@@ -1,25 +1,18 @@
-# -------- Stage 1: Build --------
-FROM eclipse-temurin:21-jdk AS build
-
-WORKDIR /app
-
-# Copy Maven files first to leverage Docker cache
-COPY pom.xml .
-COPY src/ src/
-
-# Optional: install Maven if not included in base image (for older images)
-RUN apt-get update && apt-get install -y maven
-
-# Build the Spring Boot app
-RUN mvn clean package -DskipTests
-
-# -------- Stage 2: Runtime --------
+# -------- Dev Environment --------
 FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-# Copy the packaged JAR from the build stage
-COPY --from=build /app/target/m2-backend-0.0.1-SNAPSHOT.jar app.jar
+# Install required tools
+RUN apt-get update && apt-get install -y maven curl && apt-get clean
 
-# Run the app
-CMD ["java", "-jar", "app.jar"]
+# Cache dependencies by copying only pom.xml first
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy entire source for development
+COPY . .
+
+# Use host's Maven cache if mounted (via docker-compose.override.yml)
+# and run with spring-boot:run for hot reload support
+CMD ["mvn", "spring-boot:run"]
