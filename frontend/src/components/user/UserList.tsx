@@ -19,7 +19,8 @@ import {
   useTheme,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import userService, { User, PaginatedResponse } from '../../services/userService';
+import userService, { PaginatedResponse } from '../../services/userService';
+import { User } from '../../types/user';
 
 
 interface UserListProps {

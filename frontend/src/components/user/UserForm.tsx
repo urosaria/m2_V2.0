@@ -9,7 +9,8 @@ import {
   Box,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import userService, { User } from '../../services/userService';
+import userService from '../../services/userService';
+import { User } from '../../types/user';
 import GlobalSnackbar from '../common/GlobalSnackbar';
 
 interface UserFormProps {
@@ -25,6 +26,10 @@ interface UserFormData {
   email: string;
   phone: string;
   password?: string;
+  companyName?: string;
+  companyAddress?: string;
+  companyPhone?: string;
+  companyWebsite?: string;
 }
 
 const UserForm: React.FC<UserFormProps> = ({ user, open, onClose, onSuccess }) => {
@@ -41,7 +46,11 @@ const UserForm: React.FC<UserFormProps> = ({ user, open, onClose, onSuccess }) =
       name: '',
       email: '',
       phone: '',
-      password: ''
+      password: '',
+      companyName: '',
+      companyAddress: '',
+      companyPhone: '',
+      companyWebsite: ''
     }
   });
 
@@ -55,6 +64,10 @@ const UserForm: React.FC<UserFormProps> = ({ user, open, onClose, onSuccess }) =
           name: user.name,
           email: user.email,
           phone: user.phone,
+          companyName: user.companyName || '',
+          companyAddress: user.companyAddress || '',
+          companyPhone: user.companyPhone || '',
+          companyWebsite: user.companyWebsite || '',
         });
         // Clear password field for existing users
         setValue('password', '', { shouldValidate: false });
@@ -65,7 +78,11 @@ const UserForm: React.FC<UserFormProps> = ({ user, open, onClose, onSuccess }) =
           name: '',
           email: '',
           phone: '',
-          password: ''
+          password: '',
+          companyName: '',
+          companyAddress: '',
+          companyPhone: '',
+          companyWebsite: ''
         });
       }
     }
@@ -86,7 +103,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, open, onClose, onSuccess }) =
       if (user?.num) {
         // For editing existing user
         const { password, id, ...updateData } = data;
-        await userService.updateUser(user.num, updateData);
+        await userService.updateUser(user.num, { ...updateData, id, password: password || 'temp' });
         setSnackbar({ open: true, message: '사용자가 성공적으로 수정되었습니다.', severity: 'success' });
         onSuccess();
         onClose();
@@ -178,6 +195,22 @@ const UserForm: React.FC<UserFormProps> = ({ user, open, onClose, onSuccess }) =
                 })}
                 error={!!errors.phone}
                 helperText={errors.phone?.message}
+              />
+              <TextField
+                label="회사명"
+                {...register('companyName')}
+              />
+              <TextField
+                label="회사 주소"
+                {...register('companyAddress')}
+              />
+              <TextField
+                label="회사 전화번호"
+                {...register('companyPhone')}
+              />
+              <TextField
+                label="회사 웹사이트"
+                {...register('companyWebsite')}
               />
             </Box>
           </DialogContent>

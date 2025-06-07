@@ -27,6 +27,7 @@ import {
 import { Visibility, VisibilityOff, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { useSnackbar } from '../../context/SnackbarContext';
 import logo from '../../assets/images/m2/logo.png';
+import userService from '../../services/userService';
 
 interface RegisterFormData {
   username: string;
@@ -80,12 +81,23 @@ const UserRegister: React.FC = () => {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      console.log('Form submitted:', data);
+      await userService.registerUser({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+        agreeYn: data.agreeToTerms ? 'Y' : 'N',
+        company_name: data.company_name,
+        company_address: data.company_address,
+        company_phone: data.company_phone,
+        company_website: data.company_website,
+      });
       showSnackbar('회원가입이 완료되었습니다.', 'success');
       navigate('/login');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration failed:', error);
-      showSnackbar('회원가입에 실패했습니다.', 'error');
+      const message = error?.response?.data?.message || '회원가입에 실패했습니다.';
+      showSnackbar(message, 'error');
     }
   };
 
