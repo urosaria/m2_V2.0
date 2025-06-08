@@ -43,7 +43,7 @@ const BoardRegister: React.FC = () => {
     title: '',
     contents: '',
     boardMaster: null,
-    user: user ? {
+    user: user && user.num !== null ? {
       num: user.num,
       name: user.name
     } : null
@@ -81,10 +81,10 @@ const BoardRegister: React.FC = () => {
     if (!post.user) {
       setPost(prev => ({
         ...prev,
-        user: {
-          num: user.num,
+        user: user ? {
+          num: user.num!,
           name: user.name
-        }
+        } : null
       }));
     }
 

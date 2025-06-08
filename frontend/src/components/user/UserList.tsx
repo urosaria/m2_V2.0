@@ -22,10 +22,8 @@ import {
   StyledTableRow,
 } from '../board/styles/BoardStyles';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import userService, { PaginatedResponse } from '../../services/userService';
+import userService from '../../services/userService';
 import { User } from '../../types/user';
-import userService, { User } from '../../services/userService';
-
 
 interface UserListProps {
   onEdit: (user: User) => void;
@@ -138,8 +136,8 @@ const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
                       <Box>{user.email}</Box>
                       <Box>{user.phone}</Box>
                       <Box>
-                        {new Date(user.createDate).toLocaleDateString()} /
-                        {new Date(user.updateDate).toLocaleDateString()}
+                        {user.createDate && new Date(user.createDate).toLocaleDateString()} /
+                        {user.updateDate && new Date(user.updateDate).toLocaleDateString()}
                       </Box>
                     </Box>
                   )}
@@ -147,10 +145,10 @@ const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
                 {!isMobile && <StyledTableCell>{user.email}</StyledTableCell>}
                 {!isMobile && <StyledTableCell>{user.phone}</StyledTableCell>}
                 {!isMobile && (
-                  <StyledTableCell>{new Date(user.createDate).toLocaleDateString()}</StyledTableCell>
+                  <StyledTableCell>{user.createDate && new Date(user.createDate).toLocaleDateString()}</StyledTableCell>
                 )}
                 {!isMobile && (
-                  <StyledTableCell>{new Date(user.updateDate).toLocaleDateString()}</StyledTableCell>
+                  <StyledTableCell>{user.updateDate && new Date(user.updateDate).toLocaleDateString()}</StyledTableCell>
                 )}
                 <StyledTableCell align="center">
                   {user.status !== 'D' ? (

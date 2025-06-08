@@ -110,7 +110,10 @@ const UserForm: React.FC<UserFormProps> = ({ user, open, onClose, onSuccess }) =
       } else {
         // For creating new user
         // For new users, include password and id
-        await userService.createUser(data);
+        await userService.createUser({
+          ...data,
+          password: data.password!
+        });
         setSnackbar({ open: true, message: '사용자가 성공적으로 생성되었습니다.', severity: 'success' });
         onSuccess();
       }
