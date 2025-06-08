@@ -7,12 +7,10 @@ import {
   Box,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Pagination,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import PageLayout from '../common/PageLayout';
 import { formatDate } from '../../utils/dateUtils';
@@ -20,6 +18,10 @@ import { boardMasterService } from '../../services/boardMasterService';
 import { boardService, BoardPost } from '../../services/boardService';
 import {
   CenteredBox,
+  StyledTableContainer,
+  StyledTableHead,
+  StyledTableCell,
+  StyledTableRow,
 } from './styles/BoardStyles';
 
 
@@ -41,6 +43,8 @@ const BoardList: React.FC<BoardListProps> = ({ title, description, boardId: prop
 
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -116,7 +120,8 @@ const BoardList: React.FC<BoardListProps> = ({ title, description, boardId: prop
         </Stack>
       }
     >
-      <TableContainer component={Paper}>
+      <StyledTableContainer>
+        <TableContainer>
         {totalElements === 0 ? (
           <Box p={4} textAlign="center">
             <Typography variant="body1" color="text.secondary">
@@ -125,45 +130,64 @@ const BoardList: React.FC<BoardListProps> = ({ title, description, boardId: prop
           </Box>
         ) : (
           <Table sx={{ minWidth: 650 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell width="60%"><strong>제목</strong></TableCell>
-                <TableCell width="15%"><strong>작성자</strong></TableCell>
-                <TableCell width="15%"><strong>작성일</strong></TableCell>
-                <TableCell width="10%" align="center"><strong>첨부</strong></TableCell>
-              </TableRow>
-            </TableHead>
+            <StyledTableHead>
+              <StyledTableRow>
+                <StyledTableCell width="60%"><strong>제목</strong></StyledTableCell>
+                {!isMobile && (
+                  <StyledTableCell width="15%"><strong>작성자</strong></StyledTableCell>
+                )}
+                {!isMobile && (
+                  <StyledTableCell width="15%"><strong>작성일</strong></StyledTableCell>
+                )}
+                {!isMobile && (
+                  <StyledTableCell width="10%" align="center"><strong>첨부</strong></StyledTableCell>
+                )}
+              </StyledTableRow>
+            </StyledTableHead>
             <TableBody>
               {posts.map((post) => (
-                <TableRow 
+                <StyledTableRow
                   key={post.id}
-                  hover
-                  sx={{ 
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: 'action.hover'
-                    }
-                  }}
                   onClick={() => navigate(`/boards/${boardId}/posts/${post.id}`)}
                 >
-                  <TableCell>
+                  <StyledTableCell>
                       {post.title}
-                  </TableCell>
-                  <TableCell >
-                    {post.userName}
-                  </TableCell>
-                  <TableCell>
-                    {formatDate(post.createDate)}
-                  </TableCell>
-                  <TableCell align="center">
-                    {post.files?.length || 0}
-                  </TableCell>
-                </TableRow>
+                      {isMobile && (
+                        <Box display="flex" justifyContent="space-between" mt={0.5}>
+                          <Typography variant="caption" color="text.secondary">
+                            {post.userName}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {formatDate(post.createDate)}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            첨부 {post.files?.length || 0}
+                          </Typography>
+                        </Box>
+                      )}
+                  </StyledTableCell>
+                  {!isMobile && (
+                    <StyledTableCell>
+                      {post.userName}
+                    </StyledTableCell>
+                  )}
+                  {!isMobile && (
+                    <StyledTableCell>
+                      {formatDate(post.createDate)}
+                    </StyledTableCell>
+                  )}
+                  {!isMobile && (
+                    <StyledTableCell align="center">
+                      {post.files?.length || 0}
+                    </StyledTableCell>
+                  )}
+                </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         )}
-      </TableContainer>
+        </TableContainer>
+      </StyledTableContainer>
       {totalPages > 0 && (
         <CenteredBox>
           <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', bgcolor: 'background.default', p: 2, borderRadius: 1 }}>

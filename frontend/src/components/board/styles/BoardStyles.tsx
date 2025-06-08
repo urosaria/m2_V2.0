@@ -34,7 +34,11 @@ export const StyledTableContainer = styled(Paper)(({ theme }) => ({
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[1]
+  boxShadow: theme.shadows[1],
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  overflowX: 'auto',
+  width: '100%'
 }));
 
 export const StyledTableHead = styled(TableHead)(({ theme }) => ({
@@ -48,6 +52,9 @@ export const StyledTableHead = styled(TableHead)(({ theme }) => ({
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(1.5),
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1)
+  }
 }));
 
 export const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -58,6 +65,9 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
     backgroundColor: theme.palette.action.selected,
     cursor: 'pointer',
   },
+  '& td': {
+    wordBreak: 'break-word'
+  }
 }));
 
 // Form Components
