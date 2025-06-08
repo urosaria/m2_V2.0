@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Stack } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import PictureList from '../../components/picture/PictureList';
-import { Picture } from '../../types/picture';
 import PageLayout from '../../components/common/PageLayout';
 
 const PicturePage: React.FC = () => {

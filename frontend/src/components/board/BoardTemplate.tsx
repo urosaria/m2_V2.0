@@ -1,9 +1,6 @@
 import React from 'react';
-import { useParams, Navigate, useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { useParams, Navigate } from 'react-router-dom';
 import BoardList from './BoardList';
-import PageLayout from '../common/PageLayout';
 
 const BOARD_TEMPLATES = {
   '1': {
@@ -22,7 +19,6 @@ const BOARD_TEMPLATES = {
 
 const BoardTemplate: React.FC = () => {
   const { boardId } = useParams<{ boardId: string }>();
-  const navigate = useNavigate();
 
   if (!boardId || !BOARD_TEMPLATES[boardId as keyof typeof BOARD_TEMPLATES]) {
     return <Navigate to="/" replace />;

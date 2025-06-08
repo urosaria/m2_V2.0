@@ -31,7 +31,6 @@ const EstimateEditForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [structure, setStructure] = useState<FrontendStructure | null>(null);
@@ -100,10 +99,6 @@ const EstimateEditForm: React.FC = () => {
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
-  };
-
-  const handleCancel = () => {
-    navigate('/estimates');
   };
 
   const handleListEstimate = () => navigate('/estimates');

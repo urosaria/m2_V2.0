@@ -2,19 +2,21 @@ import React from 'react';
 import {
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
   TablePagination,
   Skeleton,
   Link,
-  Tooltip
+  Tooltip,
+  Box
 } from '@mui/material';
+import { useTheme, useMediaQuery } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { BoardMaster } from '../../services/boardMasterService';
 import {
   StyledTableContainer,
+  StyledTableHead,
+  StyledTableCell,
+  StyledTableRow,
   ActionButton
 } from './styles/BoardStyles';
 
@@ -47,24 +49,26 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
   onDelete,
   onBoardClick
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <>
       <StyledTableContainer>
         <TableContainer>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>이름</TableCell>
-              <TableCell>게시판 유형</TableCell>
-              <TableCell>답변 가능</TableCell>
-              <TableCell>상태</TableCell>
-              <TableCell align="center">작업</TableCell>
-            </TableRow>
-          </TableHead>
+          <StyledTableHead>
+            <StyledTableRow>
+              <StyledTableCell>이름</StyledTableCell>
+              {!isMobile && <StyledTableCell>게시판 유형</StyledTableCell>}
+              {!isMobile && <StyledTableCell>답변 가능</StyledTableCell>}
+              {!isMobile && <StyledTableCell>상태</StyledTableCell>}
+              <StyledTableCell align="center">작업</StyledTableCell>
+            </StyledTableRow>
+          </StyledTableHead>
           <TableBody>
             {loading ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
+              <StyledTableRow>
+                <StyledTableCell colSpan={5} align="center">
                   {[...Array(3)].map((_, index) => (
                     <Skeleton
                       key={index}
@@ -73,24 +77,24 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
                       sx={{ my: 1, mx: 'auto', maxWidth: '80%' }}
                     />
                   ))}
-                </TableCell>
-              </TableRow>
+                </StyledTableCell>
+              </StyledTableRow>
             ) : error ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ color: 'error.main' }}>
+              <StyledTableRow>
+                <StyledTableCell colSpan={5} align="center" sx={{ color: 'error.main' }}>
                   {error}
-                </TableCell>
-              </TableRow>
+                </StyledTableCell>
+              </StyledTableRow>
             ) : boards.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
+              <StyledTableRow>
+                <StyledTableCell colSpan={5} align="center">
                   등록된 게시판이 없습니다.
-                </TableCell>
-              </TableRow>
+                </StyledTableCell>
+              </StyledTableRow>
             ) : (
               boards.map((board) => (
-                <TableRow key={board.id}>
-                  <TableCell>
+                <StyledTableRow key={board.id}>
+                  <StyledTableCell>
                     <Link
                       component="button"
                       variant="body2"
@@ -102,15 +106,34 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
                     >
                       {board.name}
                     </Link>
-                  </TableCell>
-                  <TableCell>
-                    {board.skinName === 'notice' && '공지사항'}
-                    {board.skinName === 'faq' && 'FAQ'}
-                    {board.skinName === 'qna' && 'Q&A'}
-                  </TableCell>
-                  <TableCell>{board.replyYn === 'Y' ? '가능' : '불가능'}</TableCell>
-                  <TableCell>{board.status === 'S' ? '사용' : '삭제'}</TableCell>
-                  <TableCell align="center">
+                    {isMobile && (
+                      <Box mt={0.5} fontSize="0.75rem" color="text.secondary">
+                        <Box>
+                          {board.skinName === 'notice' && '공지사항'}
+                          {board.skinName === 'faq' && 'FAQ'}
+                          {board.skinName === 'qna' && 'Q&A'}
+                        </Box>
+                        <Box>
+                          {board.replyYn === 'Y' ? '답변 가능' : '답변 불가'} /
+                          {board.status === 'S' ? '사용' : '삭제'}
+                        </Box>
+                      </Box>
+                    )}
+                  </StyledTableCell>
+                  {!isMobile && (
+                    <StyledTableCell>
+                      {board.skinName === 'notice' && '공지사항'}
+                      {board.skinName === 'faq' && 'FAQ'}
+                      {board.skinName === 'qna' && 'Q&A'}
+                    </StyledTableCell>
+                  )}
+                  {!isMobile && (
+                    <StyledTableCell>{board.replyYn === 'Y' ? '가능' : '불가능'}</StyledTableCell>
+                  )}
+                  {!isMobile && (
+                    <StyledTableCell>{board.status === 'S' ? '사용' : '삭제'}</StyledTableCell>
+                  )}
+                  <StyledTableCell align="center">
                     <Tooltip title="수정">
                       <ActionButton
                         onClick={() => onEdit(board)}
@@ -129,8 +152,8 @@ const BoardMasterList: React.FC<BoardMasterListProps> = ({
                         <DeleteIcon />
                       </ActionButton>
                     </Tooltip>
-                  </TableCell>
-                </TableRow>
+                  </StyledTableCell>
+                </StyledTableRow>
               ))
             )}
           </TableBody>

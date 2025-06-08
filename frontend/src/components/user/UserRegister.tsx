@@ -227,7 +227,7 @@ const UserRegister: React.FC = () => {
                           helperText={errors.company_website?.message}
                           {...register('company_website', {
                             pattern: {
-                              value: /^(https?:\/\/)?([\w-]+\.)+[\w-]+[\/\w.@?^=%&:/~+#-]*$/,
+                              value: /^(https?:\/\/)?([\w-]+\.)+[\w-]+[/\w.@?^=%&:~+#-]*$/,
                               message: '올바른 웹사이트 주소 형식이 아닙니다.'
                             }
                           })}
