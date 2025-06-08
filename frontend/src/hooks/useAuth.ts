@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-
-export interface User {
-  num: number;
-  name: string;
-  email: string;
-  role: string;
-}
+import { User } from '../types/user';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);

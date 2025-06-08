@@ -1,17 +1,7 @@
 import axios from 'axios';
+import { User } from '../types/user';
 
 const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/user`;
-
-export interface User {
-  num: number | null;
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  createDate: string;
-  updateDate: string;
-  status?: string;
-}
 
 export interface PaginatedResponse<T> {
   content: T[];
@@ -34,13 +24,53 @@ const userService = {
     return response.data;
   },
 
-  createUser: async (user: Omit<User, 'num' | 'createDate' | 'updateDate'>) => {
+  createUser: async (user: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+    agreeYn?: string;
+    companyName?: string;
+    companyAddress?: string;
+    companyPhone?: string;
+    companyWebsite?: string;
+  }) => {
     const response = await axios.post<User>(`${API_URL}`, user);
     return response.data;
   },
 
-  updateUser: async (num: number, user: Partial<User>) => {
-    const response = await axios.put(`${API_URL}/${num}`, user);
+  registerUser: async (data: {
+    username: string;
+    email: string;
+    password: string;
+    phone: string;
+    agreeYn: string;
+    company_name?: string;
+    company_address?: string;
+    company_phone?: string;
+    company_website?: string;
+  }) => {
+    const payload = {
+      id: data.username,
+      name: data.username,
+      password: data.password,
+      email: data.email,
+      phone: data.phone,
+      agreeYn: data.agreeYn,
+      companyName: data.company_name,
+      companyAddress: data.company_address,
+      companyPhone: data.company_phone,
+      companyWebsite: data.company_website,
+    };
+
+    const response = await axios.post(`${API_URL}`, payload);
+    return response.data;
+  },
+
+  updateUser: async (num: number, user: Partial<User> & { id: string; password?: string }) => {
+    const payload = { password: 'temp', ...user };
+    const response = await axios.put(`${API_URL}/${num}`, payload);
     return response.data;
   },
 

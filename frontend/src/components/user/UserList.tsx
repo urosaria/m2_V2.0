@@ -22,6 +22,8 @@ import {
   StyledTableRow,
 } from '../board/styles/BoardStyles';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import userService, { PaginatedResponse } from '../../services/userService';
+import { User } from '../../types/user';
 import userService, { User } from '../../services/userService';
 
 

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Add as AddIcon } from '@mui/icons-material';
 import UserList from '../../components/user/UserList';
 import UserForm from '../../components/user/UserForm';
-import userService, { User } from '../../services/userService';
+import userService from '../../services/userService';
+import { User } from '../../types/user';
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import { AdminButton } from '../../components/admin/AdminButton';
 
@@ -21,6 +22,10 @@ const UserManagement: React.FC = () => {
           name: '',
           email: '',
           phone: '',
+          companyName: '',
+          companyAddress: '',
+          companyPhone: '',
+          companyWebsite: '',
         } as User);
       } else {
         // Fetch full user details before editing
