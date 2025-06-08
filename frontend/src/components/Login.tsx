@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import logo from '../assets/images/m2/logo.png';
+import useAuth from '../hooks/useAuth';
 
 interface LoginFormData {
   email: string;
@@ -36,12 +37,14 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
     rememberMe: false,
   });
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = event.target;
@@ -51,9 +54,14 @@ const Login: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    navigate('/main');
+    const success = await login(formData.email, formData.password);
+    if (success) {
+      navigate('/main');
+    } else {
+      setErrorMsg('로그인에 실패했습니다');
+    }
   };
 
   const handleClickShowPassword = () => {
@@ -154,6 +162,11 @@ const Login: React.FC = () => {
               >
                 로그인
               </Button>
+              {errorMsg && (
+                <Typography color="error" align="center">
+                  {errorMsg}
+                </Typography>
+              )}
 
               <Stack
                 direction="row"

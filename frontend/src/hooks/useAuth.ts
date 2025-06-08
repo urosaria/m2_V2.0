@@ -8,26 +8,41 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    checkAuthStatus();
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+    if (storedToken && storedUser) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
   }, []);
 
   const checkAuthStatus = async () => {
-    try {
-      const response = await axios.get('/api/user/current');
-      setUser(response.data as User); // <- fixed
-      setError(null);
-    } catch (err) {
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+    if (storedToken && storedUser) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+      setUser(JSON.parse(storedUser));
+    } else {
       setUser(null);
-      setError('Authentication failed');
-    } finally {
-      setLoading(false);
     }
   };
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
-      setUser(response.data as User); // <- fixed
+      const response = await axios.post('/api/auth/login', { id: email, password });
+      const data = response.data;
+      const userData: User = {
+        num: null,
+        id: data.id,
+        name: data.name,
+        email: email,
+        role: data.role,
+      };
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
       setError(null);
       return true;
     } catch (err) {
@@ -37,13 +52,11 @@ export function useAuth() {
   };
 
   const logout = async () => {
-    try {
-      await axios.post('/api/auth/logout');
-      setUser(null);
-      setError(null);
-    } catch (err) {
-      setError('Logout failed');
-    }
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    delete axios.defaults.headers.common['Authorization'];
+    setUser(null);
+    setError(null);
   };
 
   const isAuthenticated = !!user;
