@@ -26,6 +26,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { useThemeContext } from '../../theme/ThemeContext';
 import logo from '../../assets/images/m2/logo_header.png';
+import useAuth from '../../hooks/useAuth';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
@@ -76,6 +77,7 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle, onCollapseToggle }) => 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { darkMode, toggleDarkMode } = useThemeContext();
+    const { logout } = useAuth();
 
     const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
     const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
@@ -213,7 +215,15 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle, onCollapseToggle }) => 
                 >
                   설정
                 </MenuItem>
-                <MenuItem onClick={handleMenuClose}>로그아웃</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    logout();
+                    navigate('/login');
+                  }}
+                >
+                  로그아웃
+                </MenuItem>
             </Menu>
 
             <Menu
