@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Paper,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
   TablePagination,
   IconButton,
   Button,
@@ -17,7 +13,14 @@ import {
   DialogContent,
   DialogActions,
   useTheme,
+  useMediaQuery,
 } from '@mui/material';
+import {
+  StyledTableContainer,
+  StyledTableHead,
+  StyledTableCell,
+  StyledTableRow,
+} from '../board/styles/BoardStyles';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import userService, { User, PaginatedResponse } from '../../services/userService';
 
@@ -29,6 +32,7 @@ interface UserListProps {
 
 const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [users, setUsers] = useState<User[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -81,29 +85,30 @@ const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
 
   return (
     <Box sx={{ width: '100%', p: 3 }}>
-      <TableContainer component={Paper}>
+      <StyledTableContainer>
+        <TableContainer>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>이름</TableCell>
-              <TableCell>이메일</TableCell>
-              <TableCell>전화번호</TableCell>
-              <TableCell>생성일</TableCell>
-              <TableCell>수정일</TableCell>
-              <TableCell align="center">작업</TableCell>
-            </TableRow>
-          </TableHead>
+          <StyledTableHead>
+            <StyledTableRow>
+              <StyledTableCell>ID</StyledTableCell>
+              <StyledTableCell>이름</StyledTableCell>
+              {!isMobile && <StyledTableCell>이메일</StyledTableCell>}
+              {!isMobile && <StyledTableCell>전화번호</StyledTableCell>}
+              {!isMobile && <StyledTableCell>생성일</StyledTableCell>}
+              {!isMobile && <StyledTableCell>수정일</StyledTableCell>}
+              <StyledTableCell align="center">작업</StyledTableCell>
+            </StyledTableRow>
+          </StyledTableHead>
           <TableBody>
             {users.map((user) => (
-              <TableRow 
+              <StyledTableRow
                 key={user.num}
                 sx={{
                   backgroundColor: user.status === 'D' ? 'rgba(0, 0, 0, 0.04)' : 'inherit'
                 }}
               >
-                <TableCell>{user.id}</TableCell>
-                <TableCell>
+                <StyledTableCell>{user.id}</StyledTableCell>
+                <StyledTableCell>
                   {user.name}
                   {user.status === 'D' && (
                     <Typography
@@ -117,12 +122,26 @@ const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
                     >
                     </Typography>
                   )}
-                </TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.phone}</TableCell>
-                <TableCell>{new Date(user.createDate).toLocaleDateString()}</TableCell>
-                <TableCell>{new Date(user.updateDate).toLocaleDateString()}</TableCell>
-                <TableCell align="center">
+                  {isMobile && (
+                    <Box mt={0.5} fontSize="0.75rem" color="text.secondary">
+                      <Box>{user.email}</Box>
+                      <Box>{user.phone}</Box>
+                      <Box>
+                        {new Date(user.createDate).toLocaleDateString()} /
+                        {new Date(user.updateDate).toLocaleDateString()}
+                      </Box>
+                    </Box>
+                  )}
+                </StyledTableCell>
+                {!isMobile && <StyledTableCell>{user.email}</StyledTableCell>}
+                {!isMobile && <StyledTableCell>{user.phone}</StyledTableCell>}
+                {!isMobile && (
+                  <StyledTableCell>{new Date(user.createDate).toLocaleDateString()}</StyledTableCell>
+                )}
+                {!isMobile && (
+                  <StyledTableCell>{new Date(user.updateDate).toLocaleDateString()}</StyledTableCell>
+                )}
+                <StyledTableCell align="center">
                   {user.status !== 'D' ? (
                     <>
                       <IconButton onClick={() => onEdit(user)} color="primary">
@@ -140,12 +159,13 @@ const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
                       삭제된 사용자
                     </Typography>
                   )}
-                </TableCell>
-              </TableRow>
+                </StyledTableCell>
+              </StyledTableRow>
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+        </TableContainer>
+      </StyledTableContainer>
 
       <TablePagination
         component="div"
