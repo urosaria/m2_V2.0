@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Paper,
   Table,
@@ -32,12 +32,6 @@ import {
   DoorType,
   DoorSubType,
   MaterialSearchCriteria,
-  PanelTypeLabels,
-  PanelSubTypeLabels,
-  SubMaterialSet01SubTypeLabels,
-  SubMaterialSet02SubTypeLabels,
-  WindowSubTypeLabels,
-  DoorSubTypeLabels,
   GubunCodeLabels,
   SubGubunCodeLabels,
   ValidGubunSubGubunCombinations
@@ -79,30 +73,6 @@ const getAvailableSubTypes = (gubun?: GubunCode, type?: MaterialType): MaterialS
       return Object.values(DoorSubType);
     default:
       return [];
-  }
-};
-
-const getTypeLabel = (gubun: GubunCode, type: string): string => {
-  switch (gubun) {
-    case GubunCode.PANEL:
-      return PanelTypeLabels[type as PanelType] || type;
-    default:
-      return type;
-  }
-};
-
-const getSubTypeLabel = (gubun: GubunCode, subType: string): string => {
-  switch (gubun) {
-    case GubunCode.PANEL:
-      return PanelSubTypeLabels[subType as PanelSubType] || subType;
-    case GubunCode.SUB_MATERIAL_SET_01:
-      return SubMaterialSet01SubTypeLabels[subType as SubMaterialSet01SubType] || subType;
-    case GubunCode.WINDOW:
-      return WindowSubTypeLabels[subType as WindowSubType] || subType;
-    case GubunCode.DOOR:
-      return DoorSubTypeLabels[subType as DoorSubType] || subType;
-    default:
-      return subType;
   }
 };
 

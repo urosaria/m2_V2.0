@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Button,
   TextField,
@@ -21,8 +21,6 @@ import {
 import { boardService, BoardPost } from '../../services/boardService';
 import PageLayout from '../common/PageLayout';
 import {
-  CenteredBox,
-  FlexBox,
   FlexColumnBox,
   FileUploadBox
 } from './styles/BoardStyles';
@@ -48,7 +46,7 @@ const BoardModify: React.FC = () => {
     };
 
     fetchPost();
-  }, [postId, navigate]);
+  }, [postId, navigate, boardId]);
 
   const handleSubmit = async () => {
     if (!post || !postId || !post.boardMaster?.id) return;
@@ -77,20 +75,6 @@ const BoardModify: React.FC = () => {
         [name]: value
       }));
     }
-  };
-
-  const handleFileDelete = (index: number) => {
-    if (post) {
-      setFilesToDelete(prev => [...prev, post.files[index].id.toString()]);
-      setPost(prev => ({
-        ...prev!,
-        files: prev!.files.filter((_, i) => i !== index)
-      }));
-    }
-  };
-
-  const handleNewFileDelete = (index: number) => {
-    setFiles(files.filter((_, i) => i !== index));
   };
 
   if (!post) {
@@ -164,18 +148,21 @@ const BoardModify: React.FC = () => {
             id="file-input"
             onChange={(e) => {
               if (e.target.files) {
-                setFiles(prev => [...prev, ...Array.from(e.target.files || [])]);
+                setFiles(prev => [...prev, ...Array.from(e.target.files!)]);
               }
             }}
             style={{ display: 'none' }}
           />
-          <Button
-            component="span"
-            startIcon={<CloudUploadIcon />}
-            variant="text"
-          >
-            파일 선택 또는 드래그 앤 드롭
-          </Button>
+
+          <label htmlFor="file-input">
+            <Button
+              component="span"
+              startIcon={<CloudUploadIcon />}
+              variant="text"
+            >
+              파일 선택 또는 드래그 앤 드롭
+            </Button>
+          </label>
         </FileUploadBox>
 
         {/* Existing Files */}

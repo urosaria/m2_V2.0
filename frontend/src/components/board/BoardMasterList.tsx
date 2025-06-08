@@ -6,7 +6,8 @@ import {
   TablePagination,
   Skeleton,
   Link,
-  Tooltip
+  Tooltip,
+  Box
 } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';

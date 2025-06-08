@@ -22,7 +22,7 @@ import {
   StyledTableRow,
 } from '../board/styles/BoardStyles';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import userService, { User, PaginatedResponse } from '../../services/userService';
+import userService, { User } from '../../services/userService';
 
 
 interface UserListProps {
@@ -39,7 +39,6 @@ const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
   const [totalElements, setTotalElements] = useState(0);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
 
   const fetchUsers = async () => {
     try {
@@ -52,6 +51,16 @@ const UserList: React.FC<UserListProps> = ({ onEdit, refreshTrigger }) => {
   };
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await userService.getUsers(page, rowsPerPage);
+        setUsers(response.content);
+        setTotalElements(response.totalElements);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+  
     fetchUsers();
   }, [page, rowsPerPage, refreshTrigger]);
 

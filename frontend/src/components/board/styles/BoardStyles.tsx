@@ -58,16 +58,16 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 export const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
+  '&:nth-of-type(even)': {
     backgroundColor: theme.palette.action.hover,
   },
-  '&:hover': {
+  '&:hover td': {
     backgroundColor: theme.palette.action.selected,
     cursor: 'pointer',
   },
   '& td': {
-    wordBreak: 'break-word'
-  }
+    wordBreak: 'break-word',
+  },
 }));
 
 // Form Components

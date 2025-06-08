@@ -23,7 +23,7 @@ import {
   StyledTableCell,
   StyledTableRow,
 } from './styles/BoardStyles';
-
+import { useSnackbar } from '../../context/SnackbarContext';
 
 
 interface BoardListProps {
@@ -41,30 +41,15 @@ const BoardList: React.FC<BoardListProps> = ({ title, description, boardId: prop
   const [totalElements, setTotalElements] = useState(0);
   const [boardInfo, setBoardInfo] = useState<{ name: string; description: string } | null>(null);
 
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { showSnackbar } = useSnackbar();
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo(0, 0);
   };
-
-  const loadBoardInfo = useCallback(async () => {
-    if (!boardId) return;
-    try {
-      const board = await boardMasterService.get(parseInt(boardId));
-      if (!title) {
-        setBoardInfo({
-          name: board.name,
-          description: board.description || ''
-        });
-      }
-    } catch (error) {
-      console.error('Error loading board info:', error);
-    }
-  }, [boardId, title]);
 
   const loadPosts = useCallback(async () => {
     if (!boardId) return;
@@ -76,9 +61,9 @@ const BoardList: React.FC<BoardListProps> = ({ title, description, boardId: prop
       setTotalElements(response.totalElements);
     } catch (error) {
       console.error('Error loading posts:', error);
-      setError('게시물을 불러오는 중 오류가 발생했습니다.');
+      showSnackbar('게시물을 불러오는 중 오류가 발생했습니다.', 'error');
     }
-  }, [boardId, page]);
+  }, [boardId, page, showSnackbar]); 
 
   useEffect(() => {
     if (boardId) {
@@ -92,11 +77,12 @@ const BoardList: React.FC<BoardListProps> = ({ title, description, boardId: prop
           });
         } catch (error) {
           console.error('Error loading board info:', error);
+          showSnackbar('게시물을 불러오는 중 오류가 발생했습니다.', 'error');
         }
       };
       loadBoardInfo();
     }
-  }, [boardId]);
+  }, [boardId, showSnackbar]);
 
   useEffect(() => {
     if (boardId) {

@@ -10,10 +10,6 @@ import {
   Box,
   Typography,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
 } from '@mui/material';
 import {
   CloudUpload as CloudUploadIcon,
@@ -26,11 +22,6 @@ import { boardService, BoardPost } from '../../services/boardService';
 import { boardMasterService, BoardMaster } from '../../services/boardMasterService';
 import useAuth from '../../hooks/useAuth';
 import PageLayout from '../common/PageLayout';
-import {
-  FlexBox,
-  FlexColumnBox,
-  FileUploadBox
-} from './styles/BoardStyles';
 
 interface PostState {
   title: string;
@@ -128,13 +119,6 @@ const BoardRegister: React.FC = () => {
       [name]: value
     }));
   };
-
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setFiles(prev => [...prev, ...newFiles]);
-    }
-  }, []);
 
   const handleRemoveFile = useCallback((index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
