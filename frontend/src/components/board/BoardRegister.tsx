@@ -20,7 +20,7 @@ import {
 
 import { boardService, BoardPost } from '../../services/boardService';
 import { boardMasterService, BoardMaster } from '../../services/boardMasterService';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import PageLayout from '../common/PageLayout';
 
 interface PostState {

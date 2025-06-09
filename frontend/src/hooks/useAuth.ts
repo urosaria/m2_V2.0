@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { User } from '../types/user';
 
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/auth`;
+
+type LoginResponse = {
+  num: number;
+  id: string;
+  name: string;
+  role: string;
+  access_token: string;
+};
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,15 +40,20 @@ export function useAuth() {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post('/api/auth/login', { id: email, password });
+      const response = await axios.post<LoginResponse>(`${API_URL}/login`, {
+        id: email,
+        password,
+      });
       const data = response.data;
+
       const userData: User = {
-        num: null,
+        num: data.num,
         id: data.id,
         name: data.name,
-        email: email,
+        email,
         role: data.role,
       };
+
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(userData));
@@ -70,8 +85,6 @@ export function useAuth() {
     hasRole,
     login,
     logout,
-    checkAuthStatus
+    checkAuthStatus,
   };
 }
-
-export default useAuth;
