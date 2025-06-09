@@ -103,7 +103,8 @@ const UserForm: React.FC<UserFormProps> = ({ user, open, onClose, onSuccess }) =
       if (user?.num) {
         // For editing existing user
         const { password, id, ...updateData } = data;
-        await userService.updateUser(user.num, { ...updateData, id, password: password || 'temp' });
+        const payload = password ? { ...updateData, id, password } : { ...updateData, id };
+        await userService.updateUser(user.num, payload);
         setSnackbar({ open: true, message: '사용자가 성공적으로 수정되었습니다.', severity: 'success' });
         onSuccess();
         onClose();

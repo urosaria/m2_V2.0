@@ -5,7 +5,8 @@ import jungjin.common.exception.BusinessException;
 import jungjin.common.exception.NotFoundException;
 import jungjin.user.domain.Role;
 import jungjin.user.domain.User;
-import jungjin.user.dto.UserRequestDTO;
+import jungjin.user.dto.UserCreateRequestDTO;
+import jungjin.user.dto.UserUpdateRequestDTO;
 import jungjin.user.dto.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findByLoginId(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
-    public void insertUser(UserRequestDTO request) {
+    public void insertUser(UserCreateRequestDTO request) {
         if (userRepository.existsByLoginId(request.getId())) {
             throw new BusinessException("DUPLICATE_LOGIN_ID", "Login ID already exists");
         }
@@ -74,7 +75,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new NotFoundException("User not found with num: " + userNum));
     }
 
-    public UserResponseDTO updateUser(Long userNum, UserRequestDTO request) {
+    public UserResponseDTO updateUser(Long userNum, UserUpdateRequestDTO request) {
         User user = userRepository.findByNum(userNum)
                 .orElseThrow(() -> new BusinessException("User not found with num: " + userNum));
 
