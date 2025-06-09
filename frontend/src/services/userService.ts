@@ -69,8 +69,7 @@ const userService = {
   },
 
   updateUser: async (num: number, user: Partial<User> & { id: string; password?: string }) => {
-    const payload = { password: 'temp', ...user };
-    const response = await axios.put(`${API_URL}/${num}`, payload);
+    const response = await axios.put(`${API_URL}/${num}`, user);
     return response.data;
   },
 

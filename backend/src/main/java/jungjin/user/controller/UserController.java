@@ -1,7 +1,8 @@
 package jungjin.user.controller;
 
 import jakarta.validation.Valid;
-import jungjin.user.dto.UserRequestDTO;
+import jungjin.user.dto.UserCreateRequestDTO;
+import jungjin.user.dto.UserUpdateRequestDTO;
 import jungjin.user.dto.UserResponseDTO;
 import jungjin.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@Valid @RequestBody UserRequestDTO request) {
+    public ResponseEntity<Void> register(@Valid @RequestBody UserCreateRequestDTO request) {
         userService.insertUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -32,7 +33,7 @@ public class UserController {
     @PutMapping("/{userNum}")
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable Long userNum,
-            @Valid @RequestBody UserRequestDTO userDTO) {
+            @Valid @RequestBody UserUpdateRequestDTO userDTO) {
         return ResponseEntity.ok(userService.updateUser(userNum, userDTO));
     }
 
