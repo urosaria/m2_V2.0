@@ -1,15 +1,21 @@
-# Use Node base image
-FROM node:20
+# --- Build Stage ---
+FROM node:20 as builder
 
-# Set working directory
 WORKDIR /app
-
-# Copy package.json and install deps first (cache friendly)
 COPY package*.json ./
 RUN npm install
-
-# Copy the rest of the app
 COPY . .
+RUN npm run build
 
-# Start the app
-CMD ["npm", "start"]
+# --- Production Stage ---
+FROM node:20-slim
+
+# Install serve to host the static build
+RUN npm install -g serve
+
+WORKDIR /app
+COPY --from=builder /app/build ./build
+
+# Use serve to host the static files (lightweight)
+EXPOSE 3000
+CMD ["serve", "-s", "build", "-l", "3000"]
