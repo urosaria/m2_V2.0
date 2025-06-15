@@ -1,4 +1,8 @@
 spring:
+  sql:
+    init:
+      mode: never
+
   devtools:
     livereload:
       enabled: true
@@ -21,11 +25,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: none
+    show-sql: false
     open-in-view: false
     properties:
       hibernate:
+        jdbc:
+          prepare_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   h2:
