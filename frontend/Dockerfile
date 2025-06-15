@@ -18,4 +18,4 @@ COPY --from=builder /app/build ./build
 
 # Use serve to host the static files (lightweight)
 EXPOSE 3000
-CMD ["serve", "-s", "build", "-l", "3000"]
+ENTRYPOINT ["serve", "-s", "build", "-l", "3000"]
