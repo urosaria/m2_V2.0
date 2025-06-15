@@ -1,18 +1,24 @@
-# -------- Dev Environment --------
-FROM eclipse-temurin:21-jdk
-
+# --- Build Stage ---
+FROM maven:3.9.5-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Install required tools
-RUN apt-get update && apt-get install -y maven curl && apt-get clean
-
-# Cache dependencies by copying only pom.xml first
+# Download dependencies
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Copy entire source for development
+# Copy source and build
 COPY . .
+RUN mvn clean package -DskipTests
 
-# Use host's Maven cache if mounted (via docker-compose.override.yml)
-# and run with spring-boot:run for hot reload support
-CMD ["mvn", "spring-boot:run"]
+# --- Runtime Stage ---
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
+
+# Copy built jar from build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# 👇 Tell Railway what port to use
+EXPOSE 8080
+
+# 👇 Run the app
+ENTRYPOINT ["java", "-jar", "app.jar"]
