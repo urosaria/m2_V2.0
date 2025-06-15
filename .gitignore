@@ -24,3 +24,5 @@ dist/
 nbdist/
 .nb-gradle/
 backend/src/main/webapp/upload
+
+frontend/.env.dev

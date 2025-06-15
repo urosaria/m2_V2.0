@@ -2,6 +2,7 @@ package jungjin.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jungjin.user.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,9 @@ public class WebSecurityConfig {
     public static final String REMEMBER_ME_COOKIE_NAME = "REMEMBER_ME_COOKIE";
 
     private final UserService userDetailsService;
+
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
 
     public WebSecurityConfig(UserService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -83,10 +87,8 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of(allowedOrigins));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        //configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        //configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 

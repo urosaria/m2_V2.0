@@ -1,0 +1,30 @@
+spring:
+  sql:
+    init:
+      mode: never
+
+  #pooler
+  datasource:
+    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres
+    username: postgres.qibjhketqjmupgdisash
+    password: m2jungjin
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          prepare_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# Custom application properties
+app:
+  upload:
+    dir: /Users/riayu/IdeaProjects/m2/backend/src/main/webapp/upload
+
+cors:
+  allowed-origins: https://m2-v2.vercel.app
