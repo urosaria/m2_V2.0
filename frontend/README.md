@@ -1,43 +1,131 @@
-# Getting Started with Create React App
+# M2 Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive admin and user management frontend built with React, TypeScript, and Material-UI, supporting features like user registration, authentication, board management, estimate forms, and more.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- **User Management**: Register, edit, and manage users with validation and error handling.
+- **Authentication**: JWT-based login/logout, protected routes, and role-based access.
+- **Board System**: Create, edit, and manage boards (공지사항/FAQ/Q&A), including file uploads.
+- **Estimate Forms**: Multi-step, responsive forms for submitting estimates, with mobile and desktop navigation.
+- **Material Management**: Manage materials and related data with advanced filtering and search.
+- **Picture Management**: Upload and organize images.
+- **Admin Dashboard**: Overview and quick access to key management features.
+- **Global Error Handling**: Consistent error responses and UI feedback.
+- **Responsive UI**: Optimized for both desktop and mobile using Material-UI breakpoints.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Tech Stack
 
-### `npm test`
+- **React 18** + **TypeScript**
+- **Material-UI v5** (MUI)
+- **React Hook Form** for form state/validation
+- **Axios** for HTTP requests
+- **React Router v7** for routing
+- **Jest** & **React Testing Library** for testing
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Getting Started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Install dependencies
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 2. Set up environment variables
 
-### `npm run eject`
+Create a `.env` file in the root with:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+REACT_APP_API_BASE_URL=http://localhost:8080
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Adjust the API URL as needed for your backend.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 3. Run the development server
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm run dev
+```
+
+The app will be available at [http://localhost:3000](http://localhost:3000).
+
+### 4. Build for production
+
+```bash
+npm run build
+```
+
+### 5. Serve the production build
+
+```bash
+npm start
+```
+
+---
+
+## Scripts
+
+- `npm run dev` – Start development server (hot reload)
+- `npm run build` – Build for production
+- `npm start` – Serve the production build
+- `npm test` – Run tests
+
+---
+
+## Project Structure
+
+```
+frontend/
+├── src/
+│   ├── components/      # Reusable UI components (user, board, estimate, etc)
+│   ├── pages/           # Top-level pages/routes
+│   ├── services/        # API service modules (axios)
+│   ├── hooks/           # Custom React hooks
+│   ├── types/           # TypeScript types/interfaces
+│   ├── context/         # React context providers (auth, snackbar, etc)
+│   └── assets/          # Images, logos, etc
+├── public/
+├── package.json
+├── README.md
+└── ...
+```
+
+---
+
+## Key Design Decisions
+
+- **Centralized Error Handling**: All API and UI errors are handled consistently, with user-friendly messages.
+- **Responsive Navigation**: Mobile and desktop navigation are separated for optimal UX.
+- **Type Safety**: All data models and API calls are strongly typed.
+- **Separation of Concerns**: Logic is separated into services, hooks, and components for maintainability.
+
+---
+
+## Testing
+
+Run all tests:
+
+```bash
+npm test
+```
+
+---
+
+## Contributing
+
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
+
+---
 
 ## Learn More
 
