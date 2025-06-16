@@ -8,7 +8,7 @@ A modern, responsive admin and user management frontend built with React, TypeSc
 
 - **User Management**: Register, edit, and manage users with validation and error handling.
 - **Authentication**: JWT-based login/logout, protected routes, and role-based access.
-- **Board System**: Create, edit, and manage boards (공지사항/FAQ/Q&A), including file uploads.
+- **Board System**: Create, edit, and manage boards (Notice/FAQ/Q&A), including file uploads.
 - **Estimate Forms**: Multi-step, responsive forms for submitting estimates, with mobile and desktop navigation.
 - **Material Management**: Manage materials and related data with advanced filtering and search.
 - **Picture Management**: Upload and organize images.
@@ -85,9 +85,11 @@ frontend/
 ├── src/
 │   ├── components/      # Reusable UI components (user, board, estimate, etc)
 │   ├── pages/           # Top-level pages/routes
-│   ├── services/        # API service modules (axios)
+│   ├── services/        # API service modules (axios, business logic)
+│   ├── utils/           # Utility/helper functions (formatting, validation, etc)
+│   ├── theme/           # Custom Material-UI theme and style overrides
+│   ├── types/           # TypeScript types/interfaces for app data models
 │   ├── hooks/           # Custom React hooks
-│   ├── types/           # TypeScript types/interfaces
 │   ├── context/         # React context providers (auth, snackbar, etc)
 │   └── assets/          # Images, logos, etc
 ├── public/
@@ -96,6 +98,12 @@ frontend/
 └── ...
 ```
 
+- `services/`: Handles API calls and business logic.
+- `utils/`: Common utility functions (formatting, validation, etc).
+- `theme/`: MUI theme customization and global styles.
+- `types/`: TypeScript interfaces and types for strong typing.
+
+These directories help keep the codebase modular, maintainable, and scalable.
 ---
 
 ## Key Design Decisions
