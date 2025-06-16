@@ -3,18 +3,11 @@ spring:
     init:
       mode: never
 
-  #pooler
   datasource:
-    url: jdbc:postgresql://aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres
-    username: postgres.qibjhketqjmupgdisash
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
     password: m2jungjin
     driver-class-name: org.postgresql.Driver
-
-#  datasource:
-#    url: jdbc:postgresql://db.qibjhketqjmupgdisash.supabase.co:5432/postgres
-#    username: postgres
-#    password: m2jungjin
-#    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
